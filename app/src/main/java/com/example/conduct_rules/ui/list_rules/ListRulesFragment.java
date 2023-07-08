@@ -1,6 +1,9 @@
 package com.example.conduct_rules.ui.list_rules;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -15,10 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.widget.Toast;
 
 import com.example.conduct_rules.DBHelper;
@@ -28,18 +28,15 @@ import com.example.conduct_rules.databinding.FragmentListRulesBinding;
 
 public class ListRulesFragment extends Fragment {
 
-    private ListRulesViewModel homeViewModel;
     private FragmentListRulesBinding binding;
-    private static DBHelper mDbHelper;
     private static SQLiteDatabase mDbReader;
+    private static SQLiteDatabase mDbWriter;
+
     private LinearLayout mLinerLayoutU1;
     private LinearLayout mLinerLayoutU2;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(ListRulesViewModel.class);
-
         binding = FragmentListRulesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         mLinerLayoutU1 = root.findViewById(R.id.listRules1);
@@ -59,8 +56,9 @@ public class ListRulesFragment extends Fragment {
     }
 
     private void initDBHelper(Context c) {
-        mDbHelper = new DBHelper(c);
-        mDbReader = mDbHelper.getReadableDatabase();
+        DBHelper dbHelper = new DBHelper(c);
+        mDbReader = dbHelper.getReadableDatabase();
+        mDbWriter = dbHelper.getWritableDatabase();
     }
 
     public static int convertPixelsToDp(float px, Context context) {
@@ -71,22 +69,61 @@ public class ListRulesFragment extends Fragment {
         return Math.round(dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
+    private void updateRule(RuleInfo rule) {
+        ContentValues cv = new ContentValues();
+        cv.put("checked", rule.checked ? 1 : 0);
+        mDbWriter.update("rule", cv, "_id = ?", new String[]{String.valueOf(rule.id)});
+        if (!rule.checked) {
+            mDbWriter.delete("rule", "_id = ?", new String[]{String.valueOf(rule.id)});
+        }
+    }
+
+    private void deleteRule(RuleInfo rule, Button buttonAdd) {
+
+        final Boolean[] result = {false};
+
+        AlertDialog.Builder ad;
+        String title = "Подтверждение удаления";
+        String message = "Удалить правило из практики: " + rule.name + "?";
+        String buttonYesString = "Да";
+        String buttonNoString = "Нет";
+
+        ad = new AlertDialog.Builder(getContext());
+        ad.setTitle(title);
+        ad.setMessage(message);
+
+        ad.setPositiveButton(buttonYesString, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                buttonAdd.setBackgroundResource(R.drawable.ic_add);
+                rule.checked = false;
+                updateRule(rule);
+                Toast toast = Toast.makeText(getContext(), rule.name + "\nУдалено из практики!", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+        ad.setNegativeButton(buttonNoString, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+
+            }
+        });
+        ad.setCancelable(false);
+        ad.show();
+    }
+
     View.OnClickListener buttonAddRuleClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Button buttonAdd = (Button) v;
             RuleInfo rule = (RuleInfo) buttonAdd.getTag();
-            String message;
-            if (rule.active) {
-                message = rule.name + "\nУдалено из практики!";
-                buttonAdd.setBackgroundResource(R.drawable.ic_add);
+            if (rule.checked) {
+                deleteRule(rule, buttonAdd);
             } else {
-                message = rule.name + "\nДобавлено в практику!";
                 buttonAdd.setBackgroundResource(R.drawable.ic_remove);
+                rule.checked = true;
+                updateRule(rule);
+                Toast toast = Toast.makeText(getContext(), rule.name + "\nДобавлено в практику!", Toast.LENGTH_SHORT);
+                toast.show();
             }
-            rule.active = !rule.active;
-            Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
-            toast.show();
         }
     };
 
@@ -101,7 +138,8 @@ public class ListRulesFragment extends Fragment {
         int sizeButtonNot = convertDpToPixel(30, context);
         int paddingDP = convertDpToPixel(4, context);
 
-        Cursor cursor = mDbReader.rawQuery("SELECT _id, code, name, level FROM rule", null);
+        Cursor cursor = mDbReader.rawQuery("SELECT _id, code, name, level, checked, available" +
+                " FROM rule WHERE done = 0", null);
         if ((cursor != null) && (cursor.moveToFirst())) {
             while (cursor.moveToNext()) {
 
@@ -109,7 +147,8 @@ public class ListRulesFragment extends Fragment {
                 rule.id = cursor.getInt(0);
                 rule.name = cursor.getString(2);
                 rule.level = cursor.getInt(3);
-                rule.active = false;
+                rule.checked = cursor.getInt(4) == 1;
+                rule.available = cursor.getInt(5) == 1;
 
                 LinearLayout wrapper = new LinearLayout(context);
                 wrapper.setTag(rule.id);
@@ -132,14 +171,16 @@ public class ListRulesFragment extends Fragment {
                     buttonAdd.setWidth(sizeButtonAdd);
                     buttonAdd.setHeight(sizeButtonAdd);
                     buttonAdd.setLayoutParams(new FrameLayout.LayoutParams(sizeButtonAdd, sizeButtonAdd));
-                    buttonAdd.setBackgroundResource(R.drawable.ic_add);
-                    buttonAdd.setOnClickListener(buttonAddRuleClickListener);
-                    buttonAdd.setTag(rule);
                 } else {
                     buttonAdd.setWidth(sizeButtonNot);
                     buttonAdd.setHeight(sizeButtonNot);
                     buttonAdd.setLayoutParams(new FrameLayout.LayoutParams(sizeButtonNot, sizeButtonNot));
-                    buttonAdd.setBackgroundResource(R.drawable.ic_not);
+                }
+                buttonAdd.setBackgroundResource(rule.available ?
+                        (rule.checked ?  R.drawable.ic_remove : R.drawable.ic_add) : R.drawable.ic_not);
+                if (rule.available) {
+                    buttonAdd.setOnClickListener(buttonAddRuleClickListener);
+                    buttonAdd.setTag(rule);
                 }
 
                 wrapperButton.addView(buttonAdd);

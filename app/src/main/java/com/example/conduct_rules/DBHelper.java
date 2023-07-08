@@ -27,7 +27,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "name TEXT,"
                 + "level INTEGER,"
                 + "point INTEGER,"
-                + "checked INTEGER DEFAULT 0);");
+                + "available INTEGER DEFAULT 0,"
+                + "checked INTEGER DEFAULT 0,"
+                + "done INTEGER DEFAULT 0);");
 
         db.execSQL("INSERT INTO rule (_id, code, name, level, point) VALUES " +
                 "(1,  '1.1', 'Использование воды после мочеиспускания', 1, 1)," +
@@ -80,6 +82,14 @@ public class DBHelper extends SQLiteOpenHelper {
                 "(48, '16.8', 'Тандава (минимум раз в день)', 1, 16)," +
                 "(49, '16.9', 'Каошики (минимум раз в день)', 1, 16)," +
                 "(50, '16.10', 'Гуру Сакаш', 1, 16)");
+
+        db.execSQL("UPDATE rule SET available = 1 WHERE level = 1");
+
+        db.execSQL("CREATE TABLE practice ("
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "rule_id INTEGER,"
+                + "date INTEGER,"
+                + "done INTEGER DEFAULT 0)");
     }
 
     @Override

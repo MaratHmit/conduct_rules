@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_list_rules"
+        android:icon="@drawable/ic_baseline_format_list_numbered_24"
+        android:title="@string/title_list_rules" />
+
+    <item
+        android:id="@+id/navigation_practice"
+        android:icon="@drawable/ic_baseline_playlist_add_check_24"
+        android:title="@string/title_practice" />
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="@string/title_profile" />
+
+</menu>

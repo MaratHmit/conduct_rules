@@ -1,4 +1,4 @@
-package com.example.conduct_rules;
+package ru.am.conduct_rules;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -20,6 +20,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.example.conduct_rules", appContext.getPackageName());
+        assertEquals("ru.am.conduct_rules", appContext.getPackageName());
     }
 }

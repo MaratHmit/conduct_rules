@@ -1,4 +1,4 @@
-package com.example.conduct_rules;
+package ru.am.conduct_rules;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

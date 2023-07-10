@@ -1,4 +1,4 @@
-package com.example.conduct_rules;
+package ru.am.conduct_rules.ui;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -24,16 +24,17 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.conduct_rules.databinding.ActivityMainBinding;
+import ru.am.conduct_rules.Consts;
+import ru.am.conduct_rules.DBHelper;
+import ru.am.conduct_rules.DataModule;
+import ru.am.conduct_rules.R;
+import ru.am.conduct_rules.databinding.ActivityMainBinding;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-
-    private static DBHelper mDbHelper;
-    private static SQLiteDatabase mDbReader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
+        DataModule.initDBHelper(this);
     }
 
     @Override
@@ -59,20 +61,13 @@ public class MainActivity extends AppCompatActivity {
             updateUserData();
     }
 
-    public static void initDBHelper(Context c) {
-        mDbHelper = new DBHelper(c);
-        mDbReader = mDbHelper.getReadableDatabase();
-    }
-
     private void updateUserData() {
-        if (mDbHelper == null)
-            initDBHelper(getBaseContext());
 
         TextView textViewName = (TextView) findViewById(R.id.textViewUserName);
         TextView textViewGender = (TextView) findViewById(R.id.textViewGender);
         TextView textViewLanguage = (TextView) findViewById(R.id.textViewLanguage);
 
-        Cursor query = mDbReader.rawQuery("SELECT name, gender, language FROM user WHERE _id = 1", null);
+        Cursor query = DataModule.dbReader.rawQuery("SELECT name, gender, language FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
             if (textViewName !=  null)

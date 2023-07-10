@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_list_rules"
-        android:name="com.example.conduct_rules.ui.list_rules.ListRulesFragment"
+        android:name="ru.am.conduct_rules.ui.list_rules.ListRulesFragment"
         android:label="@string/title_list_rules"
         tools:layout="@layout/fragment_list_rules" />
 
     <fragment
         android:id="@+id/navigation_practice"
-        android:name="com.example.conduct_rules.ui.practice.PracticeFragment"
+        android:name="ru.am.conduct_rules.ui.practice.PracticeFragment"
         android:label="@string/title_practice"
         tools:layout="@layout/fragment_practice" />
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.example.conduct_rules.ui.profile.ProfileFragment"
+        android:name="ru.am.conduct_rules.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
 </navigation>

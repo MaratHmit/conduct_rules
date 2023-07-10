@@ -1,4 +1,4 @@
-package com.example.conduct_rules.ui.list_rules;
+package ru.am.conduct_rules.ui.list_rules;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -21,16 +21,17 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
-import com.example.conduct_rules.DBHelper;
-import com.example.conduct_rules.R;
-import com.example.conduct_rules.RuleInfo;
-import com.example.conduct_rules.databinding.FragmentListRulesBinding;
+import ru.am.conduct_rules.DBHelper;
+import ru.am.conduct_rules.DataModule;
+import ru.am.conduct_rules.R;
+import ru.am.conduct_rules.RuleInfo;
+import ru.am.conduct_rules.databinding.FragmentListRulesBinding;
+
+import java.util.Date;
 
 public class ListRulesFragment extends Fragment {
 
     private FragmentListRulesBinding binding;
-    private static SQLiteDatabase mDbReader;
-    private static SQLiteDatabase mDbWriter;
 
     private LinearLayout mLinerLayoutU1;
     private LinearLayout mLinerLayoutU2;
@@ -42,8 +43,6 @@ public class ListRulesFragment extends Fragment {
         mLinerLayoutU1 = root.findViewById(R.id.listRules1);
         mLinerLayoutU2 = root.findViewById(R.id.listRules2);
 
-
-        initDBHelper(getContext());
         loadListRules();
 
         return root;
@@ -55,26 +54,20 @@ public class ListRulesFragment extends Fragment {
         binding = null;
     }
 
-    private void initDBHelper(Context c) {
-        DBHelper dbHelper = new DBHelper(c);
-        mDbReader = dbHelper.getReadableDatabase();
-        mDbWriter = dbHelper.getWritableDatabase();
-    }
-
-    public static int convertPixelsToDp(float px, Context context) {
-        return Math.round(px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
-    }
-
-    public static int convertDpToPixel(float dp, Context context) {
-        return Math.round(dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
-    }
-
     private void updateRule(RuleInfo rule) {
         ContentValues cv = new ContentValues();
         cv.put("checked", rule.checked ? 1 : 0);
-        mDbWriter.update("rule", cv, "_id = ?", new String[]{String.valueOf(rule.id)});
-        if (!rule.checked) {
-            mDbWriter.delete("rule", "_id = ?", new String[]{String.valueOf(rule.id)});
+        DataModule.dbWriter.update("rule", cv, "_id = ?", new String[]{String.valueOf(rule.id)});
+        DataModule.dbWriter.delete("practice", "rule_id = ?", new String[]{String.valueOf(rule.id)});
+        if (rule.checked) {
+            int startDate = (int) (new Date().getTime() / (1000 * 86400));
+            int endDate = startDate + 20;
+            for (int i = startDate; i <= endDate; i++) {
+                cv.clear();
+                cv.put("rule_id", rule.id);
+                cv.put("date", i);
+                DataModule.dbWriter.insert("practice", null, cv);
+            }
         }
     }
 
@@ -84,7 +77,7 @@ public class ListRulesFragment extends Fragment {
 
         AlertDialog.Builder ad;
         String title = "Подтверждение удаления";
-        String message = "Удалить правило из практики: " + rule.name + "?";
+        String message = "Удалить правило из практики?\n\"" + rule.name + "\"";
         String buttonYesString = "Да";
         String buttonNoString = "Нет";
 
@@ -133,14 +126,14 @@ public class ListRulesFragment extends Fragment {
         if (context == null)
             return;
 
-        int height = convertDpToPixel(130, context);
-        int sizeButtonAdd = convertDpToPixel(36, context);
-        int sizeButtonNot = convertDpToPixel(30, context);
-        int paddingDP = convertDpToPixel(4, context);
+        int height = DataModule.convertDpToPixel(130, context);
+        int sizeButtonAdd = DataModule.convertDpToPixel(36, context);
+        int sizeButtonNot = DataModule.convertDpToPixel(30, context);
+        int paddingDP = DataModule.convertDpToPixel(4, context);
 
-        Cursor cursor = mDbReader.rawQuery("SELECT _id, code, name, level, checked, available" +
-                " FROM rule WHERE done = 0", null);
-        if ((cursor != null) && (cursor.moveToFirst())) {
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, code, name, level, checked, available" +
+                " FROM rule WHERE done = 0 ORDER BY _id", null);
+        if ((cursor != null)) {
             while (cursor.moveToNext()) {
 
                 RuleInfo rule = new RuleInfo();
@@ -177,7 +170,7 @@ public class ListRulesFragment extends Fragment {
                     buttonAdd.setLayoutParams(new FrameLayout.LayoutParams(sizeButtonNot, sizeButtonNot));
                 }
                 buttonAdd.setBackgroundResource(rule.available ?
-                        (rule.checked ?  R.drawable.ic_remove : R.drawable.ic_add) : R.drawable.ic_not);
+                        (rule.checked ? R.drawable.ic_remove : R.drawable.ic_add) : R.drawable.ic_not);
                 if (rule.available) {
                     buttonAdd.setOnClickListener(buttonAddRuleClickListener);
                     buttonAdd.setTag(rule);
@@ -207,6 +200,7 @@ public class ListRulesFragment extends Fragment {
 
             }
         }
+        cursor.close();
 
     }
 }

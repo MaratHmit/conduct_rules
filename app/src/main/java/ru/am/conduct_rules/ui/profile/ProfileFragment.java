@@ -1,4 +1,4 @@
-package com.example.conduct_rules.ui.profile;
+package ru.am.conduct_rules.ui.profile;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,15 +18,14 @@ import android.support.v4.app.Fragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 
-import com.example.conduct_rules.Consts;
-import com.example.conduct_rules.DBHelper;
-import com.example.conduct_rules.ProfileActivity;
-import com.example.conduct_rules.R;
-import com.example.conduct_rules.databinding.FragmentProfileBinding;
+import ru.am.conduct_rules.Consts;
+import ru.am.conduct_rules.DBHelper;
+import ru.am.conduct_rules.ProfileActivity;
+import ru.am.conduct_rules.R;
+import ru.am.conduct_rules.databinding.FragmentProfileBinding;
 
 public class ProfileFragment extends Fragment {
 
-    private ProfileViewModel notificationsViewModel;
     private FragmentProfileBinding binding;
 
     private static DBHelper mDbHelper;
@@ -38,9 +37,6 @@ public class ProfileFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(ProfileViewModel.class);
-
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 

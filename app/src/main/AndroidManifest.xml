@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.conduct_rules">
+    package="ru.am.conduct_rules">
 
     <application
         android:allowBackup="true"
@@ -14,11 +14,13 @@
             android:exported="false"
             android:label="@string/title_activity_profile"
             android:noHistory="true"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysVisible"
             android:theme="@style/Theme.ConductRules.NoActionBar" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

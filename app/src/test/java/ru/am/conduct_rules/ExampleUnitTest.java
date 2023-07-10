@@ -1,4 +1,4 @@
-package com.example.conduct_rules;
+package ru.am.conduct_rules;
 
 import org.junit.Test;
 

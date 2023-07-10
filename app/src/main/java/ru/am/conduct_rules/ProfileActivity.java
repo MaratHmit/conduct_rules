@@ -1,4 +1,4 @@
-package com.example.conduct_rules;
+package ru.am.conduct_rules;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,7 +18,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.conduct_rules.databinding.ActivityProfileBinding;
+import ru.am.conduct_rules.databinding.ActivityProfileBinding;
 
 public class ProfileActivity extends AppCompatActivity {
 

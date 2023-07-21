@@ -199,10 +199,12 @@ public class PracticeFragment extends Fragment {
                     footer.setVisibility(View.VISIBLE);
                     main.setVisibility(View.GONE);
                     layoutParams.height *= 2;
+                    ((ImageButton) v).setImageResource(R.drawable.ic_remove_30_white);
                 } else {
                     footer.setVisibility(View.GONE);
                     main.setVisibility(View.VISIBLE);
                     layoutParams.height /= 2;
+                    ((ImageButton) v).setImageResource(R.drawable.ic_add_30_white);
                 }
                 practice.setLayoutParams(layoutParams);
             }

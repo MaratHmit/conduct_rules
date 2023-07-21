@@ -39,22 +39,10 @@
         android:paddingBottom="60dp">
 
         <LinearLayout
+            android:id="@+id/listPractices"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/listPractices"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"></LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/listProgress"
-                android:layout_width="110dp"
-                android:layout_height="match_parent"
-                android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical">
 
         </LinearLayout>
     </ScrollView>

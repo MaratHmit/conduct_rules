@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -20,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import ru.am.conduct_rules.Consts;
 import ru.am.conduct_rules.DataModule;
@@ -27,6 +29,8 @@ import ru.am.conduct_rules.ProfileActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.RuleInfo;
 import ru.am.conduct_rules.databinding.FragmentPracticeBinding;
+import ru.am.conduct_rules.ui.MainActivity;
+import ru.am.conduct_rules.ui.StackActivity;
 
 public class PracticeFragment extends Fragment {
 
@@ -35,6 +39,7 @@ public class PracticeFragment extends Fragment {
     private ArrayList<View> listPractice;
     private ArrayList<View> listMainRect;
     private ArrayList<View> listFooterRect;
+    private Button buttonMarkCards;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -49,8 +54,34 @@ public class PracticeFragment extends Fragment {
 
         loadPractices();
 
+        buttonMarkCards = (Button) root.findViewById(R.id.button_mark_cards);
+        buttonMarkCards.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), StackActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
+        buttonMarkCards.setEnabled(getCountPractices() > 0);
+
+
         return root;
     }
+
+
+    private int getCountPractices() {
+
+        int date = (int) (new Date().getTime() / (1000 * 86400));
+        String strDate = String.valueOf(date);
+        
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT COUNT(r._id)" +
+                " FROM rule r JOIN practice p WHERE r._id = p.rule_id AND p.done = 0 AND p.date = " +
+                strDate, null);
+        if (cursor.moveToFirst())
+            return cursor.getInt(0);
+        return 0;
+    }
+
 
     private void loadPractices() {
         Context context = getContext();

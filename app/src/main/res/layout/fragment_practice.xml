@@ -16,6 +16,8 @@
             android:gravity="center"
             android:padding="5dp"
             android:text="Заполнить"
+            android:enabled="false"
+            android:id="@+id/button_mark_cards"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="18sp" />
 
@@ -26,6 +28,7 @@
             android:gravity="center"
             android:padding="5dp"
             android:text="Таблица"
+            android:enabled="false"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="18sp" />
 

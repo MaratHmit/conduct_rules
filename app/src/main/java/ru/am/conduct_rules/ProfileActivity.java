@@ -25,10 +25,6 @@ public class ProfileActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
     private ActivityProfileBinding binding;
 
-    private static DBHelper mDbHelper;
-    private static SQLiteDatabase mDbWriter;
-    private static SQLiteDatabase mDbReader;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,19 +61,10 @@ public class ProfileActivity extends AppCompatActivity {
         loadData();
     }
 
-    public static void initDBHelper(Context c) {
-        mDbHelper = new DBHelper(c);
-        mDbWriter = mDbHelper.getWritableDatabase();
-        mDbReader = mDbHelper.getReadableDatabase();
-    }
 
     private void save() {
 
         Context context = this.getBaseContext();
-
-        if (mDbHelper == null) {
-            initDBHelper(context);
-        }
 
         EditText editTextName = (EditText) findViewById(R.id.editTextName);
         Spinner spinnerGender = (Spinner) findViewById(R.id.spinnerGender);
@@ -90,7 +77,7 @@ public class ProfileActivity extends AppCompatActivity {
         cv.put("name", editTextName.getText().toString());
         cv.put("gender", spinnerGender.getSelectedItemPosition());
         cv.put("language", spinnerLanguage.getSelectedItemPosition());
-        mDbWriter.update("user", cv, "_id = 1", null);
+        DataModule.dbWriter.update("user", cv, "_id = 1", null);
 
         setResult(RESULT_OK);
         finish();
@@ -99,14 +86,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadData() {
 
-        if (mDbHelper == null)
-            initDBHelper(getBaseContext());
-
         EditText editTextName = (EditText) findViewById(R.id.editTextName);
         Spinner spinnerGender = (Spinner) findViewById(R.id.spinnerGender);
         Spinner spinnerLanguage = (Spinner) findViewById(R.id.spinnerLanguage);
 
-        Cursor query = mDbReader.rawQuery("SELECT name, gender, language FROM user WHERE _id = 1", null);
+        Cursor query = DataModule.dbReader.rawQuery("SELECT name, gender, language FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
             if (editTextName != null) {

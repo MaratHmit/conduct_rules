@@ -89,6 +89,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "rule_id INTEGER,"
                 + "date INTEGER,"
+                + "result INTEGER,"
                 + "done INTEGER DEFAULT 0)");
     }
 

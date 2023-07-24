@@ -22,5 +22,6 @@
         <item>Русский</item>
         <item>Английский</item>
     </string-array>
+    <string name="title_activity_stack">StackActivity</string>
 
 </resources>

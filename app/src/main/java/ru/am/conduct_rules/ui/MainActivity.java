@@ -14,12 +14,15 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.navigation.NavController;
+import androidx.navigation.NavGraph;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -43,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_list_rules, R.id.navigation_practice, R.id.navigation_profile)
                 .build();
@@ -51,9 +53,23 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-
+        NavGraph graph = navController.getNavInflater().inflate(R.navigation.mobile_navigation);
         DataModule.initDBHelper(this);
+
+        int countPractices = getCountPractices();
+        if (countPractices == 0)
+            graph.setStartDestination(R.id.navigation_list_rules);
+        navController.setGraph(graph);
     }
+
+    private int getCountPractices() {
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT COUNT(r._id)" +
+                " FROM rule r JOIN practice p WHERE r._id = p.rule_id", null);
+        if (cursor.moveToFirst())
+            return cursor.getInt(0);
+        return 0;
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

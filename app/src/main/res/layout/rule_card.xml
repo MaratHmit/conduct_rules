@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:background="#FF7F26"
+    card_view:cardCornerRadius="6dp"
+    card_view:cardElevation="10dp"
+    >
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="540dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Номер правила"
+            android:id="@+id/text_code"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:background="#C3C3C3"
+            android:layout_gravity="center_horizontal" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:text="Текст большого правила"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:id="@+id/text_rule"
+            android:gravity="center"
+            android:breakStrategy="simple"
+            android:layout_gravity="center_horizontal" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@null"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:onClick="onButtonUnCheckRuleClick"
+            android:id="@+id/button_check_rule"
+            android:src="@drawable/ic_cancel_24"/>
+
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@null"
+            android:id="@+id/button_uncheck_rule"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:onClick="onButtonCheckRuleClick"
+            android:src="@drawable/ic_check_24"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

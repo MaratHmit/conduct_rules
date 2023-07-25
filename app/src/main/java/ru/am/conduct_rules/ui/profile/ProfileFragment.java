@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.annotation.NonNull;
@@ -46,7 +47,7 @@ public class ProfileFragment extends Fragment {
 
         initDBHelper(getContext());
 
-        Button buttonEdit = (Button) root.findViewById(R.id.buttonEdit);
+        ImageButton buttonEdit = (ImageButton) root.findViewById(R.id.buttonEdit);
 
         buttonEdit.setOnClickListener(new View.OnClickListener() {
             @Override

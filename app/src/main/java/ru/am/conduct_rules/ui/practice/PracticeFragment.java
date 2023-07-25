@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,14 +21,13 @@ import android.support.v4.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import ru.am.conduct_rules.Consts;
 import ru.am.conduct_rules.DataModule;
-import ru.am.conduct_rules.ProfileActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.RuleInfo;
 import ru.am.conduct_rules.databinding.FragmentPracticeBinding;
-import ru.am.conduct_rules.ui.MainActivity;
 import ru.am.conduct_rules.ui.StackActivity;
 
 public class PracticeFragment extends Fragment {
@@ -39,7 +37,9 @@ public class PracticeFragment extends Fragment {
     private ArrayList<View> listPractice;
     private ArrayList<View> listMainRect;
     private ArrayList<View> listFooterRect;
-    private Button buttonMarkCards;
+
+    private Map<Integer, int[]> mapPractice;
+    private Map<Integer, Integer> mapCountDays;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -48,13 +48,16 @@ public class PracticeFragment extends Fragment {
         View root = binding.getRoot();
         mLinerLayoutPractices = root.findViewById(R.id.listPractices);
 
-        listMainRect = new ArrayList();
-        listFooterRect = new ArrayList();
-        listPractice = new ArrayList();
+        listMainRect = new ArrayList<>();
+        listFooterRect = new ArrayList<>();
+        listPractice = new ArrayList<>();
+
+        mapPractice = new HashMap<Integer, int[]>();
+        mapCountDays = new HashMap<Integer, Integer>();
 
         loadPractices();
 
-        buttonMarkCards = (Button) root.findViewById(R.id.button_mark_cards);
+        Button buttonMarkCards = (Button) root.findViewById(R.id.button_mark_cards);
         buttonMarkCards.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,7 +76,7 @@ public class PracticeFragment extends Fragment {
 
         int date = (int) (new Date().getTime() / (1000 * 86400));
         String strDate = String.valueOf(date);
-        
+
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT COUNT(r._id)" +
                 " FROM rule r JOIN practice p WHERE r._id = p.rule_id AND p.done = 0 AND p.date = " +
                 strDate, null);
@@ -92,8 +95,10 @@ public class PracticeFragment extends Fragment {
         int height = DataModule.convertDpToPixel(90, context);
         int paddingDP = DataModule.convertDpToPixel(4, context);
 
+        initPracticeList();
+
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name" +
-                " FROM rule r JOIN practice p WHERE r._id = p.rule_id GROUP BY r._id", null);
+                " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
 
@@ -145,7 +150,45 @@ public class PracticeFragment extends Fragment {
 
     }
 
-    private void setProgressFooter(LinearLayout layout, int id) {
+    private void initPracticeList() {
+
+        RuleInfo info;
+        int index;
+        int currDate = (int) (new Date().getTime() / (1000 * 86400));
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT p._id, p.rule_id, p.result, p.done, p.date" +
+                " FROM practice p ORDER BY p._id", null);
+        if ((cursor != null)) {
+            while (cursor.moveToNext()) {
+                info = new RuleInfo();
+                info.id = cursor.getInt(1);
+                info.date = cursor.getInt(4);
+                int[] days;
+                if (mapPractice.get(info.id) == null) {
+                    days = new int[21];
+                    mapPractice.put(info.id, days);
+                    index = 0;
+                    mapCountDays.put(info.id, index);
+                } else {
+                    days = mapPractice.get(info.id);
+                    index = mapCountDays.get(info.id);
+                }
+                if (days != null) {
+                    if (info.date <= currDate) {
+                        if (cursor.getInt(3) == 0) { // правило пропущено
+                            days[index] = 1;
+                        } else
+                            days[index] = (cursor.getInt(2) == 0) ? 2 : 3;
+                        index++;
+                        mapCountDays.put(info.id, index);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void setProgressFooter(LinearLayout layout, int ruleID) {
 
         Context context = getContext();
         if (context == null)
@@ -154,6 +197,10 @@ public class PracticeFragment extends Fragment {
         int size1 = DataModule.convertDpToPixel(1, context);
         int height = DataModule.convertDpToPixel(90, context);
 
+        int pos = 0;
+        int[] days = new int[21];
+        if (mapPractice.get(ruleID) != null)
+            days = mapPractice.get(ruleID);
         int h;
         for (int i = 0; i < 3; i++) {
             LinearLayout wrapperH = new LinearLayout(context);
@@ -167,7 +214,24 @@ public class PracticeFragment extends Fragment {
                 View rect = new View(context);
                 rect.setLayoutParams(new LinearLayout.LayoutParams(0, h, 1));
                 rect.setBackground(context.getDrawable(R.drawable.cell_shape_light_gray));
+                if ((days != null) && (pos < days.length)) {
+                    switch (days[pos]) {
+                        case 0:
+                            rect.setBackground(context.getDrawable(R.drawable.cell_shape_light_gray));
+                            break;
+                        case 1:
+                            rect.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));
+                            break;
+                        case 2:
+                            rect.setBackground(context.getDrawable(R.drawable.cell_shape_red));
+                            break;
+                        case 3:
+                            rect.setBackground(context.getDrawable(R.drawable.cell_shape_green));
+                            break;
+                    }
+                }
                 wrapperH.addView(rect);
+                pos++;
             }
 
             layout.addView(wrapperH);
@@ -204,7 +268,8 @@ public class PracticeFragment extends Fragment {
         layoutParamsBadge.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         wrapperButtonV.addView(badge, layoutParamsBadge);
         badge.setGravity(Gravity.CENTER);
-        badge.setText("3");
+        if ((mapCountDays != null) && (mapCountDays.get(ruleID) != null))
+            badge.setText(String.valueOf(mapCountDays.get(ruleID)));
         badge.setTextSize(textSize);
         badge.setTextColor(Color.WHITE);
 
@@ -243,11 +308,15 @@ public class PracticeFragment extends Fragment {
 
         LinearLayout wrapperRect = new LinearLayout(context);
         wrapperRect.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams layoutParamsW = new LinearLayout.LayoutParams( widthL, height);
+        LinearLayout.LayoutParams layoutParamsW = new LinearLayout.LayoutParams(widthL, height);
         wrapperRect.setLayoutParams(layoutParamsW);
         listMainRect.add(wrapperRect);
 
         int h;
+        int pos = 0;
+        int[] days = new int[21];
+        if (mapPractice.get(ruleID) != null)
+            days = mapPractice.get(ruleID);
         for (int i = 0; i < 3; i++) {
             LinearLayout wrapperH = new LinearLayout(context);
             wrapperH.setOrientation(LinearLayout.HORIZONTAL);
@@ -259,8 +328,24 @@ public class PracticeFragment extends Fragment {
             for (int j = 0; j < 2; j++) {
                 View rect = new View(context);
                 rect.setLayoutParams(new LinearLayout.LayoutParams(0, h, 1));
-                rect.setBackground(context.getDrawable(R.drawable.cell_shape_light_gray));
+                if ((days != null) && (pos < days.length)) {
+                    switch (days[pos]) {
+                        case 0:
+                            rect.setBackground(context.getDrawable(R.drawable.cell_shape_light_gray));
+                            break;
+                        case 1:
+                            rect.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));
+                            break;
+                        case 2:
+                            rect.setBackground(context.getDrawable(R.drawable.cell_shape_red));
+                            break;
+                        case 3:
+                            rect.setBackground(context.getDrawable(R.drawable.cell_shape_green));
+                            break;
+                    }
+                }
                 wrapperH.addView(rect);
+                pos++;
             }
 
             wrapperRect.addView(wrapperH);

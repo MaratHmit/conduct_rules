@@ -9,4 +9,5 @@ public class RuleInfo {
     public int level; // уровень
     public Boolean checked;  // выбрано
     public Boolean available; // доступно
+    public int status;
 }

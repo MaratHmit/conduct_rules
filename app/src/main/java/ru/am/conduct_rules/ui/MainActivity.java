@@ -1,7 +1,5 @@
 package ru.am.conduct_rules.ui;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,6 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +24,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
@@ -32,6 +33,7 @@ import ru.am.conduct_rules.DBHelper;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.databinding.ActivityMainBinding;
+import ru.am.conduct_rules.ui.practice.PracticeFragment;
 
 import java.util.List;
 
@@ -76,6 +78,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == Consts.RESULT_SAVE_USER && resultCode == RESULT_OK)
             updateUserData();
+
+        if (requestCode == Consts.RESULT_FINISH && resultCode == RESULT_OK)
+            updatePractices();
+    }
+
+    private void updatePractices() {
+
+        finish();
+        startActivity(getIntent());
     }
 
     private void updateUserData() {
@@ -87,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         Cursor query = DataModule.dbReader.rawQuery("SELECT name, gender, language FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
-            if (textViewName !=  null)
+            if (textViewName != null)
                 textViewName.setText(name);
             if (textViewGender != null) {
                 if (!query.isNull(1)) {

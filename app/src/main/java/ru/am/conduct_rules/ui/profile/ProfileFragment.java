@@ -48,7 +48,6 @@ public class ProfileFragment extends Fragment {
         initDBHelper(getContext());
 
         ImageButton buttonEdit = (ImageButton) root.findViewById(R.id.buttonEdit);
-
         buttonEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,6 +55,14 @@ public class ProfileFragment extends Fragment {
                 FragmentActivity activity = getActivity();
                 if (activity != null)
                     activity.startActivityForResult(intent, Consts.RESULT_SAVE_USER);
+            }
+        });
+
+        Button buttonReset = (Button) root.findViewById(R.id.button_reset);
+        buttonReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 

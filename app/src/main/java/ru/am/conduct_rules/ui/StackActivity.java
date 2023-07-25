@@ -20,8 +20,9 @@ import ru.am.conduct_rules.RuleInfo;
 
 public class StackActivity extends AppCompatActivity {
 
-    SwipeDeck cardStack;
-    SwipeDeckAdapter mAdapter;
+    static public int date;
+    private SwipeDeck cardStack;
+    private SwipeDeckAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class StackActivity extends AppCompatActivity {
 
             @Override
             public void cardsDepleted() {
+                setResult(RESULT_OK);
                 finish();
             }
 
@@ -86,7 +88,6 @@ public class StackActivity extends AppCompatActivity {
 
     private void loadRules(ArrayList<RuleInfo> listRules) {
 
-        int date = (int) (new Date().getTime() / (1000 * 86400));
         String strDate = String.valueOf(date);
 
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT p._id AS practice_id, r._id, r.code, r.name" +

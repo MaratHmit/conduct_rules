@@ -110,6 +110,7 @@
             android:text="Руководство"></Button>
 
         <Button
+            android:id="@+id/button_reset"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="Сбросить всё"></Button>

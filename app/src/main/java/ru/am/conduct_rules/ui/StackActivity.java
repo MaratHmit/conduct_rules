@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import com.daprlabs.cardstack.SwipeDeck;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import ru.am.conduct_rules.DataModule;
@@ -20,7 +21,6 @@ import ru.am.conduct_rules.RuleInfo;
 
 public class StackActivity extends AppCompatActivity {
 
-    static public int date;
     private SwipeDeck cardStack;
     private SwipeDeckAdapter mAdapter;
 
@@ -88,12 +88,25 @@ public class StackActivity extends AppCompatActivity {
 
     private void loadRules(ArrayList<RuleInfo> listRules) {
 
+        Date currentTime = Calendar.getInstance().getTime();
+        int date = (int) (currentTime.getTime() / (1000 * 86400));
         String strDate = String.valueOf(date);
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT p._id AS practice_id, r._id, r.code, r.name" +
-                " FROM rule r JOIN practice p WHERE r._id = p.rule_id AND p.done = 0" +
-                " AND p.date = " + strDate +
-                " GROUP BY r._id", null);
+        String sqlStr = "SELECT p._id AS practice_id, r._id, r.code, r.name" +
+                " FROM rule r JOIN practice p ON r._id = p.rule_id WHERE p.done = 0 AND" +
+                " p.date = " + strDate +
+                " GROUP BY r._id";
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            int id = extras.getInt("practiceID");
+            if (id > 0)
+                sqlStr = "SELECT p._id AS practice_id, r._id, r.code, r.name" +
+                        " FROM rule r JOIN practice p ON r._id = p.rule_id" +
+                        " WHERE p._id = " + id;
+        }
+
+        Cursor cursor = DataModule.dbReader.rawQuery(sqlStr, null);
 
         if ((cursor != null)) {
             while (cursor.moveToNext()) {

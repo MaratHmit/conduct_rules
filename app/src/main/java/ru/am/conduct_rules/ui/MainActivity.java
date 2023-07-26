@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,11 +36,14 @@ import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.databinding.ActivityMainBinding;
 import ru.am.conduct_rules.ui.practice.PracticeFragment;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    static private Boolean isStart = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +63,40 @@ public class MainActivity extends AppCompatActivity {
         DataModule.initDBHelper(this);
 
         int countPractices = getCountPractices();
+        int countPracticesToday = getCountPracticesToday();
         if (countPractices == 0)
             graph.setStartDestination(R.id.navigation_list_rules);
+        if ((countPracticesToday > 0) && !isStart) {
+            startSlider();
+            isStart = true;
+        }
         navController.setGraph(graph);
+    }
+
+    private int getCountPracticesToday() {
+
+        Date currentTime = Calendar.getInstance().getTime();
+        int date = (int) (currentTime.getTime() / (1000 * 86400));
+        String strDate = String.valueOf(date);
+
+        Cursor cursor = DataModule.dbReader.rawQuery(
+                "SELECT COUNT(p._id)" +
+                " FROM rule r JOIN practice p ON r._id = p.rule_id " +
+                " WHERE p.done = 0 AND p.date = " + strDate +
+                " GROUP BY r._id", null);
+        if (cursor.moveToFirst())
+            return cursor.getInt(0);
+        return 0;
+    }
+
+    private void startSlider() {
+        Intent intent = new Intent(this, StackActivity.class);
+        startActivityForResult(intent, Consts.RESULT_FINISH);
     }
 
     private int getCountPractices() {
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT COUNT(r._id)" +
-                " FROM rule r JOIN practice p WHERE r._id = p.rule_id", null);
+                " FROM rule r JOIN practice p ON r._id = p.rule_id", null);
         if (cursor.moveToFirst())
             return cursor.getInt(0);
         return 0;
@@ -85,8 +115,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void updatePractices() {
 
-        finish();
-        startActivity(getIntent());
+        try {
+            PracticeFragment.buttonMarkCards.setEnabled(PracticeFragment.getCountPractices() > 0);
+            PracticeFragment.updateRectViews();
+        } catch (Exception e) {
+            finish();
+            startActivity(getIntent());
+        }
+
     }
 
     private void updateUserData() {

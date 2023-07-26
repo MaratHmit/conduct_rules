@@ -27,6 +27,7 @@ import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.RuleInfo;
 import ru.am.conduct_rules.databinding.FragmentListRulesBinding;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class ListRulesFragment extends Fragment {
@@ -60,7 +61,8 @@ public class ListRulesFragment extends Fragment {
         DataModule.dbWriter.update("rule", cv, "_id = ?", new String[]{String.valueOf(rule.id)});
         DataModule.dbWriter.delete("practice", "rule_id = ?", new String[]{String.valueOf(rule.id)});
         if (rule.checked) {
-            int startDate = (int) (new Date().getTime() / (1000 * 86400));
+            Date currentTime = Calendar.getInstance().getTime();
+            int startDate = (int) (currentTime.getTime() / (1000 * 86400));
             int endDate = startDate + 20;
             for (int i = startDate; i <= endDate; i++) {
                 cv.clear();
@@ -147,7 +149,8 @@ public class ListRulesFragment extends Fragment {
 
     private int getCountPractices() {
 
-        int date = (int) (new Date().getTime() / (1000 * 86400));
+        Date currentTime = Calendar.getInstance().getTime();
+        int date = (int) (currentTime.getTime() / (1000 * 86400));
         String strDate = String.valueOf(date);
 
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT COUNT(r._id)" +

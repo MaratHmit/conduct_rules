@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +80,6 @@ public class PracticeFragment extends Fragment {
 
         return root;
     }
-
 
     private int getCountPractices() {
 
@@ -298,8 +298,8 @@ public class PracticeFragment extends Fragment {
         layoutParamsBadge.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         wrapperButtonV.addView(badge, layoutParamsBadge);
         badge.setGravity(Gravity.CENTER);
-        if ((mapCountDays != null) && (mapCountDays.get(ruleID) != null))
-            badge.setText(String.valueOf(mapCountDays.get(ruleID)));
+        if ((mapPractice != null) && (mapPractice.get(ruleID) != null))
+            badge.setText(String.valueOf(getCountSuccessDays(mapPractice.get(ruleID))));
         badge.setTextSize(textSize);
         badge.setTextColor(Color.WHITE);
 
@@ -391,6 +391,15 @@ public class PracticeFragment extends Fragment {
 
         layout.addView(wrapperRect);
 
+    }
+
+    private int getCountSuccessDays(RuleInfo[] days) {
+        int result = 0;
+        for (int i = 0; i < days.length; i++) {
+            if ((days[i] != null) && (days[i].status == 3))
+                result++;
+        }
+        return result;
     }
 
     @Override

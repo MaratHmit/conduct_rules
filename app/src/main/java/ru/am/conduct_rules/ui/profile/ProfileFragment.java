@@ -1,6 +1,8 @@
 package ru.am.conduct_rules.ui.profile;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,9 +20,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
+import android.widget.Toast;
 
 import ru.am.conduct_rules.Consts;
 import ru.am.conduct_rules.DBHelper;
+import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.ProfileActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.databinding.FragmentProfileBinding;
@@ -62,7 +66,7 @@ public class ProfileFragment extends Fragment {
         buttonReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                resetData();
             }
         });
 
@@ -70,6 +74,39 @@ public class ProfileFragment extends Fragment {
 
 
         return root;
+    }
+
+    private void resetData() {
+        AlertDialog.Builder ad;
+        String title = "Подтверждение удаления данных";
+        String message = "Очистить все данные?";
+        String buttonYesString = "Да";
+        String buttonNoString = "Нет";
+
+        ad = new AlertDialog.Builder(getContext());
+        ad.setTitle(title);
+        ad.setMessage(message);
+
+        ad.setPositiveButton(buttonYesString, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                removeData();
+                Toast toast = Toast.makeText(getContext(),  "Данные очищены!", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+        ad.setNegativeButton(buttonNoString, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+
+            }
+        });
+        ad.setCancelable(false);
+        ad.show();
+    }
+
+    private void removeData() {
+        DataModule.dbWriter.execSQL("DELETE FROM practice");
+        DataModule.dbWriter.execSQL("UPDATE rule SET checked = 0, done = 0");
+        DataModule.dbWriter.execSQL("UPDATE rule SET available = 0 WHERE level = 2");
     }
 
     @Override

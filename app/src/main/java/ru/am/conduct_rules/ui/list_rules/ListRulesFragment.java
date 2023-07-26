@@ -111,14 +111,53 @@ public class ListRulesFragment extends Fragment {
             if (rule.checked) {
                 deleteRule(rule, buttonAdd);
             } else {
-                buttonAdd.setBackgroundResource(R.drawable.ic_remove);
-                rule.checked = true;
-                updateRule(rule);
-                Toast toast = Toast.makeText(getContext(), rule.name + "\nДобавлено в практику!", Toast.LENGTH_SHORT);
-                toast.show();
+                if (isCanRule()) {
+                    buttonAdd.setBackgroundResource(R.drawable.ic_remove);
+                    rule.checked = true;
+                    updateRule(rule);
+                    Toast toast = Toast.makeText(getContext(), rule.name + "\nДобавлено в практику!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         }
     };
+
+    private boolean isCanRule() {
+
+        int count = getCountPractices();
+        if (count >= 5) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Выбор правил для практики")
+                    .setMessage("В практику уже добавлено 5 правил!)")
+                    .setIcon(R.drawable.ic_do_not_touch)
+                    .setCancelable(false)
+                    .setNegativeButton("ОК",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
+
+            return false;
+        }
+        return true;
+    }
+
+    private int getCountPractices() {
+
+        int date = (int) (new Date().getTime() / (1000 * 86400));
+        String strDate = String.valueOf(date);
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT COUNT(r._id)" +
+                " FROM rule r JOIN practice p WHERE r._id = p.rule_id AND p.done = 0 AND p.date = " +
+                strDate, null);
+        if (cursor.moveToFirst())
+            return cursor.getInt(0);
+        return 0;
+    }
+
 
     private void loadListRules() {
 

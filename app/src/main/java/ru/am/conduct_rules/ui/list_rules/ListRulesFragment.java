@@ -173,8 +173,9 @@ public class ListRulesFragment extends Fragment {
         int sizeButtonNot = DataModule.convertDpToPixel(30, context);
         int paddingDP = DataModule.convertDpToPixel(4, context);
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, code, name, level, checked, available" +
-                " FROM rule WHERE done = 0 ORDER BY _id", null);
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, code, name, level, checked, " +
+                "available, done" +
+                " FROM rule ORDER BY _id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
 
@@ -184,6 +185,7 @@ public class ListRulesFragment extends Fragment {
                 rule.level = cursor.getInt(3);
                 rule.checked = cursor.getInt(4) == 1;
                 rule.available = cursor.getInt(5) == 1;
+                rule.done = cursor.getInt(6);
 
                 LinearLayout wrapper = new LinearLayout(context);
                 wrapper.setTag(rule.id);
@@ -233,7 +235,11 @@ public class ListRulesFragment extends Fragment {
                 wrapper.addView(textViewRule);
 
                 if (rule.level == 1) {
-                    wrapper.setBackground(context.getDrawable(R.drawable.cell_shape_orange));
+                    wrapper.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
+                    if (rule.done == 1)
+                        wrapper.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
+                    if (rule.done == 2)
+                        wrapper.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
                     mLinerLayoutU1.addView(wrapper);
                 } else {
                     wrapper.setBackground(context.getDrawable(R.drawable.cell_shape_gray));

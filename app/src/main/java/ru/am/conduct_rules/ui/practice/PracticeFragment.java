@@ -146,7 +146,7 @@ public class PracticeFragment extends Fragment {
 
         initPracticeList();
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -154,6 +154,7 @@ public class PracticeFragment extends Fragment {
                 RuleInfo rule = new RuleInfo();
                 rule.id = cursor.getInt(0);
                 rule.name = cursor.getString(1);
+                rule.done = cursor.getInt(2);
 
                 LinearLayout wrapperPractice = new LinearLayout(context);
                 wrapperPractice.setOrientation(LinearLayout.VERTICAL);
@@ -183,7 +184,11 @@ public class PracticeFragment extends Fragment {
                 textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 textViewRule.setLayoutParams(new LinearLayout.LayoutParams(0, FrameLayout.LayoutParams.MATCH_PARENT, 1));
                 textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
-                textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_orange));
+                textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
+                if (rule.done == 1)
+                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
+                if (rule.done == 2)
+                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
                 wrapperPracticeHeader.addView(textViewRule);
 
                 setProgressHeader(wrapperPracticeHeader, rule.id, index);

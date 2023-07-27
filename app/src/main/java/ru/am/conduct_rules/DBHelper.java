@@ -29,7 +29,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "point INTEGER,"
                 + "available INTEGER DEFAULT 0,"
                 + "checked INTEGER DEFAULT 0,"
-                + "done INTEGER DEFAULT 0);");
+                + "done INTEGER DEFAULT 0);"); // 0 - не выполнено, 1 - выполнено частично, 2 - выполенно полностью
 
         db.execSQL("INSERT INTO rule (_id, code, name, level, point) VALUES " +
                 "(1,  '1.1', 'Использование воды после мочеиспускания', 1, 1)," +

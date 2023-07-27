@@ -10,4 +10,6 @@ public class RuleInfo {
     public Boolean checked;  // выбрано
     public Boolean available; // доступно
     public int status;
+    public int done;
+    public Boolean isLast = false;
 }

@@ -101,7 +101,7 @@ public class PracticeFragment extends Fragment {
 
     static public void updateRectViews() {
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT p._id, p.result" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT p._id, p.result, p.done" +
                 " FROM practice p ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -113,7 +113,7 @@ public class PracticeFragment extends Fragment {
                     if (info == null)
                         continue;
 
-                    if (info.practiceId == cursor.getInt(0)) {
+                    if ((info.practiceId == cursor.getInt(0)) && (cursor.getInt(1) > 0)) {
                         info.status = (cursor.getInt(1) == 0) ? 2 : 3;
                         switch (info.status) {
                             case 1:
@@ -127,7 +127,6 @@ public class PracticeFragment extends Fragment {
                                 break;
                         }
                     }
-
 
                 }
             }

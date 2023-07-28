@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.format.DateFormat;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,7 +23,6 @@ import android.support.v4.app.Fragment;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +47,8 @@ public class PracticeFragment extends Fragment {
 
     static public int lastID;
     static public Button buttonMarkCards;
-    static public ArrayList<View> listViews = new ArrayList<>();
+    static public ArrayList<View> listRect = new ArrayList<>();
+    static public ArrayList<TextView> listTextViews = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -99,14 +98,32 @@ public class PracticeFragment extends Fragment {
         return 0;
     }
 
+    static public void updateTextViews() {
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, done FROM rule", null);
+        if ((cursor != null)) {
+            while (cursor.moveToNext()) {
+                for (int i = 0; i < listTextViews.size(); i++) {
+                    TextView view = listTextViews.get(i);
+                    if ((int) view.getTag() == cursor.getInt(0)) {
+                        if (cursor.getInt(1) == 1)
+                            view.setBackground(view.getContext().getDrawable(R.drawable.cell_shape_light_orange));
+                        if (cursor.getInt(1) == 2)
+                            view.setBackground(view.getContext().getDrawable(R.drawable.cell_shape_light_green));
+                    }
+                }
+            }
+        }
+
+    }
+
     static public void updateRectViews() {
 
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT p._id, p.result, p.done" +
                 " FROM practice p ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
-                for (int i = 0; i < listViews.size(); i++) {
-                    View rect = listViews.get(i);
+                for (int i = 0; i < listRect.size(); i++) {
+                    View rect = listRect.get(i);
                     if (rect == null)
                         continue;
                     RuleInfo info = (RuleInfo) rect.getTag();
@@ -189,6 +206,8 @@ public class PracticeFragment extends Fragment {
                 if (rule.done == 2)
                     textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
                 wrapperPracticeHeader.addView(textViewRule);
+                textViewRule.setTag(rule.id);
+                listTextViews.add(textViewRule);
 
                 setProgressHeader(wrapperPracticeHeader, rule.id, index);
                 setProgressFooter(wrapperPracticeFooter, rule.id);
@@ -300,7 +319,7 @@ public class PracticeFragment extends Fragment {
                         });
 
                         rect.setTag(days[pos]);
-                        listViews.add(rect);
+                        listRect.add(rect);
                     }
                 }
 
@@ -441,7 +460,7 @@ public class PracticeFragment extends Fragment {
                         });
 
                         rect.setTag(days[pos]);
-                        listViews.add(rect);
+                        listRect.add(rect);
                     }
                 }
                 wrapperH.addView(rect);

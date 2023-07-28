@@ -44,6 +44,7 @@ public class ListRulesFragment extends Fragment {
         mLinerLayoutU1 = root.findViewById(R.id.listRules1);
         mLinerLayoutU2 = root.findViewById(R.id.listRules2);
 
+        updateAvailableListRules();
         loadListRules();
 
         return root;
@@ -161,6 +162,20 @@ public class ListRulesFragment extends Fragment {
         return 0;
     }
 
+    private void updateAvailableListRules() {
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, level, point " +
+                "FROM rule WHERE level = 2 AND available = 0", null);
+        if ((cursor != null)) {
+            while (cursor.moveToNext()) {
+                Cursor cursorL = DataModule.dbReader.rawQuery("SELECT COUNT(_id) " +
+                        "FROM rule WHERE done != 2 AND level = 1 AND point = ?", new String[]{String.valueOf(cursor.getInt(2))});
+                if ((cursorL != null) && cursorL.moveToFirst() && (cursorL.getInt(0) == 0))
+                    DataModule.dbWriter.execSQL("UPDATE rule SET available = 1 WHERE _id = " + cursor.getInt(0));
+            }
+        }
+    }
+
 
     private void loadListRules() {
 
@@ -204,7 +219,7 @@ public class ListRulesFragment extends Fragment {
                         sizeButtonAdd));
 
                 Button buttonAdd = new Button(context);
-                if (rule.level == 1) {
+                if (rule.available) {
                     buttonAdd.setWidth(sizeButtonAdd);
                     buttonAdd.setHeight(sizeButtonAdd);
                     buttonAdd.setLayoutParams(new FrameLayout.LayoutParams(sizeButtonAdd, sizeButtonAdd));
@@ -234,17 +249,19 @@ public class ListRulesFragment extends Fragment {
                 textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
                 wrapper.addView(textViewRule);
 
-                if (rule.level == 1) {
+                if (rule.available) {
                     wrapper.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
                     if (rule.done == 1)
                         wrapper.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
                     if (rule.done == 2)
                         wrapper.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
-                    mLinerLayoutU1.addView(wrapper);
                 } else {
                     wrapper.setBackground(context.getDrawable(R.drawable.cell_shape_gray));
-                    mLinerLayoutU2.addView(wrapper);
                 }
+                if (rule.level == 1)
+                    mLinerLayoutU1.addView(wrapper);
+                else
+                    mLinerLayoutU2.addView(wrapper);
 
             }
         }

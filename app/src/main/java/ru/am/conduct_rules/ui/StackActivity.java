@@ -97,7 +97,7 @@ public class StackActivity extends AppCompatActivity {
                 new String[] { String.valueOf(info.id) });
         if ((cursor != null) && cursor.moveToFirst()) {
             int count = cursor.getInt(0);
-            if (count > 18)
+            if (count > 17)
                 DataModule.dbWriter.execSQL("UPDATE rule SET done = 1 WHERE done = 0 AND _id = " + info.id);
             if (count > 19)
                 DataModule.dbWriter.execSQL("UPDATE rule SET done = 2 WHERE _id = " + info.id);

@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             PracticeFragment.buttonMarkCards.setEnabled(PracticeFragment.getCountPractices() > 0);
             PracticeFragment.updateRectViews();
+            PracticeFragment.updateTextViews();
         } catch (Exception e) {
             finish();
             startActivity(getIntent());

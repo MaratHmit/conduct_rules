@@ -1,6 +1,9 @@
 package ru.am.conduct_rules.ui.practice;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -38,17 +41,19 @@ public class PracticeFragment extends Fragment {
 
     private FragmentPracticeBinding binding;
     private LinearLayout mLinerLayoutPractices;
-    private ArrayList<View> listPractice;
     private ArrayList<View> listMainRect;
     private ArrayList<View> listFooterRect;
 
     private Map<Integer, RuleInfo[]> mapPractice;
     private Map<Integer, Integer> mapCountDays;
+    private static int currentDate;
 
     static public int lastID;
     static public Button buttonMarkCards;
-    static public ArrayList<View> listRect = new ArrayList<>();
-    static public ArrayList<TextView> listTextViews = new ArrayList<>();
+    static public ArrayList<View> listPractice;
+    static public ArrayList<TextView> listRect;
+    static public ArrayList<TextView> listTextViews;
+    static public ArrayList<TextView> listBadges;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -60,6 +65,12 @@ public class PracticeFragment extends Fragment {
         listMainRect = new ArrayList<>();
         listFooterRect = new ArrayList<>();
         listPractice = new ArrayList<>();
+        listRect = new ArrayList<>();
+        listTextViews = new ArrayList<>();
+        listBadges = new ArrayList<>();
+
+        Date currentTime = Calendar.getInstance().getTime();
+        currentDate = (int) (currentTime.getTime() / (1000 * 86400));
 
         mapPractice = new HashMap<Integer, RuleInfo[]>();
         mapCountDays = new HashMap<Integer, Integer>();
@@ -118,34 +129,65 @@ public class PracticeFragment extends Fragment {
 
     static public void updateRectViews() {
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT p._id, p.result, p.done" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT p._id, p.result, p.done, p.date" +
                 " FROM practice p ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
                 for (int i = 0; i < listRect.size(); i++) {
-                    View rect = listRect.get(i);
+                    TextView rect = listRect.get(i);
                     if (rect == null)
                         continue;
                     RuleInfo info = (RuleInfo) rect.getTag();
                     if (info == null)
                         continue;
 
-                    if ((info.practiceId == cursor.getInt(0)) && (cursor.getInt(1) > 0)) {
+                    if ((info.practiceId == cursor.getInt(0))) {
                         info.status = (cursor.getInt(1) == 0) ? 2 : 3;
-                        switch (info.status) {
-                            case 1:
-                                rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_yellow));
-                                break;
-                            case 2:
-                                rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_red));
-                                break;
-                            case 3:
-                                rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_green));
-                                break;
+                        info.date = cursor.getInt(3);
+                        info.done = cursor.getInt(2);
+                        rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape));
+                        if (info.date <= currentDate)
+                            rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_yellow));
+                        if (info.done == 1) {
+                            switch (info.status) {
+                                case 2:
+                                    rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_red));
+                                    break;
+                                case 3:
+                                    rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_green));
+                                    break;
+                            }
                         }
+                        long dateInt = (long) info.date * 1000 * 86400;
+                        String s = "E dd.MM";
+                        if (rect.getText().length() < 4)
+                            s = "E";
+                        SimpleDateFormat fmt = new SimpleDateFormat(s);
+                        String dateStr = fmt.format(dateInt);
+                        rect.setText(dateStr);
+                        updateBadges();
                     }
 
                 }
+            }
+        }
+    }
+
+    private static void updateBadges() {
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, COUNT(p._id)" +
+                " FROM rule r JOIN practice p ON p.rule_id = r._id WHERE p.result = 1 GROUP BY r._id",
+                null);
+        if ((cursor != null)) {
+            try {
+                while (cursor.moveToNext()) {
+                    for (int i = 0; i < listBadges.size(); i++)
+                        if ((int) listBadges.get(i).getTag() == cursor.getInt(0)) {
+                            int count = cursor.getInt(1);
+                            listBadges.get(i).setText(String.valueOf(count));
+                        }
+                }
+            } catch (Exception e) {
+
             }
         }
     }
@@ -173,6 +215,7 @@ public class PracticeFragment extends Fragment {
                 rule.done = cursor.getInt(2);
 
                 LinearLayout wrapperPractice = new LinearLayout(context);
+                wrapperPractice.setTag(rule.id);
                 wrapperPractice.setOrientation(LinearLayout.VERTICAL);
                 wrapperPractice.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                         height));
@@ -271,8 +314,6 @@ public class PracticeFragment extends Fragment {
 
         int size1 = DataModule.convertDpToPixel(1, context);
         int height = DataModule.convertDpToPixel(90, context);
-        Date currentTime = Calendar.getInstance().getTime();
-        int currentDate = (int) (currentTime.getTime() / (1000 * 86400));
 
         int pos = 0;
         RuleInfo[] days = new RuleInfo[21];
@@ -319,8 +360,8 @@ public class PracticeFragment extends Fragment {
                         });
 
                         rect.setTag(days[pos]);
-                        listRect.add(rect);
                     }
+                    listRect.add(rect);
                 }
 
                 wrapperH.addView(rect);
@@ -361,9 +402,6 @@ public class PracticeFragment extends Fragment {
         int marginI = DataModule.convertDpToPixel(4, context);
         int textSize = DataModule.convertDpToPixel(5, context);
 
-        Date currentTime = Calendar.getInstance().getTime();
-        int currentDate = (int) (currentTime.getTime() / (1000 * 86400));
-
         RelativeLayout wrapperButtonV = new RelativeLayout(context);
         wrapperButtonV.setLayoutParams(new FrameLayout.LayoutParams(widthButtons,
                 FrameLayout.LayoutParams.MATCH_PARENT));
@@ -381,6 +419,8 @@ public class PracticeFragment extends Fragment {
             badge.setText(String.valueOf(getCountSuccessDays(mapPractice.get(ruleID))));
         badge.setTextSize(textSize);
         badge.setTextColor(Color.WHITE);
+        badge.setTag(ruleID);
+        listBadges.add(badge);
 
         ImageButton buttonPlusMinus = new ImageButton(context);
         buttonPlusMinus.setImageResource(R.drawable.ic_add_30_white);
@@ -403,12 +443,12 @@ public class PracticeFragment extends Fragment {
                 if (footer.getVisibility() == View.GONE) {
                     footer.setVisibility(View.VISIBLE);
                     main.setVisibility(View.GONE);
-                    layoutParams.height *= 2;
+                    layoutParams.height = height * 2;
                     ((ImageButton) v).setImageResource(R.drawable.ic_remove_30_white);
                 } else {
                     footer.setVisibility(View.GONE);
                     main.setVisibility(View.VISIBLE);
-                    layoutParams.height /= 2;
+                    layoutParams.height = height;
                     ((ImageButton) v).setImageResource(R.drawable.ic_add_30_white);
                 }
                 practice.setLayoutParams(layoutParams);
@@ -426,6 +466,16 @@ public class PracticeFragment extends Fragment {
         RuleInfo[] days = new RuleInfo[21];
         if (mapPractice.get(ruleID) != null)
             days = mapPractice.get(ruleID);
+        if (days != null) {
+            for (int d = 0; d < days.length; d++) {
+                if (days[d].date == currentDate) {
+                    pos = d - 5;
+                    if (pos < 0)
+                        pos = 0;
+                    break;
+                }
+            }
+        }
         for (int i = 0; i < 3; i++) {
             LinearLayout wrapperH = new LinearLayout(context);
             wrapperH.setOrientation(LinearLayout.HORIZONTAL);
@@ -435,10 +485,16 @@ public class PracticeFragment extends Fragment {
             wrapperH.setWeightSum(2);
 
             for (int j = 0; j < 2; j++) {
-                View rect = new View(context);
+                TextView rect = new TextView(context);
+                rect.setGravity(Gravity.CENTER);
+                rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8);
                 rect.setLayoutParams(new LinearLayout.LayoutParams(0, h, 1));
                 rect.setBackground(context.getDrawable(R.drawable.cell_shape_light_gray));
                 if ((days != null) && (pos < days.length) && (days[pos] != null)) {
+                    long dateInt = (long) days[pos].date * 1000 * 86400;
+                    SimpleDateFormat fmt = new SimpleDateFormat("E dd.MM");
+                    String dateStr = fmt.format(dateInt);
+                    rect.setText(dateStr);
                     if (days[pos].date <= currentDate) {
                         switch (days[pos].status) {
                             case 1:
@@ -460,8 +516,8 @@ public class PracticeFragment extends Fragment {
                         });
 
                         rect.setTag(days[pos]);
-                        listRect.add(rect);
                     }
+                    listRect.add(rect);
                 }
                 wrapperH.addView(rect);
                 pos++;
@@ -471,7 +527,110 @@ public class PracticeFragment extends Fragment {
         }
 
         layout.addView(wrapperRect);
+    }
 
+    public static void updateStatuses(Context context) {
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name" +
+                " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
+
+        if ((cursor != null)) {
+            while (cursor.moveToNext()) {
+                RuleInfo info = new RuleInfo();
+                info.id = cursor.getInt(0);
+                info.name = cursor.getString(1);
+                updateStatusRule(info);
+                checkRuleOnFinish(context, info);
+            }
+        }
+    }
+
+    private static void checkRuleOnFinish(Context context, RuleInfo info) {
+        boolean isLast = checkRuleIsLast(info);
+        if (!isLast)
+            return;
+
+        AlertDialog.Builder ad;
+        String title = "Практика " + info.name +  " завершена!";
+        String message = "Удалить правило из практики?";
+        String buttonYesString = "Да";
+        String buttonNoString = "Нет";
+
+        ad = new AlertDialog.Builder(context);
+        ad.setTitle(title);
+        ad.setMessage(message);
+
+        ad.setPositiveButton(buttonYesString, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                DataModule.dbWriter.execSQL("DELETE FROM practice WHERE rule_id = " + info.id);
+                DataModule.dbWriter.execSQL("UPDATE rule SET checked = 0 WHERE _id = " + info.id);
+                try {
+                    for (int i = 0; i < PracticeFragment.listPractice.size(); i++) {
+                        if ((int) PracticeFragment.listPractice.get(i).getTag() == info.id) {
+                            PracticeFragment.listPractice.get(i).setVisibility(View.GONE);
+                        }
+                    }
+                } catch (Exception e) {
+
+                }
+
+            }
+        });
+        ad.setNegativeButton(buttonNoString, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+
+                Cursor cursor = DataModule.dbReader.rawQuery(
+                        "SELECT MIN(_id) FROM practice WHERE rule_id = ?",
+                        new String[] { String.valueOf(info.id) });
+
+                if ((cursor != null) && cursor.moveToFirst()) {
+
+                    int id = cursor.getInt(0);
+
+                    ContentValues cv = new ContentValues();
+                    Date currentTime = Calendar.getInstance().getTime();
+                    int startDate = (int) (currentTime.getTime() / (1000 * 86400));
+                    int endDate = startDate + 20;
+                    for (int i = startDate; i <= endDate; i++) {
+                        cv.clear();
+                        cv.put("date", i);
+                        cv.put("done", 0);
+                        cv.putNull("result");
+                        DataModule.dbWriter.update("practice", cv,"rule_id = ? AND _id = ?",
+                                new String[]{String.valueOf(info.id), String.valueOf(id)});
+                        id++;
+                    }
+                    updateRectViews();
+                }
+
+            }
+        });
+        ad.setCancelable(false);
+        ad.show();
+    }
+
+    private static boolean checkRuleIsLast(RuleInfo info) {
+        Cursor cursor = DataModule.dbReader.rawQuery(
+                "SELECT COUNT(_id) FROM practice WHERE rule_id = ? AND done = 1",
+                new String[] { String.valueOf(info.id) });
+        if ((cursor != null) && cursor.moveToFirst()) {
+            int count = cursor.getInt(0);
+            return count == Consts.COUNT_PRACTICES;
+        }
+        return false;
+    }
+
+    private static void updateStatusRule(RuleInfo info) {
+        Cursor cursor = DataModule.dbReader.rawQuery(
+                "SELECT COUNT(_id) FROM practice WHERE result = 1 AND rule_id = ?",
+                new String[] { String.valueOf(info.id) });
+        if ((cursor != null) && cursor.moveToFirst()) {
+            int count = cursor.getInt(0);
+            if (count > 17)
+                DataModule.dbWriter.execSQL("UPDATE rule SET done = 1 WHERE done = 0 AND _id = " + info.id);
+            if (count > 19)
+                DataModule.dbWriter.execSQL("UPDATE rule SET done = 2 WHERE _id = " + info.id);
+        }
     }
 
     private int getCountSuccessDays(RuleInfo[] days) {

@@ -1,9 +1,13 @@
 package ru.am.conduct_rules.ui;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Toast;
 
 import com.daprlabs.cardstack.SwipeDeck;
 
@@ -14,6 +18,7 @@ import java.util.Date;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.RuleInfo;
+import ru.am.conduct_rules.ui.practice.PracticeFragment;
 
 public class StackActivity extends AppCompatActivity {
 
@@ -80,29 +85,8 @@ public class StackActivity extends AppCompatActivity {
         cv.put("result", check ? 1 : 0);
         cv.put("done", 1);
         DataModule.dbWriter.update("practice", cv, "_id = ?", new String[] { String.valueOf(info.practiceId) });
-
-        updateStatusRule(info);
-        checkRuleOnFinish(info);
     }
 
-    private void checkRuleOnFinish(RuleInfo info) {
-        if (!info.isLast)
-            return;
-
-    }
-
-    private void updateStatusRule(RuleInfo info) {
-        Cursor cursor = DataModule.dbReader.rawQuery(
-                "SELECT COUNT(_id) FROM practice WHERE result = 1 AND rule_id = ?",
-                new String[] { String.valueOf(info.id) });
-        if ((cursor != null) && cursor.moveToFirst()) {
-            int count = cursor.getInt(0);
-            if (count > 17)
-                DataModule.dbWriter.execSQL("UPDATE rule SET done = 1 WHERE done = 0 AND _id = " + info.id);
-            if (count > 19)
-                DataModule.dbWriter.execSQL("UPDATE rule SET done = 2 WHERE _id = " + info.id);
-        }
-    }
 
     private void loadRules(ArrayList<RuleInfo> listRules) {
 

@@ -43,7 +43,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    static private Boolean isStart = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +65,8 @@ public class MainActivity extends AppCompatActivity {
         int countPracticesToday = getCountPracticesToday();
         if (countPractices == 0)
             graph.setStartDestination(R.id.navigation_list_rules);
-        if ((countPracticesToday > 0) && !isStart) {
+        if ((countPracticesToday > 0))
             startSlider();
-            isStart = true;
-        }
         navController.setGraph(graph);
     }
 
@@ -119,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
             PracticeFragment.buttonMarkCards.setEnabled(PracticeFragment.getCountPractices() > 0);
             PracticeFragment.updateRectViews();
             PracticeFragment.updateTextViews();
+            PracticeFragment.updateStatuses(this);
         } catch (Exception e) {
             finish();
             startActivity(getIntent());

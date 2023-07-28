@@ -7,9 +7,8 @@ public class RuleInfo {
     public String code;
     public int date;
     public int level; // уровень
-    public Boolean checked;  // выбрано
-    public Boolean available; // доступно
+    public boolean checked;  // выбрано
+    public boolean available; // доступно
     public int status;
     public int done;
-    public Boolean isLast = false;
 }

@@ -76,8 +76,6 @@ public class ListRulesFragment extends Fragment {
 
     private void deleteRule(RuleInfo rule, Button buttonAdd) {
 
-        final Boolean[] result = {false};
-
         AlertDialog.Builder ad;
         String title = "Подтверждение удаления";
         String message = "Удалить правило из практики?\n\"" + rule.name + "\"";

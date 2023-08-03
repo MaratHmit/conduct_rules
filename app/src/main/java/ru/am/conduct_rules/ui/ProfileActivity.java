@@ -1,4 +1,4 @@
-package ru.am.conduct_rules;
+package ru.am.conduct_rules.ui;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,6 +18,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import ru.am.conduct_rules.DataModule;
+import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.databinding.ActivityProfileBinding;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -66,9 +68,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         Context context = this.getBaseContext();
 
-        EditText editTextName = (EditText) findViewById(R.id.editTextName);
-        Spinner spinnerGender = (Spinner) findViewById(R.id.spinnerGender);
-        Spinner spinnerLanguage = (Spinner) findViewById(R.id.spinnerLanguage);
+        EditText editTextName = findViewById(R.id.editTextName);
+        Spinner spinnerGender = findViewById(R.id.spinnerGender);
+        Spinner spinnerLanguage = findViewById(R.id.spinnerLanguage);
+        Spinner spinnerMode = findViewById(R.id.spinnerMode);
 
         if ((editTextName == null) || (spinnerGender == null) || (spinnerLanguage == null))
             return;
@@ -77,6 +80,7 @@ public class ProfileActivity extends AppCompatActivity {
         cv.put("name", editTextName.getText().toString());
         cv.put("gender", spinnerGender.getSelectedItemPosition());
         cv.put("language", spinnerLanguage.getSelectedItemPosition());
+        cv.put("mode", spinnerMode.getSelectedItemPosition());
         DataModule.dbWriter.update("user", cv, "_id = 1", null);
 
         setResult(RESULT_OK);
@@ -86,11 +90,12 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadData() {
 
-        EditText editTextName = (EditText) findViewById(R.id.editTextName);
-        Spinner spinnerGender = (Spinner) findViewById(R.id.spinnerGender);
-        Spinner spinnerLanguage = (Spinner) findViewById(R.id.spinnerLanguage);
+        EditText editTextName = findViewById(R.id.editTextName);
+        Spinner spinnerGender = findViewById(R.id.spinnerGender);
+        Spinner spinnerLanguage = findViewById(R.id.spinnerLanguage);
+        Spinner spinnerMode = findViewById(R.id.spinnerMode);
 
-        Cursor query = DataModule.dbReader.rawQuery("SELECT name, gender, language FROM user WHERE _id = 1", null);
+        Cursor query = DataModule.dbReader.rawQuery("SELECT name, gender, language, mode FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
             if (editTextName != null) {
@@ -102,6 +107,8 @@ public class ProfileActivity extends AppCompatActivity {
                 spinnerGender.setSelection(query.getInt(1));
             if (spinnerLanguage != null)
                 spinnerLanguage.setSelection(query.getInt(2));
+            if (spinnerMode != null)
+                spinnerMode.setSelection(query.getInt(3));
         }
 
     }

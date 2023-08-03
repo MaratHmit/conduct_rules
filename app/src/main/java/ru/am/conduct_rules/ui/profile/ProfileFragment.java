@@ -13,19 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.widget.Toast;
 
 import ru.am.conduct_rules.Consts;
 import ru.am.conduct_rules.DBHelper;
 import ru.am.conduct_rules.DataModule;
-import ru.am.conduct_rules.ProfileActivity;
+import ru.am.conduct_rules.ui.ProfileActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.databinding.FragmentProfileBinding;
 
@@ -39,15 +35,17 @@ public class ProfileFragment extends Fragment {
     private TextView mTextViewName;
     private TextView mTextViewGender;
     private TextView mTextViewLanguage;
+    private TextView mTextViewMode;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        mTextViewName = (TextView) root.findViewById(R.id.textViewUserName);
-        mTextViewGender = (TextView) root.findViewById(R.id.textViewGender);
-        mTextViewLanguage = (TextView) root.findViewById(R.id.textViewLanguage);
+        mTextViewName = root.findViewById(R.id.textViewUserName);
+        mTextViewGender = root.findViewById(R.id.textViewGender);
+        mTextViewLanguage = root.findViewById(R.id.textViewLanguage);
+        mTextViewMode = root.findViewById(R.id.textViewMode);
 
         initDBHelper(getContext());
 
@@ -121,7 +119,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadData() {
-        Cursor query = mDbReader.rawQuery("SELECT name, gender, language FROM user WHERE _id = 1", null);
+        Cursor query = mDbReader.rawQuery("SELECT name, gender, language, mode FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
             if (mTextViewName != null)
@@ -135,8 +133,13 @@ public class ProfileFragment extends Fragment {
             }
             if (mTextViewLanguage != null) {
                 mTextViewLanguage.setText("Русский");
-                if (query.getInt(1) == 1)
+                if (query.getInt(2) == 1)
                     mTextViewLanguage.setText("Английский");
+            }
+            if (mTextViewMode != null) {
+                mTextViewMode.setText("Свайп");
+                if (query.getInt(3) == 1)
+                    mTextViewMode.setText("Таблица");
             }
         }
 

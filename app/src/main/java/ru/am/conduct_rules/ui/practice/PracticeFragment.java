@@ -1,5 +1,6 @@
 package ru.am.conduct_rules.ui.practice;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,18 +8,25 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -41,6 +49,8 @@ public class PracticeFragment extends Fragment {
 
     private FragmentPracticeBinding binding;
     private LinearLayout mLinerLayoutPractices;
+    private LinearLayout mLinerLayoutTable;
+    private ScrollView mScrollViewPractice;
     private ArrayList<View> listMainRect;
     private ArrayList<View> listFooterRect;
 
@@ -60,7 +70,9 @@ public class PracticeFragment extends Fragment {
 
         binding = FragmentPracticeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        mLinerLayoutPractices = root.findViewById(R.id.listPractices);
+        mLinerLayoutPractices = root.findViewById(R.id.listPracticesSwipe);
+        mLinerLayoutTable = root.findViewById(R.id.listPracticesTable);
+        mScrollViewPractice = root.findViewById(R.id.scrollViewPractice);
 
         listMainRect = new ArrayList<>();
         listFooterRect = new ArrayList<>();
@@ -175,7 +187,7 @@ public class PracticeFragment extends Fragment {
 
     private static void updateBadges() {
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, COUNT(p._id)" +
-                " FROM rule r JOIN practice p ON p.rule_id = r._id WHERE p.result = 1 GROUP BY r._id",
+                        " FROM rule r JOIN practice p ON p.rule_id = r._id WHERE p.result = 1 GROUP BY r._id",
                 null);
         if ((cursor != null)) {
             try {
@@ -194,6 +206,23 @@ public class PracticeFragment extends Fragment {
 
 
     private void loadPractices() {
+
+        Cursor query = DataModule.dbReader.rawQuery("SELECT mode FROM user WHERE _id = 1", null);
+        if (query.moveToFirst()) {
+            if (query.getInt(0) == 0) {
+                mLinerLayoutTable.setVisibility(View.GONE);
+                mScrollViewPractice.setVisibility(View.VISIBLE);
+                createPracticesSwipe();
+            } else {
+                mLinerLayoutTable.setVisibility(View.VISIBLE);
+                mScrollViewPractice.setVisibility(View.GONE);
+                createPracticesTable();
+            }
+        }
+    }
+
+    private void createPracticesSwipe() {
+
         Context context = getContext();
         if (context == null)
             return;
@@ -263,7 +292,214 @@ public class PracticeFragment extends Fragment {
         }
         cursor.close();
 
+
     }
+
+    private void createPracticesTable() {
+
+        Context context = getContext();
+        Activity activity = getActivity();
+        if (context == null || activity == null)
+            return;
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int widthDisplay = displayMetrics.widthPixels;
+
+        int widthCell = DataModule.convertDpToPixel(50, context);
+        int heightCell = DataModule.convertDpToPixel(100, context);
+        int widthLeftSide = widthDisplay - 4 * widthCell;
+        int heightHeader = DataModule.convertDpToPixel(50, context);
+
+        View viewLeftSide = getViewLeftSide(context, widthLeftSide, heightHeader, heightCell);
+        View viewCenterSide = getViewCenterSide(context, widthCell, heightHeader, heightCell);
+        View viewRightSide = getViewRightSide(context, widthCell, heightHeader, heightCell);
+
+        mLinerLayoutTable.addView(viewLeftSide);
+        mLinerLayoutTable.addView(viewCenterSide);
+        mLinerLayoutTable.addView(viewRightSide);
+    }
+
+    private View getViewCenterSide(Context context, int widthCell, int heightHeader, int heightCell) {
+
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setLayoutParams(new FrameLayout.LayoutParams(widthCell,
+                FrameLayout.LayoutParams.WRAP_CONTENT));
+
+        View view = new View(context);
+        view.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightHeader));
+        view.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+        layout.addView(view);
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done" +
+                " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
+        if ((cursor != null)) {
+            while (cursor.moveToNext()) {
+
+                View viewCell = new View(context);
+                viewCell.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightCell));
+                viewCell.setBackground(context.getDrawable(R.drawable.cell_shape_violet));
+                layout.addView(viewCell);
+
+            }
+        }
+
+        return layout;
+    }
+
+    private View getViewRightSide(Context context, int widthCell, int heightHeader, int heightCell) {
+
+        HorizontalScrollView scrollView = new HorizontalScrollView(context);
+        scrollView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        scrollView.setFillViewport(true);
+
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        layout.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));
+        scrollView.addView(layout);
+
+        int paddingDP = DataModule.convertDpToPixel(6, context);
+
+        // заголовок
+        LinearLayout layoutHeader = new LinearLayout(context);
+        layoutHeader.setOrientation(LinearLayout.HORIZONTAL);
+        layoutHeader.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, heightHeader));
+        layout.addView(layoutHeader);
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT MIN(p.date) min, MAX(p.date) max" +
+                " FROM rule r JOIN practice p ON r._id = p.rule_id", null);
+        if ((cursor != null) && cursor.moveToFirst()) {
+
+            int minDate = cursor.getInt(0);
+            int maxDate = cursor.getInt(1);
+
+            for (int i = minDate; i < maxDate + 1; i++) {
+                TextView viewCell = new TextView(context);
+                viewCell.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightHeader));
+                viewCell.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+
+                long dateInt = (long) i * 1000 * 86400;
+                SimpleDateFormat fmt = new SimpleDateFormat("dd.MM");
+                String dateStr = fmt.format(dateInt);
+                viewCell.setGravity(Gravity.CENTER);
+                viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                viewCell.setTextColor(Color.WHITE);
+                viewCell.setText(dateStr);
+
+                layoutHeader.addView(viewCell);
+            }
+
+            Cursor cursorP = DataModule.dbReader.rawQuery("SELECT r._id FROM rule r " +
+                    "JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
+
+            if ((cursorP != null)) {
+                while (cursorP.moveToNext()) {
+                    LinearLayout layoutRule = new LinearLayout(context);
+                    layoutRule.setOrientation(LinearLayout.HORIZONTAL);
+                    layoutRule.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, heightCell));
+
+                    Cursor cursorL = DataModule.dbReader.rawQuery("SELECT p._id, p.result, p.done, p.date" +
+                            " FROM practice p WHERE p.rule_id = ?", new String[]{cursorP.getString(0)});
+                    if (cursorL != null) {
+                        for (int i = minDate; i < maxDate + 1; i++) {
+                            RelativeLayout view = new RelativeLayout(context);
+                            view.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+                            cursorL.moveToFirst();
+                            while (true) {
+                                if (i == cursorL.getInt(3)) {
+                                    view.setBackground(context.getDrawable(R.drawable.cell_shape_orange));
+                                    ImageView image = new ImageView(context);
+                                    image.setImageDrawable(context.getDrawable(R.drawable.ic_box));
+                                    if (cursorL.getInt(2) == 1) {
+                                        if (cursorL.getInt(1) == 1)
+                                            image.setImageDrawable(context.getDrawable(R.drawable.ic_check_gray));
+                                        else
+                                            image.setImageDrawable(context.getDrawable(R.drawable.ic_unchecked));
+                                    }
+                                    image.setPadding(paddingDP, paddingDP, paddingDP, paddingDP);
+                                    image.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.MATCH_PARENT));
+                                    view.addView(image);
+
+                                    break;
+                                }
+                                if (!cursorL.moveToNext())
+                                    break;
+                            }
+                            view.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightCell));
+                            layoutRule.addView(view);
+                        }
+                    }
+                    layout.addView(layoutRule);
+
+                }
+            }
+
+        }
+
+        return scrollView;
+
+    }
+
+    private View getViewLeftSide(Context context, int width, int heightHeader, int heightCell) {
+
+
+        LinearLayout layoutLeftSide = new LinearLayout(context);
+        layoutLeftSide.setOrientation(LinearLayout.VERTICAL);
+        layoutLeftSide.setLayoutParams(new FrameLayout.LayoutParams(width,
+                FrameLayout.LayoutParams.WRAP_CONTENT));
+        layoutLeftSide.setBackground(context.getDrawable(R.drawable.cell_shape));
+
+        TextView textViewTitle = new TextView(context);
+        textViewTitle.setText("Мои правила");
+        textViewTitle.setTypeface(null, Typeface.BOLD);
+        textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        textViewTitle.setGravity(Gravity.CENTER);
+        textViewTitle.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                heightHeader));
+        textViewTitle.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+        textViewTitle.setTextColor(Color.WHITE);
+        layoutLeftSide.addView(textViewTitle);
+
+        int paddingDP = DataModule.convertDpToPixel(4, context);
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done" +
+                " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
+        if ((cursor != null)) {
+            while (cursor.moveToNext()) {
+
+                RuleInfo rule = new RuleInfo();
+                rule.id = cursor.getInt(0);
+                rule.name = cursor.getString(1);
+                rule.done = cursor.getInt(2);
+
+                TextView textViewRule = new TextView(context);
+                textViewRule.setText(rule.name);
+                textViewRule.setHeight(heightCell);
+                textViewRule.setGravity(Gravity.CENTER);
+                textViewRule.setEllipsize(TextUtils.TruncateAt.END);
+                textViewRule.setMaxLines(4);
+                textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                textViewRule.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        heightCell));
+                textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
+                textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
+                if (rule.done == 1)
+                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
+                if (rule.done == 2)
+                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
+
+                layoutLeftSide.addView(textViewRule);
+            }
+        }
+
+
+        return layoutLeftSide;
+    }
+
 
     private void initPracticeList() {
 
@@ -487,12 +723,12 @@ public class PracticeFragment extends Fragment {
             for (int j = 0; j < 2; j++) {
                 TextView rect = new TextView(context);
                 rect.setGravity(Gravity.CENTER);
-                rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8);
+                rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
                 rect.setLayoutParams(new LinearLayout.LayoutParams(0, h, 1));
                 rect.setBackground(context.getDrawable(R.drawable.cell_shape_light_gray));
                 if ((days != null) && (pos < days.length) && (days[pos] != null)) {
                     long dateInt = (long) days[pos].date * 1000 * 86400;
-                    SimpleDateFormat fmt = new SimpleDateFormat("E dd.MM");
+                    SimpleDateFormat fmt = new SimpleDateFormat("E");
                     String dateStr = fmt.format(dateInt);
                     rect.setText(dateStr);
                     if (days[pos].date <= currentDate) {
@@ -551,7 +787,7 @@ public class PracticeFragment extends Fragment {
             return;
 
         AlertDialog.Builder ad;
-        String title = "Практика " + info.name +  " завершена!";
+        String title = "Практика " + info.name + " завершена!";
         String message = "Удалить правило из практики?";
         String buttonYesString = "Да";
         String buttonNoString = "Нет";
@@ -581,7 +817,7 @@ public class PracticeFragment extends Fragment {
 
                 Cursor cursor = DataModule.dbReader.rawQuery(
                         "SELECT MIN(_id) FROM practice WHERE rule_id = ?",
-                        new String[] { String.valueOf(info.id) });
+                        new String[]{String.valueOf(info.id)});
 
                 if ((cursor != null) && cursor.moveToFirst()) {
 
@@ -596,7 +832,7 @@ public class PracticeFragment extends Fragment {
                         cv.put("date", i);
                         cv.put("done", 0);
                         cv.putNull("result");
-                        DataModule.dbWriter.update("practice", cv,"rule_id = ? AND _id = ?",
+                        DataModule.dbWriter.update("practice", cv, "rule_id = ? AND _id = ?",
                                 new String[]{String.valueOf(info.id), String.valueOf(id)});
                         id++;
                     }
@@ -612,7 +848,7 @@ public class PracticeFragment extends Fragment {
     private static boolean checkRuleIsLast(RuleInfo info) {
         Cursor cursor = DataModule.dbReader.rawQuery(
                 "SELECT COUNT(_id) FROM practice WHERE rule_id = ? AND done = 1",
-                new String[] { String.valueOf(info.id) });
+                new String[]{String.valueOf(info.id)});
         if ((cursor != null) && cursor.moveToFirst()) {
             int count = cursor.getInt(0);
             return count == Consts.COUNT_PRACTICES;
@@ -623,7 +859,7 @@ public class PracticeFragment extends Fragment {
     private static void updateStatusRule(RuleInfo info) {
         Cursor cursor = DataModule.dbReader.rawQuery(
                 "SELECT COUNT(_id) FROM practice WHERE result = 1 AND rule_id = ?",
-                new String[] { String.valueOf(info.id) });
+                new String[]{String.valueOf(info.id)});
         if ((cursor != null) && cursor.moveToFirst()) {
             int count = cursor.getInt(0);
             if (count > 17)

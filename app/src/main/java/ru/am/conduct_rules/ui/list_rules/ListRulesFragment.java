@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -240,6 +241,8 @@ public class ListRulesFragment extends Fragment {
                 TextView textViewRule = new TextView(context);
                 textViewRule.setText(rule.name);
                 textViewRule.setHeight(height);
+                textViewRule.setEllipsize(TextUtils.TruncateAt.END);
+                textViewRule.setMaxLines(4);
                 textViewRule.setGravity(Gravity.CENTER_HORIZONTAL);
                 textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 textViewRule.setLayoutParams(new FrameLayout.LayoutParams(

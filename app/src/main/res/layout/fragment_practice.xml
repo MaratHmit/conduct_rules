@@ -39,16 +39,27 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:paddingBottom="60dp">
+        android:paddingBottom="60dp"
+        android:visibility="gone"
+        android:id="@+id/scrollViewPractice" >
 
         <LinearLayout
-            android:id="@+id/listPractices"
+            android:id="@+id/listPracticesSwipe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/listPracticesTable"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:orientation="horizontal">
+
+    </LinearLayout>
 
 </LinearLayout>
 

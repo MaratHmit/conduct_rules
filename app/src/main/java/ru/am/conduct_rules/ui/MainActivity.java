@@ -87,8 +87,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startSlider() {
-        Intent intent = new Intent(this, StackActivity.class);
-        startActivityForResult(intent, Consts.RESULT_FINISH);
+
+        Cursor query = DataModule.dbReader.rawQuery("SELECT mode FROM user WHERE _id = 1", null);
+        if (query.moveToFirst()) {
+            if (query.getInt(0) == 0) {
+                Intent intent = new Intent(this, StackActivity.class);
+                startActivityForResult(intent, Consts.RESULT_FINISH);
+            }
+        }
+
     }
 
     private int getCountPractices() {
@@ -126,11 +133,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUserData() {
 
-        TextView textViewName = (TextView) findViewById(R.id.textViewUserName);
-        TextView textViewGender = (TextView) findViewById(R.id.textViewGender);
-        TextView textViewLanguage = (TextView) findViewById(R.id.textViewLanguage);
+        TextView textViewName = findViewById(R.id.textViewUserName);
+        TextView textViewGender = findViewById(R.id.textViewGender);
+        TextView textViewLanguage = findViewById(R.id.textViewLanguage);
+        TextView textViewMode = findViewById(R.id.textViewMode);
 
-        Cursor query = DataModule.dbReader.rawQuery("SELECT name, gender, language FROM user WHERE _id = 1", null);
+        Cursor query = DataModule.dbReader.rawQuery("SELECT name, gender, language, mode FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
             if (textViewName != null)
@@ -144,8 +152,13 @@ public class MainActivity extends AppCompatActivity {
             }
             if (textViewLanguage != null) {
                 textViewLanguage.setText("Русский");
-                if (query.getInt(1) == 1)
+                if (query.getInt(2) == 1)
                     textViewLanguage.setText("Английский");
+            }
+            if (textViewMode != null) {
+                textViewMode.setText("Свайп");
+                if (query.getInt(3) == 1)
+                    textViewMode.setText("Таблица");
             }
 
         }

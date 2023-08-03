@@ -28,7 +28,7 @@
             android:gravity="center"
             android:padding="5dp"
             android:text="Таблица"
-            android:enabled="false"
+            android:id="@+id/button_mode"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="18sp" />
 

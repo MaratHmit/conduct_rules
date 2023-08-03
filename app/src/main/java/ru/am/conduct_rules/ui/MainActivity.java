@@ -1,36 +1,18 @@
 package ru.am.conduct_rules.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.media.Image;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
-import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import ru.am.conduct_rules.Consts;
-import ru.am.conduct_rules.DBHelper;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.databinding.ActivityMainBinding;
@@ -38,7 +20,6 @@ import ru.am.conduct_rules.ui.practice.PracticeFragment;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -120,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     private void updatePractices() {
 
         try {
-            PracticeFragment.buttonMarkCards.setEnabled(PracticeFragment.getCountPractices() > 0);
+            PracticeFragment.sButtonMarkCards.setEnabled(PracticeFragment.getCountPractices() > 0);
             PracticeFragment.updateRectViews();
             PracticeFragment.updateTextViews();
             PracticeFragment.updateStatuses(this);

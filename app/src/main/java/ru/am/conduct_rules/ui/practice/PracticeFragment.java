@@ -19,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
@@ -47,52 +46,59 @@ import ru.am.conduct_rules.ui.StackActivity;
 
 public class PracticeFragment extends Fragment {
 
-    private FragmentPracticeBinding binding;
+    private FragmentPracticeBinding mBinding;
     private LinearLayout mLinerLayoutPractices;
     private LinearLayout mLinerLayoutTable;
     private ScrollView mScrollViewPractice;
-    private ArrayList<View> listMainRect;
-    private ArrayList<View> listFooterRect;
+    private ArrayList<View> mListMainRect;
+    private ArrayList<View> mListFooterRect;
 
-    private Map<Integer, RuleInfo[]> mapPractice;
-    private Map<Integer, Integer> mapCountDays;
-    private static int currentDate;
+    private Map<Integer, RuleInfo[]> mMapPractice;
+    private Map<Integer, Integer> mMapCountDays;
+    private static int sCurrentDate;
+    private Button mButtonMode;
+    private int mMode;
 
-    static public int lastID;
-    static public Button buttonMarkCards;
-    static public ArrayList<View> listPractice;
-    static public ArrayList<TextView> listRect;
-    static public ArrayList<TextView> listTextViews;
-    static public ArrayList<TextView> listBadges;
+    static public Button sButtonMarkCards;
+    static public ArrayList<View> sListPractice;
+    static public ArrayList<TextView> sListRect;
+    static public ArrayList<TextView> sListTextViews;
+    static public ArrayList<TextView> sListBadges;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        binding = FragmentPracticeBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        mBinding = FragmentPracticeBinding.inflate(inflater, container, false);
+        View root = mBinding.getRoot();
         mLinerLayoutPractices = root.findViewById(R.id.listPracticesSwipe);
         mLinerLayoutTable = root.findViewById(R.id.listPracticesTable);
         mScrollViewPractice = root.findViewById(R.id.scrollViewPractice);
 
-        listMainRect = new ArrayList<>();
-        listFooterRect = new ArrayList<>();
-        listPractice = new ArrayList<>();
-        listRect = new ArrayList<>();
-        listTextViews = new ArrayList<>();
-        listBadges = new ArrayList<>();
+        mListMainRect = new ArrayList<>();
+        mListFooterRect = new ArrayList<>();
+        sListPractice = new ArrayList<>();
+        sListRect = new ArrayList<>();
+        sListTextViews = new ArrayList<>();
+        sListBadges = new ArrayList<>();
 
         Date currentTime = Calendar.getInstance().getTime();
-        currentDate = (int) (currentTime.getTime() / (1000 * 86400));
+        sCurrentDate = (int) (currentTime.getTime() / (1000 * 86400));
 
-        mapPractice = new HashMap<Integer, RuleInfo[]>();
-        mapCountDays = new HashMap<Integer, Integer>();
+        mMapPractice = new HashMap<Integer, RuleInfo[]>();
+        mMapCountDays = new HashMap<Integer, Integer>();
 
-        lastID = getId();
+        mMode = readMode();
 
-        loadPractices();
+        mButtonMode = root.findViewById(R.id.button_mode);
+        mButtonMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeMode();
+            }
+        });
 
-        buttonMarkCards = (Button) root.findViewById(R.id.button_mark_cards);
-        buttonMarkCards.setOnClickListener(new View.OnClickListener() {
+        sButtonMarkCards = root.findViewById(R.id.button_mark_cards);
+        sButtonMarkCards.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), StackActivity.class);
@@ -101,10 +107,46 @@ public class PracticeFragment extends Fragment {
                     activity.startActivityForResult(intent, Consts.RESULT_FINISH);
             }
         });
-        buttonMarkCards.setEnabled(getCountPractices() > 0);
+        sButtonMarkCards.setEnabled(getCountPractices() > 0);
 
+        initPractices();
 
         return root;
+    }
+
+    private int readMode() {
+        Cursor query = DataModule.dbReader.rawQuery("SELECT mode FROM user WHERE _id = 1", null);
+        if (query.moveToFirst())
+            return query.getInt(0);
+        return 0;
+    }
+
+    private void changeMode() {
+
+        mMode = (mMode == 0) ? 1 : 0;
+
+        ContentValues cv = new ContentValues();
+        cv.put("mode", mMode);
+        DataModule.dbWriter.update("user", cv, "_id = 1", null);
+
+        mLinerLayoutTable.removeAllViews();
+        mLinerLayoutPractices.removeAllViews();
+
+        clearLists();
+        initPractices();
+    }
+
+    private void clearLists() {
+
+        mListMainRect.clear();
+        mListFooterRect.clear();
+        sListPractice.clear();
+        sListRect.clear();
+        sListTextViews.clear();
+        sListBadges.clear();
+
+        mMapPractice.clear();
+        mMapCountDays.clear();
     }
 
     static public int getCountPractices() {
@@ -125,8 +167,8 @@ public class PracticeFragment extends Fragment {
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, done FROM rule", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
-                for (int i = 0; i < listTextViews.size(); i++) {
-                    TextView view = listTextViews.get(i);
+                for (int i = 0; i < sListTextViews.size(); i++) {
+                    TextView view = sListTextViews.get(i);
                     if ((int) view.getTag() == cursor.getInt(0)) {
                         if (cursor.getInt(1) == 1)
                             view.setBackground(view.getContext().getDrawable(R.drawable.cell_shape_light_orange));
@@ -145,8 +187,8 @@ public class PracticeFragment extends Fragment {
                 " FROM practice p ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
-                for (int i = 0; i < listRect.size(); i++) {
-                    TextView rect = listRect.get(i);
+                for (int i = 0; i < sListRect.size(); i++) {
+                    TextView rect = sListRect.get(i);
                     if (rect == null)
                         continue;
                     RuleInfo info = (RuleInfo) rect.getTag();
@@ -158,7 +200,7 @@ public class PracticeFragment extends Fragment {
                         info.date = cursor.getInt(3);
                         info.done = cursor.getInt(2);
                         rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape));
-                        if (info.date <= currentDate)
+                        if (info.date <= sCurrentDate)
                             rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_yellow));
                         if (info.done == 1) {
                             switch (info.status) {
@@ -192,10 +234,10 @@ public class PracticeFragment extends Fragment {
         if ((cursor != null)) {
             try {
                 while (cursor.moveToNext()) {
-                    for (int i = 0; i < listBadges.size(); i++)
-                        if ((int) listBadges.get(i).getTag() == cursor.getInt(0)) {
+                    for (int i = 0; i < sListBadges.size(); i++)
+                        if ((int) sListBadges.get(i).getTag() == cursor.getInt(0)) {
                             int count = cursor.getInt(1);
-                            listBadges.get(i).setText(String.valueOf(count));
+                            sListBadges.get(i).setText(String.valueOf(count));
                         }
                 }
             } catch (Exception e) {
@@ -205,20 +247,22 @@ public class PracticeFragment extends Fragment {
     }
 
 
-    private void loadPractices() {
+    private void initPractices() {
 
-        Cursor query = DataModule.dbReader.rawQuery("SELECT mode FROM user WHERE _id = 1", null);
-        if (query.moveToFirst()) {
-            if (query.getInt(0) == 0) {
-                mLinerLayoutTable.setVisibility(View.GONE);
-                mScrollViewPractice.setVisibility(View.VISIBLE);
-                createPracticesSwipe();
-            } else {
-                mLinerLayoutTable.setVisibility(View.VISIBLE);
-                mScrollViewPractice.setVisibility(View.GONE);
-                createPracticesTable();
-            }
+        if (mMode == 0) {
+            mLinerLayoutTable.setVisibility(View.GONE);
+            mScrollViewPractice.setVisibility(View.VISIBLE);
+            sButtonMarkCards.setVisibility(View.VISIBLE);
+            mButtonMode.setText("Таблица");
+            createPracticesSwipe();
+            return;
         }
+
+        mLinerLayoutTable.setVisibility(View.VISIBLE);
+        mScrollViewPractice.setVisibility(View.GONE);
+        sButtonMarkCards.setVisibility(View.GONE);
+        mButtonMode.setText("Свайп режим");
+        createPracticesTable();
     }
 
     private void createPracticesSwipe() {
@@ -248,7 +292,7 @@ public class PracticeFragment extends Fragment {
                 wrapperPractice.setOrientation(LinearLayout.VERTICAL);
                 wrapperPractice.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                         height));
-                listPractice.add(wrapperPractice);
+                sListPractice.add(wrapperPractice);
 
                 LinearLayout wrapperPracticeHeader = new LinearLayout(context);
                 wrapperPracticeHeader.setOrientation(LinearLayout.HORIZONTAL);
@@ -279,11 +323,11 @@ public class PracticeFragment extends Fragment {
                     textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
                 wrapperPracticeHeader.addView(textViewRule);
                 textViewRule.setTag(rule.id);
-                listTextViews.add(textViewRule);
+                sListTextViews.add(textViewRule);
 
                 setProgressHeader(wrapperPracticeHeader, rule.id, index);
                 setProgressFooter(wrapperPracticeFooter, rule.id);
-                listFooterRect.add(wrapperPracticeFooter);
+                mListFooterRect.add(wrapperPracticeFooter);
 
                 mLinerLayoutPractices.addView(wrapperPractice);
                 index++;
@@ -517,14 +561,14 @@ public class PracticeFragment extends Fragment {
                 info.date = cursor.getInt(4);
                 info.practiceId = cursor.getInt(0);
                 RuleInfo[] days;
-                if (mapPractice.get(info.id) == null) {
+                if (mMapPractice.get(info.id) == null) {
                     days = new RuleInfo[21];
-                    mapPractice.put(info.id, days);
+                    mMapPractice.put(info.id, days);
                     index = 0;
-                    mapCountDays.put(info.id, index);
+                    mMapCountDays.put(info.id, index);
                 } else {
-                    days = mapPractice.get(info.id);
-                    index = mapCountDays.get(info.id);
+                    days = mMapPractice.get(info.id);
+                    index = mMapCountDays.get(info.id);
                 }
                 if (days != null) {
                     if (info.date <= currDate) {
@@ -535,7 +579,7 @@ public class PracticeFragment extends Fragment {
                     }
                     days[index] = info;
                     index++;
-                    mapCountDays.put(info.id, index);
+                    mMapCountDays.put(info.id, index);
                 }
             }
         }
@@ -553,8 +597,8 @@ public class PracticeFragment extends Fragment {
 
         int pos = 0;
         RuleInfo[] days = new RuleInfo[21];
-        if (mapPractice.get(ruleID) != null)
-            days = mapPractice.get(ruleID);
+        if (mMapPractice.get(ruleID) != null)
+            days = mMapPractice.get(ruleID);
         int h;
         for (int i = 0; i < 3; i++) {
             LinearLayout wrapperH = new LinearLayout(context);
@@ -575,7 +619,7 @@ public class PracticeFragment extends Fragment {
                     SimpleDateFormat fmt = new SimpleDateFormat("E dd.MM");
                     String dateStr = fmt.format(dateInt);
                     rect.setText(dateStr);
-                    if (days[pos].date <= currentDate) {
+                    if (days[pos].date <= sCurrentDate) {
                         switch (days[pos].status) {
                             case 1:
                                 rect.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));
@@ -597,7 +641,7 @@ public class PracticeFragment extends Fragment {
 
                         rect.setTag(days[pos]);
                     }
-                    listRect.add(rect);
+                    sListRect.add(rect);
                 }
 
                 wrapperH.addView(rect);
@@ -651,12 +695,12 @@ public class PracticeFragment extends Fragment {
         layoutParamsBadge.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         wrapperButtonV.addView(badge, layoutParamsBadge);
         badge.setGravity(Gravity.CENTER);
-        if ((mapPractice != null) && (mapPractice.get(ruleID) != null))
-            badge.setText(String.valueOf(getCountSuccessDays(mapPractice.get(ruleID))));
+        if ((mMapPractice != null) && (mMapPractice.get(ruleID) != null))
+            badge.setText(String.valueOf(getCountSuccessDays(mMapPractice.get(ruleID))));
         badge.setTextSize(textSize);
         badge.setTextColor(Color.WHITE);
         badge.setTag(ruleID);
-        listBadges.add(badge);
+        sListBadges.add(badge);
 
         ImageButton buttonPlusMinus = new ImageButton(context);
         buttonPlusMinus.setImageResource(R.drawable.ic_add_30_white);
@@ -671,9 +715,9 @@ public class PracticeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int i = (int) ((ImageButton) v).getTag();
-                View practice = listPractice.get(i);
-                View footer = listFooterRect.get(i);
-                View main = listMainRect.get(i);
+                View practice = sListPractice.get(i);
+                View footer = mListFooterRect.get(i);
+                View main = mListMainRect.get(i);
                 LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) practice.getLayoutParams();
 
                 if (footer.getVisibility() == View.GONE) {
@@ -695,16 +739,16 @@ public class PracticeFragment extends Fragment {
         wrapperRect.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams layoutParamsW = new LinearLayout.LayoutParams(widthL, height);
         wrapperRect.setLayoutParams(layoutParamsW);
-        listMainRect.add(wrapperRect);
+        mListMainRect.add(wrapperRect);
 
         int h;
         int pos = 0;
         RuleInfo[] days = new RuleInfo[21];
-        if (mapPractice.get(ruleID) != null)
-            days = mapPractice.get(ruleID);
+        if (mMapPractice.get(ruleID) != null)
+            days = mMapPractice.get(ruleID);
         if (days != null) {
             for (int d = 0; d < days.length; d++) {
-                if (days[d].date == currentDate) {
+                if (days[d].date == sCurrentDate) {
                     pos = d - 5;
                     if (pos < 0)
                         pos = 0;
@@ -731,7 +775,7 @@ public class PracticeFragment extends Fragment {
                     SimpleDateFormat fmt = new SimpleDateFormat("E");
                     String dateStr = fmt.format(dateInt);
                     rect.setText(dateStr);
-                    if (days[pos].date <= currentDate) {
+                    if (days[pos].date <= sCurrentDate) {
                         switch (days[pos].status) {
                             case 1:
                                 rect.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));
@@ -753,7 +797,7 @@ public class PracticeFragment extends Fragment {
 
                         rect.setTag(days[pos]);
                     }
-                    listRect.add(rect);
+                    sListRect.add(rect);
                 }
                 wrapperH.addView(rect);
                 pos++;
@@ -801,9 +845,9 @@ public class PracticeFragment extends Fragment {
                 DataModule.dbWriter.execSQL("DELETE FROM practice WHERE rule_id = " + info.id);
                 DataModule.dbWriter.execSQL("UPDATE rule SET checked = 0 WHERE _id = " + info.id);
                 try {
-                    for (int i = 0; i < PracticeFragment.listPractice.size(); i++) {
-                        if ((int) PracticeFragment.listPractice.get(i).getTag() == info.id) {
-                            PracticeFragment.listPractice.get(i).setVisibility(View.GONE);
+                    for (int i = 0; i < PracticeFragment.sListPractice.size(); i++) {
+                        if ((int) PracticeFragment.sListPractice.get(i).getTag() == info.id) {
+                            PracticeFragment.sListPractice.get(i).setVisibility(View.GONE);
                         }
                     }
                 } catch (Exception e) {
@@ -881,6 +925,6 @@ public class PracticeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        mBinding = null;
     }
 }

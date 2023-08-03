@@ -58,6 +58,7 @@ public class PracticeFragment extends Fragment {
     private static int sCurrentDate;
     private Button mButtonMode;
     private int mMode;
+    private ArrayList<TextView> listBadgesTable;
 
     static public Button sButtonMarkCards;
     static public ArrayList<View> sListPractice;
@@ -80,6 +81,7 @@ public class PracticeFragment extends Fragment {
         sListRect = new ArrayList<>();
         sListTextViews = new ArrayList<>();
         sListBadges = new ArrayList<>();
+        listBadgesTable = new ArrayList<>();
 
         Date currentTime = Calendar.getInstance().getTime();
         sCurrentDate = (int) (currentTime.getTime() / (1000 * 86400));
@@ -144,6 +146,7 @@ public class PracticeFragment extends Fragment {
         sListRect.clear();
         sListTextViews.clear();
         sListBadges.clear();
+        listBadgesTable.clear();
 
         mMapPractice.clear();
         mMapCountDays.clear();
@@ -364,6 +367,61 @@ public class PracticeFragment extends Fragment {
         mLinerLayoutTable.addView(viewRightSide);
     }
 
+    private View getViewLeftSide(Context context, int width, int heightHeader, int heightCell) {
+
+        LinearLayout layoutLeftSide = new LinearLayout(context);
+        layoutLeftSide.setOrientation(LinearLayout.VERTICAL);
+        layoutLeftSide.setLayoutParams(new FrameLayout.LayoutParams(width,
+                FrameLayout.LayoutParams.WRAP_CONTENT));
+        layoutLeftSide.setBackground(context.getDrawable(R.drawable.cell_shape));
+
+        TextView textViewTitle = new TextView(context);
+        textViewTitle.setText("Мои правила");
+        textViewTitle.setTypeface(null, Typeface.BOLD);
+        textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        textViewTitle.setGravity(Gravity.CENTER);
+        textViewTitle.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                heightHeader));
+        textViewTitle.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+        textViewTitle.setTextColor(Color.WHITE);
+        layoutLeftSide.addView(textViewTitle);
+
+        int paddingDP = DataModule.convertDpToPixel(4, context);
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done" +
+                " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
+        if ((cursor != null)) {
+            while (cursor.moveToNext()) {
+
+                RuleInfo rule = new RuleInfo();
+                rule.id = cursor.getInt(0);
+                rule.name = cursor.getString(1);
+                rule.done = cursor.getInt(2);
+
+                TextView textViewRule = new TextView(context);
+                textViewRule.setText(rule.name);
+                textViewRule.setHeight(heightCell);
+                textViewRule.setGravity(Gravity.CENTER);
+                textViewRule.setEllipsize(TextUtils.TruncateAt.END);
+                textViewRule.setMaxLines(4);
+                textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                textViewRule.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        heightCell));
+                textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
+                textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
+                if (rule.done == 1)
+                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
+                if (rule.done == 2)
+                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
+
+                layoutLeftSide.addView(textViewRule);
+            }
+        }
+
+        return layoutLeftSide;
+    }
+
+
     private View getViewCenterSide(Context context, int widthCell, int heightHeader, int heightCell) {
 
         LinearLayout layout = new LinearLayout(context);
@@ -381,13 +439,18 @@ public class PracticeFragment extends Fragment {
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
 
-                View viewCell = new View(context);
+                TextView viewCell = new TextView(context);
+                viewCell.setTag(cursor.getInt(0));
+                viewCell.setGravity(Gravity.CENTER);
+                viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                viewCell.setTypeface(null, Typeface.BOLD);
                 viewCell.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightCell));
                 viewCell.setBackground(context.getDrawable(R.drawable.cell_shape_violet));
                 layout.addView(viewCell);
-
+                listBadgesTable.add(viewCell);
             }
         }
+        refreshBadgesTable();
 
         return layout;
     }
@@ -454,6 +517,13 @@ public class PracticeFragment extends Fragment {
                             cursorL.moveToFirst();
                             while (true) {
                                 if (i == cursorL.getInt(3)) {
+
+                                    RuleInfo info = new RuleInfo();
+                                    info.id = cursorP.getInt(0);
+                                    info.practiceId = cursorL.getInt(0);
+                                    info.status = cursorL.getInt(1);
+                                    info.done = cursorL.getInt(2);
+
                                     view.setBackground(context.getDrawable(R.drawable.cell_shape_orange));
                                     ImageView image = new ImageView(context);
                                     image.setImageDrawable(context.getDrawable(R.drawable.ic_box));
@@ -466,7 +536,28 @@ public class PracticeFragment extends Fragment {
                                     image.setPadding(paddingDP, paddingDP, paddingDP, paddingDP);
                                     image.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                             ViewGroup.LayoutParams.MATCH_PARENT));
+                                    image.setTag(info);
                                     view.addView(image);
+                                    image.setOnClickListener(v -> {
+                                        ImageView imageL = (ImageView) v;
+                                        RuleInfo infoL = (RuleInfo) v.getTag();
+                                        if (infoL.done == 0) {
+                                            infoL.done = 1;
+                                            infoL.status = 1;
+                                            imageL.setImageDrawable(context.getDrawable(R.drawable.ic_check_gray));
+                                            updatePractice(infoL);
+                                            return;
+                                        }
+                                        if ((infoL.status == 0) && (infoL.done == 1)) {
+                                            infoL.done = 0;
+                                            image.setImageDrawable(context.getDrawable(R.drawable.ic_box));
+                                            updatePractice(infoL);
+                                            return;
+                                        }
+                                        imageL.setImageDrawable(context.getDrawable(R.drawable.ic_unchecked));
+                                        infoL.status = 0;
+                                        updatePractice(infoL);
+                                    });
 
                                     break;
                                 }
@@ -488,62 +579,23 @@ public class PracticeFragment extends Fragment {
 
     }
 
-    private View getViewLeftSide(Context context, int width, int heightHeader, int heightCell) {
+    private void refreshBadgesTable() {
 
-
-        LinearLayout layoutLeftSide = new LinearLayout(context);
-        layoutLeftSide.setOrientation(LinearLayout.VERTICAL);
-        layoutLeftSide.setLayoutParams(new FrameLayout.LayoutParams(width,
-                FrameLayout.LayoutParams.WRAP_CONTENT));
-        layoutLeftSide.setBackground(context.getDrawable(R.drawable.cell_shape));
-
-        TextView textViewTitle = new TextView(context);
-        textViewTitle.setText("Мои правила");
-        textViewTitle.setTypeface(null, Typeface.BOLD);
-        textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-        textViewTitle.setGravity(Gravity.CENTER);
-        textViewTitle.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                heightHeader));
-        textViewTitle.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
-        textViewTitle.setTextColor(Color.WHITE);
-        layoutLeftSide.addView(textViewTitle);
-
-        int paddingDP = DataModule.convertDpToPixel(4, context);
-
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, SUM(p.result), SUM(p.done)" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
-
-                RuleInfo rule = new RuleInfo();
-                rule.id = cursor.getInt(0);
-                rule.name = cursor.getString(1);
-                rule.done = cursor.getInt(2);
-
-                TextView textViewRule = new TextView(context);
-                textViewRule.setText(rule.name);
-                textViewRule.setHeight(heightCell);
-                textViewRule.setGravity(Gravity.CENTER);
-                textViewRule.setEllipsize(TextUtils.TruncateAt.END);
-                textViewRule.setMaxLines(4);
-                textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                textViewRule.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        heightCell));
-                textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
-                textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
-                if (rule.done == 1)
-                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
-                if (rule.done == 2)
-                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
-
-                layoutLeftSide.addView(textViewRule);
+                for (int i = 0; i < listBadgesTable.size(); i++) {
+                    TextView textView = listBadgesTable.get(i);
+                    if ((int) textView.getTag() == cursor.getInt(0)) {
+                        String s = cursor.getInt(1) + "/" + cursor.getInt(2);
+                        textView.setText(s);
+                        break;
+                    }
+                }
             }
         }
-
-
-        return layoutLeftSide;
     }
-
 
     private void initPracticeList() {
 
@@ -911,6 +963,16 @@ public class PracticeFragment extends Fragment {
             if (count > 19)
                 DataModule.dbWriter.execSQL("UPDATE rule SET done = 2 WHERE _id = " + info.id);
         }
+    }
+
+    private void updatePractice(RuleInfo info) {
+
+        ContentValues cv = new ContentValues();
+        cv.put("result", info.status);
+        cv.put("done", info.done);
+        DataModule.dbWriter.update("practice", cv, "_id = ?", new String[]{String.valueOf(info.practiceId)});
+
+        refreshBadgesTable();
     }
 
     private int getCountSuccessDays(RuleInfo[] days) {

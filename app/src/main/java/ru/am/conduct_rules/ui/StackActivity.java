@@ -1,13 +1,9 @@
 package ru.am.conduct_rules.ui;
 
-import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Toast;
 
 import com.daprlabs.cardstack.SwipeDeck;
 
@@ -18,7 +14,6 @@ import java.util.Date;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.RuleInfo;
-import ru.am.conduct_rules.ui.practice.PracticeFragment;
 
 public class StackActivity extends AppCompatActivity {
 
@@ -48,12 +43,12 @@ public class StackActivity extends AppCompatActivity {
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
             @Override
             public void cardSwipedLeft(int position) {
-                updateRule(position, false); // правило не выполнено
+                updatePractice(position, false); // правило не выполнено
             }
 
             @Override
             public void cardSwipedRight(int position) {
-                updateRule(position, true); // правило выполнено
+                updatePractice(position, true); // правило выполнено
             }
 
             @Override
@@ -76,7 +71,7 @@ public class StackActivity extends AppCompatActivity {
 
     }
 
-    private void updateRule(int position, boolean check) {
+    private void updatePractice(int position, boolean check) {
 
         RuleInfo info = mAdapter.getRuleInfo(position);
 

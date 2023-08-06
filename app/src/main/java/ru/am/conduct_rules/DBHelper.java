@@ -18,6 +18,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "_id INTEGER PRIMARY KEY,"
                 + "name TEXT,"
                 + "gender INTEGER,"
+                + "mode INTEGER DEFAULT 0,"
                 + "language INTEGER);");
 
         db.execSQL("INSERT INTO user (_id, name, gender, language) VALUES (1, 'Садхака', NULL, 0)");
@@ -96,8 +97,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion == 2) {
-            db.execSQL("ALTER TABLE user ADD COLUMN mode INTEGER DEFAULT 0");
+        if (newVersion > 1) {
+            try {
+                db.execSQL("ALTER TABLE user ADD COLUMN mode INTEGER DEFAULT 0");
+            } catch (Exception e) {
+
+            }
         }
     }
 

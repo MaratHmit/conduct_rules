@@ -1,6 +1,8 @@
 package ru.am.conduct_rules.ui.profile;
 
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,14 +10,19 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import ru.am.conduct_rules.Consts;
@@ -32,10 +39,17 @@ public class ProfileFragment extends Fragment {
     private static DBHelper mDbHelper;
     private static SQLiteDatabase mDbReader;
 
+    private LinearLayout mLinerLayoutUserName;
+    private LinearLayout mLinerLayoutReminder;
     private TextView mTextViewName;
-    private TextView mTextViewGender;
-    private TextView mTextViewLanguage;
-    private TextView mTextViewMode;
+    private Spinner mSpinnerGender;
+    private Spinner mSpinnerLanguage;
+    private Spinner mSpinnerMode;
+    private Spinner mSpinnerReminder;
+    private TextView mTextViewReminderTime;
+
+    private int mHourReminder, mMinReminder;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -43,22 +57,18 @@ public class ProfileFragment extends Fragment {
         View root = binding.getRoot();
 
         mTextViewName = root.findViewById(R.id.textViewUserName);
-        mTextViewGender = root.findViewById(R.id.textViewGender);
-        mTextViewLanguage = root.findViewById(R.id.textViewLanguage);
-        mTextViewMode = root.findViewById(R.id.textViewMode);
+        mTextViewReminderTime = root.findViewById(R.id.textViewReminderTime);
+        mSpinnerGender = root.findViewById(R.id.spinnerGender);
+        mSpinnerLanguage = root.findViewById(R.id.spinnerLanguage);
+        mSpinnerMode = root.findViewById(R.id.spinnerMode);
+        mSpinnerReminder = root.findViewById(R.id.spinnerReminder);
+        mLinerLayoutUserName = root.findViewById(R.id.linerLayoutUserName);
+        mLinerLayoutReminder = root.findViewById(R.id.linerLayoutReminder);
 
         initDBHelper(getContext());
 
-        ImageButton buttonEdit = (ImageButton) root.findViewById(R.id.buttonEdit);
-        buttonEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), ProfileActivity.class);
-                FragmentActivity activity = getActivity();
-                if (activity != null)
-                    activity.startActivityForResult(intent, Consts.RESULT_SAVE_USER);
-            }
-        });
+        loadData();
+        setListeners();
 
         Button buttonReset = (Button) root.findViewById(R.id.button_reset);
         buttonReset.setOnClickListener(new View.OnClickListener() {
@@ -68,11 +78,80 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        loadData();
-
-
         return root;
     }
+
+    AdapterView.OnItemSelectedListener selectedListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+            String fieldName = "";
+            ContentValues cv = new ContentValues();
+            if (parentView == mSpinnerGender)
+                fieldName = "gender";
+            if (parentView == mSpinnerLanguage)
+                fieldName = "language";
+            if (parentView == mSpinnerMode)
+                fieldName = "mode";
+            if (parentView == mSpinnerReminder) {
+                fieldName = "reminder";
+                mLinerLayoutReminder.setVisibility(position == 1 ? View.VISIBLE : View.GONE);
+            }
+            if (fieldName.isEmpty())
+                return;
+
+            cv.put(fieldName, position);
+            DataModule.dbWriter.update("user", cv, "_id = 1", null);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+
+        }
+
+    };
+
+    private void setListeners() {
+
+        mLinerLayoutUserName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ProfileActivity.class);
+                FragmentActivity activity = getActivity();
+                if (activity != null)
+                    activity.startActivityForResult(intent, Consts.RESULT_SAVE_USER);
+            }
+        });
+
+        mSpinnerGender.setOnItemSelectedListener(selectedListener);
+        mSpinnerLanguage.setOnItemSelectedListener(selectedListener);
+        mSpinnerMode.setOnItemSelectedListener(selectedListener);
+        mSpinnerReminder.setOnItemSelectedListener(selectedListener);
+
+        mLinerLayoutReminder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimePickerDialog(getActivity(), timeSetListener,
+                        mHourReminder, mMinReminder, true)
+                        .show();
+            }
+        });
+    }
+
+    // установка обработчика выбора времени
+    TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            mHourReminder = hourOfDay;
+            mMinReminder = minute;
+            String time = String.format("%02d", mHourReminder) + ":" + String.format("%02d", mMinReminder);
+            mTextViewReminderTime.setText(time);
+            ContentValues cv = new ContentValues();
+            int timeInt = hourOfDay * 60 + minute;
+            cv.put("reminder_time", timeInt);
+            DataModule.dbWriter.update("user", cv, "_id = 1", null);
+        }
+    };
+
 
     private void resetData() {
         AlertDialog.Builder ad;
@@ -88,7 +167,7 @@ public class ProfileFragment extends Fragment {
         ad.setPositiveButton(buttonYesString, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int arg1) {
                 removeData();
-                Toast toast = Toast.makeText(getContext(),  "Данные очищены!", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getContext(), "Данные очищены!", Toast.LENGTH_SHORT);
                 toast.show();
             }
         });
@@ -119,28 +198,30 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadData() {
-        Cursor query = mDbReader.rawQuery("SELECT name, gender, language, mode FROM user WHERE _id = 1", null);
+
+        Cursor query = mDbReader.rawQuery(
+                "SELECT name, gender, language, mode, reminder, reminder_time FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
             if (mTextViewName != null)
                 mTextViewName.setText(name);
-            if (mTextViewGender != null) {
-                if (!query.isNull(1)) {
-                    mTextViewGender.setText("Мужской");
-                    if (query.getInt(1) == 1)
-                        mTextViewGender.setText("Женский");
-                }
+            if (mSpinnerGender != null)
+                mSpinnerGender.setSelection(query.getInt(1));
+            if (mSpinnerLanguage != null)
+                mSpinnerLanguage.setSelection(query.getInt(2));
+            if (mSpinnerMode != null)
+                mSpinnerMode.setSelection(query.getInt(3));
+            if (mSpinnerReminder != null)
+                mSpinnerReminder.setSelection(query.getInt(4));
+            if (mTextViewReminderTime != null) {
+                int t = query.getInt(5);
+                mHourReminder = t / 60;
+                mMinReminder = t % 60;
+                String time = String.format("%02d", mHourReminder) + ":" + String.format("%02d", mMinReminder);
+                mTextViewReminderTime.setText(time);
             }
-            if (mTextViewLanguage != null) {
-                mTextViewLanguage.setText("Русский");
-                if (query.getInt(2) == 1)
-                    mTextViewLanguage.setText("Английский");
-            }
-            if (mTextViewMode != null) {
-                mTextViewMode.setText("Свайп");
-                if (query.getInt(3) == 1)
-                    mTextViewMode.setText("Таблица");
-            }
+
+
         }
 
     }

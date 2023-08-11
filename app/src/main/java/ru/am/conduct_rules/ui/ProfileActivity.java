@@ -66,36 +66,23 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void save() {
 
-        Context context = this.getBaseContext();
-
         EditText editTextName = findViewById(R.id.editTextName);
-        Spinner spinnerGender = findViewById(R.id.spinnerGender);
-        Spinner spinnerLanguage = findViewById(R.id.spinnerLanguage);
-        Spinner spinnerMode = findViewById(R.id.spinnerMode);
-
-        if ((editTextName == null) || (spinnerGender == null) || (spinnerLanguage == null))
+        if (editTextName == null)
             return;
 
         ContentValues cv = new ContentValues();
         cv.put("name", editTextName.getText().toString());
-        cv.put("gender", spinnerGender.getSelectedItemPosition());
-        cv.put("language", spinnerLanguage.getSelectedItemPosition());
-        cv.put("mode", spinnerMode.getSelectedItemPosition());
         DataModule.dbWriter.update("user", cv, "_id = 1", null);
 
         setResult(RESULT_OK);
         finish();
-
     }
 
     private void loadData() {
 
         EditText editTextName = findViewById(R.id.editTextName);
-        Spinner spinnerGender = findViewById(R.id.spinnerGender);
-        Spinner spinnerLanguage = findViewById(R.id.spinnerLanguage);
-        Spinner spinnerMode = findViewById(R.id.spinnerMode);
 
-        Cursor query = DataModule.dbReader.rawQuery("SELECT name, gender, language, mode FROM user WHERE _id = 1", null);
+        Cursor query = DataModule.dbReader.rawQuery("SELECT name FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
             if (editTextName != null) {
@@ -103,12 +90,6 @@ public class ProfileActivity extends AppCompatActivity {
                 editTextName.requestFocus();
                 editTextName.setSelection(editTextName.length());
             }
-            if (spinnerGender != null)
-                spinnerGender.setSelection(query.getInt(1));
-            if (spinnerLanguage != null)
-                spinnerLanguage.setSelection(query.getInt(2));
-            if (spinnerMode != null)
-                spinnerMode.setSelection(query.getInt(3));
         }
 
     }

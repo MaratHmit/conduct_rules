@@ -276,11 +276,12 @@ public class PracticeFragment extends Fragment {
 
         int index = 0;
         int height = DataModule.convertDpToPixel(90, context);
+        int widthNum = DataModule.convertDpToPixel(30, context);
         int paddingDP = DataModule.convertDpToPixel(4, context);
 
         initPracticeList();
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.code" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -289,6 +290,7 @@ public class PracticeFragment extends Fragment {
                 rule.id = cursor.getInt(0);
                 rule.name = cursor.getString(1);
                 rule.done = cursor.getInt(2);
+                rule.code = cursor.getString(3);
 
                 LinearLayout wrapperPractice = new LinearLayout(context);
                 wrapperPractice.setTag(rule.id);
@@ -298,6 +300,19 @@ public class PracticeFragment extends Fragment {
                 sListPractice.add(wrapperPractice);
 
                 LinearLayout wrapperPracticeHeader = new LinearLayout(context);
+
+                rule.code = rule.code.replace(".", "\n-\n");
+                TextView textViewNum = new TextView(context);
+                textViewNum.setText(rule.code);
+                textViewNum.setGravity(Gravity.CENTER);
+                textViewNum.setPadding(paddingDP, 0, paddingDP, 0);
+                textViewNum.setLayoutParams(new FrameLayout.LayoutParams(widthNum, FrameLayout.LayoutParams.MATCH_PARENT));
+                textViewNum.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+                textViewNum.setTextColor(Color.WHITE);
+                textViewNum.setTypeface(null, Typeface.BOLD);
+                textViewNum.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                wrapperPracticeHeader.addView(textViewNum);
+
                 wrapperPracticeHeader.setOrientation(LinearLayout.HORIZONTAL);
                 wrapperPracticeHeader.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                         height));

@@ -19,6 +19,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "name TEXT,"
                 + "gender INTEGER,"
                 + "mode INTEGER DEFAULT 0,"
+                + "reminder INTEGER DEFAULT 0,"
+                + "reminder_time INTEGER DEFAULT 1260,"
                 + "language INTEGER);");
 
         db.execSQL("INSERT INTO user (_id, name, gender, language) VALUES (1, 'Садхака', NULL, 0)");
@@ -100,6 +102,15 @@ public class DBHelper extends SQLiteOpenHelper {
         if (newVersion > 1) {
             try {
                 db.execSQL("ALTER TABLE user ADD COLUMN mode INTEGER DEFAULT 0");
+            } catch (Exception e) {
+
+            }
+        }
+
+        if (newVersion > 2) {
+            try {
+                db.execSQL("ALTER TABLE user ADD COLUMN reminder INTEGER DEFAULT 0");
+                db.execSQL("ALTER TABLE user ADD COLUMN reminder_time INTEGER DEFAULT 1260");
             } catch (Exception e) {
 
             }

@@ -115,32 +115,12 @@ public class MainActivity extends AppCompatActivity {
     private void updateUserData() {
 
         TextView textViewName = findViewById(R.id.textViewUserName);
-        TextView textViewGender = findViewById(R.id.textViewGender);
-        TextView textViewLanguage = findViewById(R.id.textViewLanguage);
-        TextView textViewMode = findViewById(R.id.textViewMode);
 
-        Cursor query = DataModule.dbReader.rawQuery("SELECT name, gender, language, mode FROM user WHERE _id = 1", null);
+        Cursor query = DataModule.dbReader.rawQuery("SELECT name FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
             if (textViewName != null)
                 textViewName.setText(name);
-            if (textViewGender != null) {
-                if (!query.isNull(1)) {
-                    textViewGender.setText("Мужской");
-                    if (query.getInt(1) == 1)
-                        textViewGender.setText("Женский");
-                }
-            }
-            if (textViewLanguage != null) {
-                textViewLanguage.setText("Русский");
-                if (query.getInt(2) == 1)
-                    textViewLanguage.setText("Английский");
-            }
-            if (textViewMode != null) {
-                textViewMode.setText("Свайп");
-                if (query.getInt(3) == 1)
-                    textViewMode.setText("Таблица");
-            }
 
         }
 

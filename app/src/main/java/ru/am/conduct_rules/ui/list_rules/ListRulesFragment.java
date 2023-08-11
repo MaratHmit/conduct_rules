@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -175,7 +176,6 @@ public class ListRulesFragment extends Fragment {
         }
     }
 
-
     private void loadListRules() {
 
         Context context = getContext();
@@ -183,6 +183,7 @@ public class ListRulesFragment extends Fragment {
             return;
 
         int height = DataModule.convertDpToPixel(130, context);
+        int widthN = DataModule.convertDpToPixel(60, context);
         int sizeButtonAdd = DataModule.convertDpToPixel(36, context);
         int sizeButtonNot = DataModule.convertDpToPixel(30, context);
         int paddingDP = DataModule.convertDpToPixel(4, context);
@@ -195,6 +196,7 @@ public class ListRulesFragment extends Fragment {
 
                 RuleInfo rule = new RuleInfo();
                 rule.id = cursor.getInt(0);
+                rule.code = cursor.getString(1);
                 rule.name = cursor.getString(2);
                 rule.level = cursor.getInt(3);
                 rule.checked = cursor.getInt(4) == 1;
@@ -205,9 +207,20 @@ public class ListRulesFragment extends Fragment {
                 wrapper.setTag(rule.id);
                 wrapper.setOrientation(LinearLayout.VERTICAL);
                 wrapper.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                        height));
+                        FrameLayout.LayoutParams.MATCH_PARENT));
 
                 LinearLayout wrapperButton = new LinearLayout(context);
+
+                TextView textViewNumeric = new TextView(context);
+                textViewNumeric.setLayoutParams(new FrameLayout.LayoutParams(widthN,
+                        FrameLayout.LayoutParams.MATCH_PARENT));
+
+                textViewNumeric.setText(rule.code);
+                textViewNumeric.setTypeface(null, Typeface.BOLD);
+                textViewNumeric.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                textViewNumeric.setPadding(paddingDP, 0, paddingDP, 0);
+                wrapperButton.addView(textViewNumeric);
+
                 View emptyView = new View(context);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, 0);
                 params.weight = 1;

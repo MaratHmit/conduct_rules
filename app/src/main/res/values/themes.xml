@@ -16,4 +16,7 @@
     <style name="Theme.ConductRules.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.ConductRules.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+
 </resources>

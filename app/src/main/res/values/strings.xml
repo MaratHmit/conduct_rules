@@ -28,6 +28,12 @@
         <item>Таблица</item>
     </string-array>
 
+    <string-array name="reminderList">
+        <item>Выключено</item>
+        <item>Включено</item>
+    </string-array>
+
+
 
 
     <string name="title_activity_stack">StackActivity</string>

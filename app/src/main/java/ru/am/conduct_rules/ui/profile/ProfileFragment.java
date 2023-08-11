@@ -1,6 +1,11 @@
 package ru.am.conduct_rules.ui.profile;
 
+import static ru.am.conduct_rules.Consts.NOTIFY_ID;
+
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,13 +15,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.Layout;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,14 +30,21 @@ import android.support.v4.app.Fragment;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 import ru.am.conduct_rules.Consts;
 import ru.am.conduct_rules.DBHelper;
 import ru.am.conduct_rules.DataModule;
+import ru.am.conduct_rules.Receiver;
+import ru.am.conduct_rules.ui.MainActivity;
 import ru.am.conduct_rules.ui.ProfileActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.databinding.FragmentProfileBinding;
 
 public class ProfileFragment extends Fragment {
+
+    private final static String default_notification_channel_id = "default";
+    private final static int NOTIFICATION_REMINDER_NIGHT = 54565;
 
     private FragmentProfileBinding binding;
 
@@ -49,6 +61,7 @@ public class ProfileFragment extends Fragment {
     private TextView mTextViewReminderTime;
 
     private int mHourReminder, mMinReminder;
+    private boolean isInit = false;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -78,12 +91,17 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        isInit = true;
+
         return root;
     }
 
     AdapterView.OnItemSelectedListener selectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+            if (!isInit)
+                return;
 
             String fieldName = "";
             ContentValues cv = new ContentValues();
@@ -96,6 +114,8 @@ public class ProfileFragment extends Fragment {
             if (parentView == mSpinnerReminder) {
                 fieldName = "reminder";
                 mLinerLayoutReminder.setVisibility(position == 1 ? View.VISIBLE : View.GONE);
+                if (position == 1)
+                    setNotification();
             }
             if (fieldName.isEmpty())
                 return;
@@ -141,6 +161,7 @@ public class ProfileFragment extends Fragment {
     // установка обработчика выбора времени
     TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
             mHourReminder = hourOfDay;
             mMinReminder = minute;
             String time = String.format("%02d", mHourReminder) + ":" + String.format("%02d", mMinReminder);
@@ -149,9 +170,34 @@ public class ProfileFragment extends Fragment {
             int timeInt = hourOfDay * 60 + minute;
             cv.put("reminder_time", timeInt);
             DataModule.dbWriter.update("user", cv, "_id = 1", null);
+            setNotification();
+
         }
     };
 
+    private void setNotification() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, mHourReminder);
+        calendar.set(Calendar.MINUTE, mMinReminder);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Intent notifyIntent = new Intent(getActivity(), Receiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast
+                (getContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Cursor query = mDbReader.rawQuery(
+                "SELECT reminder FROM user WHERE _id = 1", null);
+        if (query.moveToFirst()) {
+            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+            if (query.getInt(0) == 1)
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                        AlarmManager.INTERVAL_DAY, pendingIntent);
+            else
+                alarmManager.cancel(pendingIntent);
+        }
+    }
 
     private void resetData() {
         AlertDialog.Builder ad;

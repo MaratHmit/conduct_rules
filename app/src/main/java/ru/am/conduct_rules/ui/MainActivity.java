@@ -1,9 +1,19 @@
 package ru.am.conduct_rules.ui;
 
+import static android.telephony.AvailableNetworkInfo.PRIORITY_HIGH;
+
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.navigation.NavController;
@@ -12,11 +22,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import ru.am.conduct_rules.Consts;
-import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.R;
-import ru.am.conduct_rules.databinding.ActivityMainBinding;
+import ru.am.conduct_rules.DataModule;
+import ru.am.conduct_rules.Consts;
+import ru.am.conduct_rules.Receiver;
 import ru.am.conduct_rules.ui.practice.PracticeFragment;
+import ru.am.conduct_rules.databinding.ActivityMainBinding;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -24,6 +35,10 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private Context context;
+
+    private NotificationManager notificationManager;
+    private static final int NOTIFY_ID = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        context = binding.getRoot().getContext();
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_list_rules, R.id.navigation_practice, R.id.navigation_profile)
@@ -49,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         if ((countPracticesToday > 0))
             startSlider();
         navController.setGraph(graph);
+
     }
 
     private int getCountPracticesToday() {

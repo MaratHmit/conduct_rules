@@ -82,7 +82,6 @@ public class StackActivity extends AppCompatActivity {
         DataModule.dbWriter.update("practice", cv, "_id = ?", new String[] { String.valueOf(info.practiceId) });
     }
 
-
     private void loadRules(ArrayList<RuleInfo> listRules) {
 
         Date currentTime = Calendar.getInstance().getTime();

@@ -2,9 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.am.conduct_rules">
 
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -33,21 +34,25 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".ReminderIntentService"
-            android:exported="false" >
-        </service>
-
         <activity
             android:name=".ui.StackActivity"
             android:exported="false"
             android:label="16 пунков"
             android:theme="@style/Theme.ConductRules.NoActionBar" />
 
+        <service
+            android:name=".ReminderIntentService"
+            android:exported="false"></service>
+
         <receiver
             android:name=".Receiver"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false">
+            <intent-filter>
+                <action android:name="ru.am.conduct_rules.receiver_action" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

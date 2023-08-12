@@ -11,10 +11,12 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import ru.am.conduct_rules.ui.MainActivity;
 
-public class ReminderIntentService  extends IntentService {
+public class ReminderIntentService extends IntentService {
 
     public ReminderIntentService() {
-        super("MyNewIntentService");
+
+        super("ConductRulesService");
+
     }
 
     @Override

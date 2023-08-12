@@ -1,6 +1,5 @@
 package ru.am.conduct_rules.ui.profile;
 
-import static ru.am.conduct_rules.Consts.NOTIFICATION_KEY;
 import static ru.am.conduct_rules.Consts.NOTIFY_ID;
 
 import android.app.AlarmManager;
@@ -195,8 +194,6 @@ public class ProfileFragment extends Fragment {
 
         try {
             Intent notifyIntent = new Intent(getActivity(), Receiver.class);
-            notifyIntent.putExtra(NOTIFICATION_KEY, NOTIFY_ID);
-            notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             PendingIntent pendingIntent = PendingIntent.getBroadcast
                     (getContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT  | PendingIntent.FLAG_IMMUTABLE);
             Cursor query = mDbReader.rawQuery(
@@ -205,8 +202,8 @@ public class ProfileFragment extends Fragment {
                 AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
                 alarmManager.cancel(pendingIntent);
                 if (query.getInt(0) == 1)
-                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 60000,
-                            AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                            AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15, pendingIntent);
             }
         } catch (Exception e) {
             Log.e("PendingIntent", e.getMessage());

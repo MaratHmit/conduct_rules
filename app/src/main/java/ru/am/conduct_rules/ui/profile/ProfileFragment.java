@@ -1,5 +1,6 @@
 package ru.am.conduct_rules.ui.profile;
 
+import static ru.am.conduct_rules.Consts.NOTIFICATION_KEY;
 import static ru.am.conduct_rules.Consts.NOTIFY_ID;
 
 import android.app.AlarmManager;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,9 +44,6 @@ import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.databinding.FragmentProfileBinding;
 
 public class ProfileFragment extends Fragment {
-
-    private final static String default_notification_channel_id = "default";
-    private final static int NOTIFICATION_REMINDER_NIGHT = 54565;
 
     private FragmentProfileBinding binding;
 
@@ -91,17 +90,12 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        isInit = true;
-
         return root;
     }
 
     AdapterView.OnItemSelectedListener selectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-
-            if (!isInit)
-                return;
 
             String fieldName = "";
             ContentValues cv = new ContentValues();
@@ -114,14 +108,21 @@ public class ProfileFragment extends Fragment {
             if (parentView == mSpinnerReminder) {
                 fieldName = "reminder";
                 mLinerLayoutReminder.setVisibility(position == 1 ? View.VISIBLE : View.GONE);
-                if (position == 1)
-                    setNotification();
             }
             if (fieldName.isEmpty())
                 return;
 
-            cv.put(fieldName, position);
-            DataModule.dbWriter.update("user", cv, "_id = 1", null);
+            if (isInit) {
+                cv.put(fieldName, position);
+                DataModule.dbWriter.update("user", cv, "_id = 1", null);
+            }
+            if (parentView == mSpinnerReminder) {
+                if (!isInit) {
+                    isInit = true;
+                    return;
+                }
+                setNotification();
+            }
         }
 
         @Override
@@ -156,6 +157,15 @@ public class ProfileFragment extends Fragment {
                         .show();
             }
         });
+
+        mTextViewReminderTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimePickerDialog(getActivity(), timeSetListener,
+                        mHourReminder, mMinReminder, true)
+                        .show();
+            }
+        });
     }
 
     // установка обработчика выбора времени
@@ -183,19 +193,24 @@ public class ProfileFragment extends Fragment {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        Intent notifyIntent = new Intent(getActivity(), Receiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast
-                (getContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Cursor query = mDbReader.rawQuery(
-                "SELECT reminder FROM user WHERE _id = 1", null);
-        if (query.moveToFirst()) {
-            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-            if (query.getInt(0) == 1)
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                        AlarmManager.INTERVAL_DAY, pendingIntent);
-            else
+        try {
+            Intent notifyIntent = new Intent(getActivity(), Receiver.class);
+            notifyIntent.putExtra(NOTIFICATION_KEY, NOTIFY_ID);
+            notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast
+                    (getContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT  | PendingIntent.FLAG_IMMUTABLE);
+            Cursor query = mDbReader.rawQuery(
+                    "SELECT reminder FROM user WHERE _id = 1", null);
+            if (query.moveToFirst()) {
+                AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
                 alarmManager.cancel(pendingIntent);
+                if (query.getInt(0) == 1)
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 60000,
+                            AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
+            }
+        } catch (Exception e) {
+            Log.e("PendingIntent", e.getMessage());
+
         }
     }
 

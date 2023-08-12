@@ -8,6 +8,7 @@ public class Consts {
     public static int DB_VERSION = 3;
     public static String DATABASE_NAME = "sadhaka";
     public static String NOTIFICATION_CHANNEL_ID = "10001";
+    public static String NOTIFICATION_KEY = "19791";
 
     public static int NOTIFY_ID = 1250;
 

@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
             startSlider();
         navController.setGraph(graph);
 
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.cancelAll();
     }
 
     private int getCountPracticesToday() {

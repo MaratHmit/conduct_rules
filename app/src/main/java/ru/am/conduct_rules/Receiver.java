@@ -16,24 +16,24 @@ public class Receiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
         intent = new Intent(context, ReminderIntentService.class);
-        if (isAppForeground(context))
-            context.startService(intent);
-        else
+        if (isBackgroundRunning(context))
             context.startForegroundService(intent);
-
+        else
+            context.startService(intent);
     }
 
-    public boolean isAppForeground(Context mContext) {
-
-        ActivityManager am = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
-        if (!tasks.isEmpty()) {
-            ComponentName topActivity = tasks.get(0).topActivity;
-            if (!topActivity.getPackageName().equals(mContext.getPackageName())) {
-                return false;
+    public static boolean isBackgroundRunning(Context context) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+            if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                for (String activeProcess : processInfo.pkgList) {
+                    if (activeProcess.equals(context.getPackageName())) {
+                        return false;
+                    }
+                }
             }
         }
-
         return true;
     }
 

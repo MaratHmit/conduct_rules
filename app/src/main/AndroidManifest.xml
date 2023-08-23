@@ -48,9 +48,6 @@
             android:name=".Receiver"
             android:enabled="true"
             android:exported="false">
-            <intent-filter>
-                <action android:name="ru.am.conduct_rules.receiver_action" />
-            </intent-filter>
         </receiver>
 
     </application>

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.daprlabs.cardstack.SwipeFrameLayout
+<!--<ru.am.conduct_rules.cardstack.SwipeFrameLayout-->
+<ru.am.conduct_rules.cardstack.SwipeFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:swipedeck="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.daprlabs.cardstack.SwipeDeck
+<!--    ru.am.conduct_rules.cardstack.SwipeDeck-->
+    <ru.am.conduct_rules.cardstack.SwipeDeck
         android:id="@+id/swipe_deck"
         android:layout_width="match_parent"
         android:layout_height="600dp"
@@ -18,4 +20,4 @@
         swipedeck:rotation_degrees="2" />
 
 
-</com.daprlabs.cardstack.SwipeFrameLayout>
+</ru.am.conduct_rules.cardstack.SwipeFrameLayout>

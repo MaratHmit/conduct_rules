@@ -77,10 +77,12 @@ public class PracticeFragment extends Fragment {
 
         mListMainRect = new ArrayList<>();
         mListFooterRect = new ArrayList<>();
+
         sListPractice = new ArrayList<>();
         sListRect = new ArrayList<>();
         sListTextViews = new ArrayList<>();
         sListBadges = new ArrayList<>();
+
         listBadgesTable = new ArrayList<>();
 
         Date currentTime = Calendar.getInstance().getTime();

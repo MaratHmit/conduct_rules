@@ -38,7 +38,7 @@ public class ReminderIntentService extends IntentService {
         Notification.Builder builder = new Notification.Builder(this, Consts.NOTIFICATION_CHANNEL_ID);
         builder.setContentTitle("Оценка 16 пунктов");
         builder.setContentText("Пора оценить правила");
-        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setSmallIcon(R.drawable.ic_notify);
         Intent notifyIntent = new Intent(this, MainActivity.class);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 2, notifyIntent,

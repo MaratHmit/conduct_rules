@@ -2,10 +2,15 @@ package ru.am.conduct_rules.ui;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
-import com.daprlabs.cardstack.SwipeDeck;
+//import com.daprlabs.cardstack.SwipeDeck;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,6 +19,7 @@ import java.util.Date;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.RuleInfo;
+import ru.am.conduct_rules.cardstack.SwipeDeck;
 
 public class StackActivity extends AppCompatActivity {
 
@@ -37,18 +43,16 @@ public class StackActivity extends AppCompatActivity {
 
         mAdapter = new SwipeDeckAdapter(listRules, this);
         cardStack.setAdapter(mAdapter);
-        cardStack.setLeftImage(R.id.button_check_rule);
-        cardStack.setRightImage(R.id.button_uncheck_rule);
 
         cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
             @Override
             public void cardSwipedLeft(int position) {
-                updatePractice(position, false); // правило не выполнено
+                updatePractice(position, true); // правило выполнено
             }
 
             @Override
             public void cardSwipedRight(int position) {
-                updatePractice(position, true); // правило выполнено
+                updatePractice(position, false); // правило не выполнено
             }
 
             @Override
@@ -59,16 +63,13 @@ public class StackActivity extends AppCompatActivity {
 
             @Override
             public void cardActionDown() {
-
             }
 
             @Override
             public void cardActionUp() {
 
             }
-
         });
-
     }
 
     private void updatePractice(int position, boolean check) {

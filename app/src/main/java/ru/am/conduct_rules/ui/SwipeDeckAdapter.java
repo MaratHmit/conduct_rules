@@ -59,8 +59,8 @@ public class SwipeDeckAdapter extends BaseAdapter {
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String item = (String) getItem(position);
-                Log.i("StackActivity", item);
+                RuleInfo infoR = (RuleInfo) getItem(position);
+                Log.i("StackActivity", infoR.name);
             }
         });
 

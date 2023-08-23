@@ -11,4 +11,5 @@ public class RuleInfo {
     public boolean available; // доступно
     public int status;
     public int done;
+
 }

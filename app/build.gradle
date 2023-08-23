@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 32
 
     defaultConfig {
         applicationId "ru.am.conduct_rules"
         minSdk 28
-        targetSdk 33
+        targetSdk 32
         versionCode 3
         versionName "1.3"
 

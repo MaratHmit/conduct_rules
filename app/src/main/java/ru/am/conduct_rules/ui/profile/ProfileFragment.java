@@ -203,7 +203,7 @@ public class ProfileFragment extends Fragment {
                 alarmManager.cancel(pendingIntent);
                 if (query.getInt(0) == 1)
                     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                            AlarmManager.INTERVAL_FIFTEEN_MINUTES / 15, pendingIntent);
+                            AlarmManager.INTERVAL_FIFTEEN_MINUTES / 30, pendingIntent);
             }
         } catch (Exception e) {
             Log.e("PendingIntent", e.getMessage());

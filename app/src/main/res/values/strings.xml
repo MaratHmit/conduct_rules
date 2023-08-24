@@ -37,5 +37,9 @@
 
 
     <string name="title_activity_stack">StackActivity</string>
+    <string name="number_rule">Номер правила</string>
+    <string name="sample_str_rule">Текст большого правила</string>
+    <string name="table">Таблица</string>
+    <string name="swipe_mode">Свайп режим</string>
 
 </resources>

@@ -77,6 +77,7 @@ public class SwipeListener implements View.OnTouchListener {
                 v.clearAnimation();
 
                 mActivePointerId = event.getPointerId(0);
+                card.setAlpha(1);
 
                 x = event.getX();
                 y = event.getY();
@@ -122,6 +123,7 @@ public class SwipeListener implements View.OnTouchListener {
                 card.setX(posX);
                 card.setY(posY);
                 card.setBackgroundColor(Color.rgb(255, 255, 255));
+                card.setAlpha(1);
 
                 //card.setRotation
                 float distobjectX = posX - initialX;
@@ -129,11 +131,14 @@ public class SwipeListener implements View.OnTouchListener {
                 card.setRotation(rotation);
 
                 float alpha = (((posX - paddingLeft) / (parentWidth * OPACITY_END)));
-                if (alpha > 0.4)
-                    card.setBackgroundColor(Color.rgb(255, 0, 0));
-                if (alpha < -0.4)
-                    card.setBackgroundColor(Color.rgb(0, 255, 0));
-
+                if (alpha > 0.4) {
+                    card.setBackgroundColor(Color.rgb(238, 96, 85));
+                    card.setAlpha(1 - alpha / 2);
+                }
+                if (alpha < -0.4) {
+                    card.setBackgroundColor(Color.rgb(170, 246, 131));
+                    card.setAlpha(1 + alpha / 2);
+                }
 
                 if (rightView != null && leftView != null) {
                     //set alpha of left and right image
@@ -142,6 +147,7 @@ public class SwipeListener implements View.OnTouchListener {
                     rightView.setAlpha(alpha);
                     leftView.setAlpha(-alpha);
                 }
+
 
                 break;
 
@@ -156,6 +162,7 @@ public class SwipeListener implements View.OnTouchListener {
                 }
                 //check if this is a click event and then perform a click
                 //this is a workaround, android doesn't play well with multiple listeners
+                card.setBackgroundColor(Color.rgb(255, 255, 255));
 
                 if (click) v.performClick();
                 //if(click) return false;

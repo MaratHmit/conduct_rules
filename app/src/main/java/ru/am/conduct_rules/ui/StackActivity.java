@@ -4,6 +4,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.ColorSpace;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -48,11 +52,35 @@ public class StackActivity extends AppCompatActivity {
             @Override
             public void cardSwipedLeft(int position) {
                 updatePractice(position, true); // правило выполнено
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ok);
+                try {
+                    if (mp.isPlaying()) {
+                        mp.stop();
+                        mp.release();
+                        mp = MediaPlayer.create(getApplicationContext(), R.raw.ok);
+                    }
+                    mp.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
 
             @Override
             public void cardSwipedRight(int position) {
                 updatePractice(position, false); // правило не выполнено
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.cancel);
+                try {
+                    if (mp.isPlaying()) {
+                        mp.stop();
+                        mp.release();
+                        mp = MediaPlayer.create(getApplicationContext(), R.raw.cancel);
+                    }
+                    mp.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
 
             @Override
@@ -80,7 +108,7 @@ public class StackActivity extends AppCompatActivity {
         cv.put("rule_id", info.id);
         cv.put("result", check ? 1 : 0);
         cv.put("done", 1);
-        DataModule.dbWriter.update("practice", cv, "_id = ?", new String[] { String.valueOf(info.practiceId) });
+        DataModule.dbWriter.update("practice", cv, "_id = ?", new String[]{String.valueOf(info.practiceId)});
     }
 
     private void loadRules(ArrayList<RuleInfo> listRules) {

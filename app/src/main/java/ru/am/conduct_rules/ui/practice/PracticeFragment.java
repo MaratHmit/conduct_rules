@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -258,7 +259,7 @@ public class PracticeFragment extends Fragment {
             mLinerLayoutTable.setVisibility(View.GONE);
             mScrollViewPractice.setVisibility(View.VISIBLE);
             sButtonMarkCards.setVisibility(View.VISIBLE);
-            mButtonMode.setText("Таблица");
+            mButtonMode.setText(R.string.table);
             createPracticesSwipe();
             return;
         }
@@ -266,7 +267,7 @@ public class PracticeFragment extends Fragment {
         mLinerLayoutTable.setVisibility(View.VISIBLE);
         mScrollViewPractice.setVisibility(View.GONE);
         sButtonMarkCards.setVisibility(View.GONE);
-        mButtonMode.setText("Свайп режим");
+        mButtonMode.setText(R.string.swipe_mode);
         createPracticesTable();
     }
 
@@ -478,6 +479,13 @@ public class PracticeFragment extends Fragment {
         scrollView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         scrollView.setFillViewport(true);
+        scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                Log.d("scrollX", String.valueOf(scrollX));
+                Log.d("scrollY", String.valueOf(scrollY));
+            }
+        });
 
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -493,6 +501,9 @@ public class PracticeFragment extends Fragment {
         layoutHeader.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, heightHeader));
         layout.addView(layoutHeader);
 
+        int paddingX = 0;
+
+
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT MIN(p.date) min, MAX(p.date) max" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id", null);
         if ((cursor != null) && cursor.moveToFirst()) {
@@ -504,6 +515,9 @@ public class PracticeFragment extends Fragment {
                 TextView viewCell = new TextView(context);
                 viewCell.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightHeader));
                 viewCell.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+                if (i == sCurrentDate && paddingX == 0) {
+                    paddingX = widthCell * (i - minDate);
+                }
 
                 long dateInt = (long) i * 1000 * 86400;
                 SimpleDateFormat fmt = new SimpleDateFormat("dd.MM");
@@ -590,6 +604,15 @@ public class PracticeFragment extends Fragment {
                 }
             }
 
+        }
+
+        if (paddingX >= 0) {
+            int finalPaddingX = paddingX;
+            scrollView.post(new Runnable() {
+                public void run() {
+                    scrollView.scrollTo(finalPaddingX, 0);
+                }
+            });
         }
 
         return scrollView;

@@ -20,7 +20,7 @@
             android:layout_gravity="center_horizontal"
             android:background="#C3C3C3"
             android:gravity="center"
-            android:text="Номер правила"
+            android:text="@string/number_rule"
             android:textSize="22sp" />
 
         <LinearLayout
@@ -44,14 +44,38 @@
                     android:gravity="center"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:text="Текст большого правила"
+                    android:text="@string/sample_str_rule"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:orientation="horizontal">
 
+
+                    <ImageButton
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:background="@null"
+                        android:onClick="onButtonUnCheckRuleClick"
+                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/button_check_rule"
+                        android:src="@drawable/ic_cancel_24"/>
+
+                    <ImageButton
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:background="@null"
+                        android:id="@+id/button_uncheck_rule"
+                        android:layout_marginLeft="10dp"
+                        android:layout_alignParentLeft="true"
+                        android:onClick="onButtonCheckRuleClick"
+                        android:src="@drawable/ic_check_24"/>
+
+                </RelativeLayout>
             </LinearLayout>
-
-
 
         </LinearLayout>
     </LinearLayout>

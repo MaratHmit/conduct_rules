@@ -22,12 +22,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_20
+        targetCompatibility JavaVersion.VERSION_20
     }
     buildFeatures {
         viewBinding true
     }
+    namespace 'ru.am.conduct_rules'
 }
 
 dependencies {

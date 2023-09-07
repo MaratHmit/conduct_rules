@@ -1,13 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.ConductRules" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">#3F51B5</item>
-        <item name="colorPrimaryDark">#303F9F</item>
-        <item name="colorAccent">#FFC107</item>
-        <!-- Customize your theme here. -->
+    <style name="Theme.ConductRules" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorPrimary">#182533</item>
+        <item name="colorPrimaryDark">#17212B</item>
+        <item name="colorAccent">#74B1EB</item>
+        <item name="android:windowBackground">#182533</item>
     </style>
-
-
-
 </resources>

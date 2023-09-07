@@ -1,11 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Theme.ConductRules" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">#607D8B</item>
+        <item name="colorPrimary">#517DA2</item>
         <item name="colorPrimaryDark">#455A64</item>
-        <item name="colorAccent">#FF4081</item>
-        <!-- Customize your theme here. -->
+        <item name="colorAccent">@android:color/darker_gray</item>
     </style>
 
     <style name="Theme.ConductRules.NoActionBar">
@@ -14,9 +11,5 @@
     </style>
 
     <style name="Theme.ConductRules.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="Theme.ConductRules.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-
-
 </resources>

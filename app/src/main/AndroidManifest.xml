@@ -36,8 +36,15 @@
         <activity
             android:name=".ui.StackActivity"
             android:exported="false"
-            android:label="16 пунков"
+            android:label="16 пунктов"
             android:theme="@style/Theme.ConductRules.NoActionBar" />
+
+
+        <activity
+            android:name=".EstimateActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ConductRules.NoActionBar"
+            android:label="Оценка правил" />
 
         <service
             android:name=".ReminderIntentService"
@@ -46,8 +53,7 @@
         <receiver
             android:name=".Receiver"
             android:enabled="true"
-            android:exported="false">
-        </receiver>
+            android:exported="false"></receiver>
 
     </application>
 

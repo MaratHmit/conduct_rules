@@ -36,6 +36,7 @@ import java.util.Calendar;
 import ru.am.conduct_rules.Consts;
 import ru.am.conduct_rules.DBHelper;
 import ru.am.conduct_rules.DataModule;
+import ru.am.conduct_rules.EstimateActivity;
 import ru.am.conduct_rules.Receiver;
 import ru.am.conduct_rules.ui.MainActivity;
 import ru.am.conduct_rules.ui.ProfileActivity;
@@ -45,6 +46,8 @@ import ru.am.conduct_rules.databinding.FragmentProfileBinding;
 public class ProfileFragment extends Fragment {
 
     private FragmentProfileBinding binding;
+
+    private View mRoot;
 
     private static DBHelper mDbHelper;
     private static SQLiteDatabase mDbReader;
@@ -65,31 +68,23 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        mRoot = binding.getRoot();
 
-        mTextViewName = root.findViewById(R.id.textViewUserName);
-        mTextViewReminderTime = root.findViewById(R.id.textViewReminderTime);
-        mSpinnerGender = root.findViewById(R.id.spinnerGender);
-        mSpinnerLanguage = root.findViewById(R.id.spinnerLanguage);
-        mSpinnerMode = root.findViewById(R.id.spinnerMode);
-        mSpinnerReminder = root.findViewById(R.id.spinnerReminder);
-        mLinerLayoutUserName = root.findViewById(R.id.linerLayoutUserName);
-        mLinerLayoutReminder = root.findViewById(R.id.linerLayoutReminder);
+        mTextViewName = mRoot.findViewById(R.id.textViewUserName);
+        mTextViewReminderTime = mRoot.findViewById(R.id.textViewReminderTime);
+        mSpinnerGender = mRoot.findViewById(R.id.spinnerGender);
+        mSpinnerLanguage = mRoot.findViewById(R.id.spinnerLanguage);
+        mSpinnerMode = mRoot.findViewById(R.id.spinnerMode);
+        mSpinnerReminder = mRoot.findViewById(R.id.spinnerReminder);
+        mLinerLayoutUserName = mRoot.findViewById(R.id.linerLayoutUserName);
+        mLinerLayoutReminder = mRoot.findViewById(R.id.linerLayoutReminder);
 
         initDBHelper(getContext());
 
         loadData();
         setListeners();
 
-        Button buttonReset = (Button) root.findViewById(R.id.button_reset);
-        buttonReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetData();
-            }
-        });
-
-        return root;
+        return mRoot;
     }
 
     AdapterView.OnItemSelectedListener selectedListener = new AdapterView.OnItemSelectedListener() {
@@ -165,6 +160,29 @@ public class ProfileFragment extends Fragment {
                         .show();
             }
         });
+
+        Button buttonReset = mRoot.findViewById(R.id.button_reset);
+        buttonReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetData();
+            }
+        });
+
+
+        Button buttonRunEstimate = mRoot.findViewById(R.id.buttonRunEstimate);
+        buttonRunEstimate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                runEstimate();
+            }
+        });
+
+    }
+
+    private void runEstimate() {
+
+        Intent intent = new Intent(getContext(), EstimateActivity.class);
+        startActivityForResult(intent, Consts.RESULT_ESTIMATE);
     }
 
     // установка обработчика выбора времени

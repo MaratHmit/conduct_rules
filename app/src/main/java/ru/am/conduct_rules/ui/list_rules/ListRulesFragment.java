@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -182,7 +183,7 @@ public class ListRulesFragment extends Fragment {
         if (context == null)
             return;
 
-        int height = DataModule.convertDpToPixel(100, context);
+        int height = DataModule.convertDpToPixel(80, context);
         int widthN = DataModule.convertDpToPixel(60, context);
         int sizeButtonAdd = DataModule.convertDpToPixel(36, context);
         int sizeButtonNot = DataModule.convertDpToPixel(30, context);
@@ -218,8 +219,9 @@ public class ListRulesFragment extends Fragment {
 
                 textViewNumeric.setText(rule.code);
                 textViewNumeric.setTypeface(null, Typeface.BOLD);
-                textViewNumeric.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                textViewNumeric.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 textViewNumeric.setPadding(paddingDP, 0, paddingDP, 0);
+                textViewNumeric.setTextColor(Color.BLACK);
                 wrapperButton.addView(textViewNumeric);
 
                 View emptyView = new View(context);
@@ -228,8 +230,10 @@ public class ListRulesFragment extends Fragment {
                 emptyView.setLayoutParams(params);
                 wrapperButton.addView(emptyView);
                 wrapperButton.setOrientation(LinearLayout.HORIZONTAL);
-                wrapperButton.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                        sizeButtonAdd));
+                FrameLayout.LayoutParams paramsWrapper = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                        sizeButtonAdd);
+                paramsWrapper.setMarginEnd(paddingDP);
+                wrapperButton.setLayoutParams(paramsWrapper);
 
                 Button buttonAdd = new Button(context);
                 if (rule.available) {
@@ -262,6 +266,7 @@ public class ListRulesFragment extends Fragment {
                 textViewRule.setLayoutParams(new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
                 textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
+                textViewRule.setTextColor(Color.BLACK);
                 wrapper.addView(textViewRule);
                 int colorID = R.drawable.cell_shape_gray;
                 switch (rule.estimate) {

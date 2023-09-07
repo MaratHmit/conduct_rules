@@ -41,5 +41,19 @@
     <string name="sample_str_rule">Текст большого правила</string>
     <string name="table">Таблица</string>
     <string name="swipe_mode">Свайп режим</string>
+    <string name="perfect">Идеально</string>
+    <string name="good">Хорошо</string>
+    <string name="bad">Плохо</string>
+    <string name="back">Назад</string>
+    <string name="skip">Пропустить</string>
+    <string name="everyday_dh">Еженедельная дхармачакра</string>
+    <string name="finish_estimate">Завершить оценку</string>
+    <string name="userName">Имя пользователя</string>
+    <string name="gender">Пол</string>
+    <string name="estimateRules">Оценить правила</string>
+    <string name="instruction">Руководство</string>
+    <string name="resetAll">Сбросить всё</string>
+    <string name="level_1">1 уровень</string>
+    <string name="level_2">2 уровень</string>
 
 </resources>

@@ -9,8 +9,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +26,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import ru.am.conduct_rules.EstimateActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.Consts;
@@ -54,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-
         NavGraph graph = navController.getNavInflater().inflate(R.navigation.mobile_navigation);
+
         DataModule.initDBHelper(this);
 
         int countPractices = getCountPractices();
@@ -65,9 +70,16 @@ public class MainActivity extends AppCompatActivity {
         if ((countPracticesToday > 0))
             startSlider();
         navController.setGraph(graph);
+       // runEstimate();
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancelAll();
+    }
+
+    private void runEstimate() {
+
+        Intent intent = new Intent(this, EstimateActivity.class);
+        startActivityForResult(intent, Consts.RESULT_ESTIMATE);
     }
 
     private int getCountPracticesToday() {

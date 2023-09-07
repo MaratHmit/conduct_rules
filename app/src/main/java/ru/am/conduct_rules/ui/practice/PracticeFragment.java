@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -67,6 +68,8 @@ public class PracticeFragment extends Fragment {
     static public ArrayList<TextView> sListTextViews;
     static public ArrayList<TextView> sListBadges;
 
+    static private boolean mIsNightMode;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -93,6 +96,10 @@ public class PracticeFragment extends Fragment {
         mMapCountDays = new HashMap<Integer, Integer>();
 
         mMode = readMode();
+
+        int nightModeFlags = getContext().getResources().getConfiguration().uiMode &
+                Configuration.UI_MODE_NIGHT_MASK;
+        mIsNightMode = Configuration.UI_MODE_NIGHT_YES == nightModeFlags;
 
         mButtonMode = root.findViewById(R.id.button_mode);
         mButtonMode.setOnClickListener(new View.OnClickListener() {
@@ -337,6 +344,7 @@ public class PracticeFragment extends Fragment {
                 textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 textViewRule.setLayoutParams(new LinearLayout.LayoutParams(0, FrameLayout.LayoutParams.MATCH_PARENT, 1));
                 textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
+                textViewRule.setTextColor(Color.BLACK);
                 textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
                 if (rule.done == 1)
                     textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
@@ -705,13 +713,15 @@ public class PracticeFragment extends Fragment {
                 rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
                 rect.setGravity(Gravity.CENTER);
                 rect.setLayoutParams(new LinearLayout.LayoutParams(0, h, 1));
-                rect.setBackground(context.getDrawable(R.drawable.cell_shape_light_gray));
+                rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect));
                 if ((days != null) && (pos < days.length) && (days[pos] != null)) {
                     long dateInt = (long) days[pos].date * 1000 * 86400;
                     SimpleDateFormat fmt = new SimpleDateFormat("E dd.MM");
                     String dateStr = fmt.format(dateInt);
                     rect.setText(dateStr);
                     if (days[pos].date <= sCurrentDate) {
+                        if (mIsNightMode)
+                            rect.setTextColor(Color.BLACK);
                         switch (days[pos].status) {
                             case 1:
                                 rect.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));
@@ -777,7 +787,7 @@ public class PracticeFragment extends Fragment {
         RelativeLayout wrapperButtonV = new RelativeLayout(context);
         wrapperButtonV.setLayoutParams(new FrameLayout.LayoutParams(widthButtons,
                 FrameLayout.LayoutParams.MATCH_PARENT));
-        wrapperButtonV.setBackground(context.getDrawable(R.drawable.cell_shape));
+        wrapperButtonV.setBackground(context.getDrawable(R.drawable.cell_shape_rect));
         layout.addView(wrapperButtonV);
 
         TextView badge = new TextView(context);
@@ -861,13 +871,15 @@ public class PracticeFragment extends Fragment {
                 rect.setGravity(Gravity.CENTER);
                 rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
                 rect.setLayoutParams(new LinearLayout.LayoutParams(0, h, 1));
-                rect.setBackground(context.getDrawable(R.drawable.cell_shape_light_gray));
+                rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect));
                 if ((days != null) && (pos < days.length) && (days[pos] != null)) {
                     long dateInt = (long) days[pos].date * 1000 * 86400;
                     SimpleDateFormat fmt = new SimpleDateFormat("E");
                     String dateStr = fmt.format(dateInt);
                     rect.setText(dateStr);
                     if (days[pos].date <= sCurrentDate) {
+                        if (mIsNightMode)
+                            rect.setTextColor(Color.BLACK);
                         switch (days[pos].status) {
                             case 1:
                                 rect.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));

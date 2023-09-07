@@ -17,8 +17,7 @@
             android:background="@drawable/cell_shape"
             android:gravity="center"
             android:padding="5dp"
-            android:text="1 уровень"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/level_1"
             android:textSize="18sp" />
 
         <TextView
@@ -28,8 +27,7 @@
             android:background="@drawable/cell_shape"
             android:gravity="center"
             android:padding="5dp"
-            android:text="2 уровень"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/level_2"
             android:textSize="18sp" />
 
     </LinearLayout>

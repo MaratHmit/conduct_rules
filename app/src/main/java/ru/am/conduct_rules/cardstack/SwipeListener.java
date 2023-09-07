@@ -2,6 +2,7 @@ package ru.am.conduct_rules.cardstack;
 
 import android.animation.Animator;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import ru.am.conduct_rules.R;
 
@@ -35,9 +37,16 @@ public class SwipeListener implements View.OnTouchListener {
     private View rightView;
     private View leftView;
 
+    private Drawable mBackgroundCard;
+    private int mTextColor;
+
 
     public SwipeListener(View card, final SwipeCallback callback, float initialX, float initialY, float rotation, float opacityEnd) {
         this.card = card;
+        mBackgroundCard = card.getBackground();
+        TextView textView = card.findViewById(R.id.text_rule);
+        if (textView != null)
+            mTextColor =  textView.getCurrentTextColor();
         this.initialX = initialX;
         this.initialY = initialY;
         this.callback = callback;
@@ -120,10 +129,13 @@ public class SwipeListener implements View.OnTouchListener {
                 if (Math.abs(dx + dy) > 5) click = false;
 
 
+                TextView textView = card.findViewById(R.id.text_rule);
                 card.setX(posX);
                 card.setY(posY);
-                card.setBackgroundColor(Color.rgb(255, 255, 255));
+                card.setBackground(mBackgroundCard);
                 card.setAlpha(1);
+                if (textView != null)
+                    textView.setTextColor(mTextColor);
 
                 //card.setRotation
                 float distobjectX = posX - initialX;
@@ -134,10 +146,14 @@ public class SwipeListener implements View.OnTouchListener {
                 if (alpha > 0.4) {
                     card.setBackgroundColor(Color.rgb(238, 96, 85));
                     card.setAlpha(1 - alpha / 2);
+                    if (textView != null)
+                        textView.setTextColor(Color.BLACK);
                 }
                 if (alpha < -0.4) {
                     card.setBackgroundColor(Color.rgb(170, 246, 131));
                     card.setAlpha(1 + alpha / 2);
+                    if (textView != null)
+                        textView.setTextColor(Color.BLACK);
                 }
 
                 if (rightView != null && leftView != null) {
@@ -162,7 +178,10 @@ public class SwipeListener implements View.OnTouchListener {
                 }
                 //check if this is a click event and then perform a click
                 //this is a workaround, android doesn't play well with multiple listeners
-                card.setBackgroundColor(Color.rgb(255, 255, 255));
+                card.setBackground(mBackgroundCard);
+                TextView textViewR = card.findViewById(R.id.text_rule);
+                if (textViewR != null)
+                    textViewR.setTextColor(mTextColor);
 
                 if (click) v.performClick();
                 //if(click) return false;

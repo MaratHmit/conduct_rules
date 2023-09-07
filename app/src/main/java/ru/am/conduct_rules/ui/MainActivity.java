@@ -70,16 +70,18 @@ public class MainActivity extends AppCompatActivity {
         if ((countPracticesToday > 0))
             startSlider();
         navController.setGraph(graph);
-       // runEstimate();
+        runEstimate();
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancelAll();
     }
 
     private void runEstimate() {
-
-        Intent intent = new Intent(this, EstimateActivity.class);
-        startActivityForResult(intent, Consts.RESULT_ESTIMATE);
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT SUM(estimate) FROM rule", null);
+        if (cursor.moveToFirst() && cursor.getInt(0) == 0) {
+            Intent intent = new Intent(this, EstimateActivity.class);
+            startActivityForResult(intent, Consts.RESULT_ESTIMATE);
+        }
     }
 
     private int getCountPracticesToday() {
@@ -90,9 +92,9 @@ public class MainActivity extends AppCompatActivity {
 
         Cursor cursor = DataModule.dbReader.rawQuery(
                 "SELECT COUNT(p._id)" +
-                " FROM rule r JOIN practice p ON r._id = p.rule_id " +
-                " WHERE p.done = 0 AND p.date = " + strDate +
-                " GROUP BY r._id", null);
+                        " FROM rule r JOIN practice p ON r._id = p.rule_id " +
+                        " WHERE p.done = 0 AND p.date = " + strDate +
+                        " GROUP BY r._id", null);
         if (cursor.moveToFirst())
             return cursor.getInt(0);
         return 0;

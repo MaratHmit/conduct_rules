@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -27,6 +28,16 @@ import ru.am.conduct_rules.RuleInfo;
 public class ViewRuleItem extends LinearLayout {
 
     private RuleInfo mRule;
+
+    interface OnCheckedRuleListener{
+        void updateRules();
+    }
+
+    OnCheckedRuleListener onCheckedRuleListener;
+
+    public void setOnCheckedRuleListener(OnCheckedRuleListener ruleListener){
+        this.onCheckedRuleListener = ruleListener;
+    }
 
     private ViewRuleItem(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -70,8 +81,10 @@ public class ViewRuleItem extends LinearLayout {
         tvName.setText(mRule.name);
 
         Button btnAddRule = findViewById(R.id.btn_add_rule);
-        if (btnAddRule != null)
-            btnAddRule.setOnClickListener(buttonAddRuleClickListener);
+        btnAddRule.setOnClickListener(buttonAddRuleClickListener);
+
+        ImageButton btnDeleteRule = findViewById(R.id.btn_delete_rule);
+        btnDeleteRule.setOnClickListener(buttonDeleteRuleClickListener);
 
         if (mRule.checked)
             setInPractice();
@@ -94,7 +107,7 @@ public class ViewRuleItem extends LinearLayout {
         mRule = rule;
     }
 
-    private int getCountPractices() {
+    public static int getCountPractices() {
         Date currentTime = Calendar.getInstance().getTime();
         int date = (int) (currentTime.getTime() / (1000 * 86400));
         String strDate = String.valueOf(date);
@@ -128,6 +141,29 @@ public class ViewRuleItem extends LinearLayout {
             setInPractice();
     };
 
+    View.OnClickListener buttonDeleteRuleClickListener = v -> {
+        deleteRule();
+    };
+
+    private void setOutPractice() {
+
+        RelativeLayout rlInPractice = findViewById(R.id.rl_in_practice);
+        rlInPractice.setVisibility(INVISIBLE);
+
+        LinearLayout llOutPractice = findViewById(R.id.ll_out_practice);
+        llOutPractice.setVisibility(VISIBLE);
+
+        View vRight = findViewById(R.id.v_right);
+        vRight.setVisibility(VISIBLE);
+
+        ImageView ivLogo = findViewById(R.id.iv_logo_rule);
+        ivLogo.setBackgroundResource(R.drawable.logo_in_practice);
+
+        LinearLayout llRule = findViewById(R.id.ll_rule);
+        llRule.setPadding(0, 0, 0, 60);
+        llRule.requestLayout();
+    }
+
     void setInPractice() {
 
         RelativeLayout rlInPractice = findViewById(R.id.rl_in_practice);
@@ -139,20 +175,18 @@ public class ViewRuleItem extends LinearLayout {
         View vRight = findViewById(R.id.v_right);
         vRight.setVisibility(GONE);
 
-        int height = DataModule.convertDpToPixel(120, getContext());
-
         ImageView ivLogo = findViewById(R.id.iv_logo_rule);
         ivLogo.setBackgroundResource(R.drawable.logo_in_practice);
 
         LinearLayout llRule = findViewById(R.id.ll_rule);
-        llRule.setPadding(0, 0, 0, 20);
-        llRule.getLayoutParams().height = height;
+        llRule.setPadding(0, 0, 0, 60);
         llRule.requestLayout();
     }
 
     private boolean updateRule(boolean checked) {
         try {
             ContentValues cv = new ContentValues();
+            mRule.checked = checked;
             cv.put("checked", checked ? 1 : 0);
             DataModule.dbWriter.update("rule", cv, "_id = ?", new String[]{String.valueOf(mRule.id)});
             DataModule.dbWriter.delete("practice", "rule_id = ?", new String[]{String.valueOf(mRule.id)});
@@ -167,12 +201,40 @@ public class ViewRuleItem extends LinearLayout {
                     DataModule.dbWriter.insert("practice", null, cv);
                 }
             }
+            if (onCheckedRuleListener != null)
+                onCheckedRuleListener.updateRules();
             return true;
 
         } catch (Exception e) {
             Log.e("updateRule", Objects.requireNonNull(e.getMessage()));
         }
         return false;
+    }
+
+    private void deleteRule() {
+        AlertDialog.Builder ad;
+        String title = "Подтверждение удаления";
+        String message = "Удалить правило из практики?\n\"" + mRule.name + "\"";
+        String buttonYesString = "Да";
+        String buttonNoString = "Нет";
+
+        ad = new AlertDialog.Builder(getContext());
+        ad.setTitle(title);
+        ad.setMessage(message);
+
+        ad.setPositiveButton(buttonYesString, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+                updateRule(false);
+                setOutPractice();
+            }
+        });
+        ad.setNegativeButton(buttonNoString, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int arg1) {
+
+            }
+        });
+        ad.setCancelable(false);
+        ad.show();
     }
 
 

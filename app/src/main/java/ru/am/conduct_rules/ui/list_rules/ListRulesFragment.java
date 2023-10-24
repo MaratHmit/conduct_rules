@@ -17,7 +17,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -57,6 +59,7 @@ public class ListRulesFragment extends Fragment {
         mContainerBase = mRoot.findViewById(R.id.ll_list_rules_base);
         mContainerAdvanced = mRoot.findViewById(R.id.ll_list_rules_advanced);
 
+        initCheckButtons();
         initButtonSelectors();
         updateAvailableListRules();
         loadListRules();
@@ -64,19 +67,33 @@ public class ListRulesFragment extends Fragment {
         return mRoot;
     }
 
+    private void initCheckButtons() {
+
+        int count = ViewRuleItem.getCountPractices();
+
+        LinearLayout llButtons = mRoot.findViewById(R.id.ll_check_buttons);
+        for (int i = 0; i < llButtons.getChildCount(); i++) {
+            CheckBox b = (CheckBox) llButtons.getChildAt(i);
+            b.setChecked(i < count);
+            if (i < count)
+                b.setAlpha(1);
+            else
+                b.setAlpha((float) 0.6);
+        }
+    }
+
     private void initButtonSelectors() {
         Button buttonBase = mRoot.findViewById(R.id.button_base);
         Button buttonAdvanced = mRoot.findViewById(R.id.button_advanced);
         if (buttonBase != null && buttonAdvanced != null) {
-            buttonBase.setPressed(true);
+            buttonBase.setSelected(true);
             buttonBase.setTextColor(Color.WHITE);
             buttonBase.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    buttonBase.setPressed(true);
                     buttonBase.setSelected(true);
                     buttonBase.setTextColor(Color.WHITE);
-                    buttonAdvanced.setPressed(false);
+                    buttonAdvanced.setSelected(false);
                     buttonAdvanced.setTextColor(Color.DKGRAY);
                     mContainerAdvanced.setVisibility(View.GONE);
                     mContainerBase.setVisibility(View.VISIBLE);
@@ -88,11 +105,10 @@ public class ListRulesFragment extends Fragment {
             buttonAdvanced.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    buttonAdvanced.setPressed(true);
+                    buttonAdvanced.setSelected(true);
                     buttonAdvanced.setTextColor(Color.WHITE);
-                    buttonBase.setPressed(false);
-                    buttonBase.setTextColor(Color.DKGRAY);
                     buttonBase.setSelected(false);
+                    buttonBase.setTextColor(Color.DKGRAY);
                     mContainerAdvanced.setVisibility(View.VISIBLE);
                     mContainerBase.setVisibility(View.GONE);
                     return true;
@@ -129,48 +145,6 @@ public class ListRulesFragment extends Fragment {
                 DataModule.dbWriter.insert("practice", null, cv);
             }
         }
-    }
-
-    private void deleteRule(RuleInfo rule, Button buttonAdd) {
-        AlertDialog.Builder ad;
-        String title = "Подтверждение удаления";
-        String message = "Удалить правило из практики?\n\"" + rule.name + "\"";
-        String buttonYesString = "Да";
-        String buttonNoString = "Нет";
-
-        ad = new AlertDialog.Builder(getContext());
-        ad.setTitle(title);
-        ad.setMessage(message);
-
-        ad.setPositiveButton(buttonYesString, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int arg1) {
-                buttonAdd.setBackgroundResource(R.drawable.ic_add);
-                rule.checked = false;
-                updateRule(rule);
-                Toast toast = Toast.makeText(getContext(), rule.name + "\nУдалено из практики!", Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        });
-        ad.setNegativeButton(buttonNoString, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int arg1) {
-
-            }
-        });
-        ad.setCancelable(false);
-        ad.show();
-    }
-
-    private int getCountPractices() {
-        Date currentTime = Calendar.getInstance().getTime();
-        int date = (int) (currentTime.getTime() / (1000 * 86400));
-        String strDate = String.valueOf(date);
-
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT COUNT(r._id)" +
-                " FROM rule r JOIN practice p WHERE r._id = p.rule_id AND p.done = 0 AND p.date = " +
-                strDate, null);
-        if (cursor.moveToFirst())
-            return cursor.getInt(0);
-        return 0;
     }
 
     private void updateAvailableListRules() {
@@ -214,6 +188,12 @@ public class ListRulesFragment extends Fragment {
 
     private void addViewRule(RuleInfo rule) {
         ViewRuleItem item = new ViewRuleItem(mContext, rule);
+        item.setOnCheckedRuleListener(new ViewRuleItem.OnCheckedRuleListener() {
+            @Override
+            public void updateRules() {
+                initCheckButtons();
+            }
+        });
         if (rule.level == Consts.LEVEL_BASE)
             mContainerBase.addView(item);
         else

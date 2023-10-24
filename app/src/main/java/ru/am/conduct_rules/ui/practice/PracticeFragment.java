@@ -66,7 +66,7 @@ public class PracticeFragment extends Fragment {
     static public ArrayList<View> sListPractice;
     static public ArrayList<TextView> sListRect;
     static public ArrayList<TextView> sListTextViews;
-    static public ArrayList<TextView> sListBadges;
+    static private ArrayList<TextView> sListBadges;
 
     static private boolean mIsNightMode;
 
@@ -241,24 +241,25 @@ public class PracticeFragment extends Fragment {
     }
 
     private static void updateBadges() {
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, COUNT(p._id)" +
-                        " FROM rule r JOIN practice p ON p.rule_id = r._id WHERE p.result = 1 GROUP BY r._id",
-                null);
-        if ((cursor != null)) {
-            try {
-                while (cursor.moveToNext()) {
-                    for (int i = 0; i < sListBadges.size(); i++)
-                        if ((int) sListBadges.get(i).getTag() == cursor.getInt(0)) {
-                            int count = cursor.getInt(1);
-                            sListBadges.get(i).setText(String.valueOf(count));
-                        }
-                }
-            } catch (Exception e) {
 
+        for (int i = 0; i < sListBadges.size(); i++) {
+            Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, p.result, p.date" +
+                            " FROM rule r JOIN practice p ON p.rule_id = r._id WHERE r._id = ?",
+                    new String[]{String.valueOf((int) sListBadges.get(i).getTag())});
+            if ((cursor != null)) {
+                int count = 0;
+                while (cursor.moveToNext()) {
+                    if (cursor.getInt(2) <= sCurrentDate) {
+                        if (cursor.getInt(1) == 1)
+                            count++;
+                        else
+                            count = 0;
+                    }
+                }
+                sListBadges.get(i).setText(String.valueOf(count));
             }
         }
     }
-
 
     private void initPractices() {
 
@@ -291,7 +292,7 @@ public class PracticeFragment extends Fragment {
 
         initPracticeList();
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.code" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.code, r.estimate" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -301,6 +302,7 @@ public class PracticeFragment extends Fragment {
                 rule.name = cursor.getString(1);
                 rule.done = cursor.getInt(2);
                 rule.code = cursor.getString(3);
+                rule.estimate = cursor.getInt(4);
 
                 LinearLayout wrapperPractice = new LinearLayout(context);
                 wrapperPractice.setTag(rule.id);
@@ -344,12 +346,12 @@ public class PracticeFragment extends Fragment {
                 textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 textViewRule.setLayoutParams(new LinearLayout.LayoutParams(0, FrameLayout.LayoutParams.MATCH_PARENT, 1));
                 textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
-                textViewRule.setTextColor(Color.BLACK);
-                textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
-                if (rule.done == 1)
-                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
-                if (rule.done == 2)
-                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
+                if (rule.estimate == 1)
+                    textViewNum.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
+                if (rule.estimate == 2)
+                    textViewNum.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
+                if (rule.estimate == 3)
+                    textViewNum.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
                 wrapperPracticeHeader.addView(textViewRule);
                 textViewRule.setTag(rule.id);
                 sListTextViews.add(textViewRule);
@@ -797,12 +799,11 @@ public class PracticeFragment extends Fragment {
         layoutParamsBadge.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         wrapperButtonV.addView(badge, layoutParamsBadge);
         badge.setGravity(Gravity.CENTER);
-        if ((mMapPractice != null) && (mMapPractice.get(ruleID) != null))
-            badge.setText(String.valueOf(getCountSuccessDays(mMapPractice.get(ruleID))));
         badge.setTextSize(textSize);
         badge.setTextColor(Color.WHITE);
         badge.setTag(ruleID);
         sListBadges.add(badge);
+        updateBadges();
 
         ImageButton buttonPlusMinus = new ImageButton(context);
         buttonPlusMinus.setImageResource(R.drawable.ic_add_30_white);
@@ -930,12 +931,18 @@ public class PracticeFragment extends Fragment {
     }
 
     private static void checkRuleOnFinish(Context context, RuleInfo info) {
+
+        if (sCurrentDate == 0) {
+            Date currentTime = Calendar.getInstance().getTime();
+            sCurrentDate = (int) (currentTime.getTime() / (1000 * 86400));
+        }
+
         boolean isLast = checkRuleIsLast(info);
         if (!isLast)
             return;
 
         AlertDialog.Builder ad;
-        String title = "Практика " + info.name + " завершена!";
+        String title = "Практика\n" + info.name + "\nзавершена!";
         String message = "Удалить правило из практики?";
         String buttonYesString = "Да";
         String buttonNoString = "Нет";
@@ -995,8 +1002,8 @@ public class PracticeFragment extends Fragment {
 
     private static boolean checkRuleIsLast(RuleInfo info) {
         Cursor cursor = DataModule.dbReader.rawQuery(
-                "SELECT COUNT(_id) FROM practice WHERE rule_id = ? AND done = 1",
-                new String[]{String.valueOf(info.id)});
+                "SELECT COUNT(_id) FROM practice WHERE date <= ? AND rule_id = ?",
+                new String[]{String.valueOf(sCurrentDate), String.valueOf(info.id)});
         if ((cursor != null) && cursor.moveToFirst()) {
             int count = cursor.getInt(0);
             return count == Consts.COUNT_PRACTICES;
@@ -1010,10 +1017,12 @@ public class PracticeFragment extends Fragment {
                 new String[]{String.valueOf(info.id)});
         if ((cursor != null) && cursor.moveToFirst()) {
             int count = cursor.getInt(0);
+            if (count > 1)
+                DataModule.dbWriter.execSQL("UPDATE rule SET estimate = 1 WHERE estimate < 2 AND _id = " + info.id);
             if (count > 17)
-                DataModule.dbWriter.execSQL("UPDATE rule SET done = 1 WHERE done = 0 AND _id = " + info.id);
+                DataModule.dbWriter.execSQL("UPDATE rule SET done = 1, estimate = 2 WHERE estimate < 2 AND _id = " + info.id);
             if (count > 19)
-                DataModule.dbWriter.execSQL("UPDATE rule SET done = 2 WHERE _id = " + info.id);
+                DataModule.dbWriter.execSQL("UPDATE rule SET done = 2, estimate = 3 WHERE _id = " + info.id);
         }
     }
 
@@ -1027,14 +1036,6 @@ public class PracticeFragment extends Fragment {
         refreshBadgesTable();
     }
 
-    private int getCountSuccessDays(RuleInfo[] days) {
-        int result = 0;
-        for (int i = 0; i < days.length; i++) {
-            if ((days[i] != null) && (days[i].status == 3))
-                result++;
-        }
-        return result;
-    }
 
     @Override
     public void onDestroyView() {

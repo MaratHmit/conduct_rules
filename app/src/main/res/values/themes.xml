@@ -2,7 +2,7 @@
     <style name="Theme.ConductRules" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">#517DA2</item>
         <item name="colorPrimaryDark">#455A64</item>
-        <item name="colorAccent">@android:color/darker_gray</item>
+        <item name="colorAccent">#FF7235</item>
     </style>
 
     <style name="Theme.ConductRules.NoActionBar">

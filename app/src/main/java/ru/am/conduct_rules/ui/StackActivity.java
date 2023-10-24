@@ -2,17 +2,10 @@ package ru.am.conduct_rules.ui;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.ColorSpace;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
-import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
+import android.view.View;
 
 //import com.daprlabs.cardstack.SwipeDeck;
 
@@ -27,7 +20,7 @@ import ru.am.conduct_rules.cardstack.SwipeDeck;
 
 public class StackActivity extends AppCompatActivity {
 
-    private SwipeDeck cardStack;
+    private SwipeDeck mCardStack;
     private SwipeDeckAdapter mAdapter;
 
     @Override
@@ -36,8 +29,25 @@ public class StackActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_stack);
 
-        cardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
+        mCardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
         init();
+    }
+
+    private void playSound(boolean success) {
+
+        int res = success ? R.raw.ok : R.raw.cancel;
+
+        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), res);
+        try {
+            if (mp.isPlaying()) {
+                mp.stop();
+                mp.release();
+                mp = MediaPlayer.create(getApplicationContext(), res);
+            }
+            mp.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void init() {
@@ -46,41 +56,19 @@ public class StackActivity extends AppCompatActivity {
         loadRules(listRules);
 
         mAdapter = new SwipeDeckAdapter(listRules, this);
-        cardStack.setAdapter(mAdapter);
+        mCardStack.setAdapter(mAdapter);
 
-        cardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
+        mCardStack.setEventCallback(new SwipeDeck.SwipeEventCallback() {
             @Override
             public void cardSwipedLeft(int position) {
                 updatePractice(position, true); // правило выполнено
-                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ok);
-                try {
-                    if (mp.isPlaying()) {
-                        mp.stop();
-                        mp.release();
-                        mp = MediaPlayer.create(getApplicationContext(), R.raw.ok);
-                    }
-                    mp.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                playSound(true);
             }
 
             @Override
             public void cardSwipedRight(int position) {
                 updatePractice(position, false); // правило не выполнено
-                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.cancel);
-                try {
-                    if (mp.isPlaying()) {
-                        mp.stop();
-                        mp.release();
-                        mp = MediaPlayer.create(getApplicationContext(), R.raw.cancel);
-                    }
-                    mp.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                playSound(false);
             }
 
             @Override
@@ -146,6 +134,14 @@ public class StackActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    public void onButtonCheckRuleClick(View view) {
+        mCardStack.swipeTopCardLeft(10);
+    }
+
+    public void onButtonUnCheckRuleClick(View view) {
+        mCardStack.swipeTopCardRight(10);
     }
 
 }

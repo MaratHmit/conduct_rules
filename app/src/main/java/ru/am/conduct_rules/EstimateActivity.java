@@ -2,6 +2,7 @@ package ru.am.conduct_rules;
 
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -118,6 +119,19 @@ public class EstimateActivity extends AppCompatActivity {
         int id = mListRules.get(mCurrentIndex - 1).id;
         mListRules.get(mCurrentIndex - 1).estimate = tag;
         DataModule.dbWriter.execSQL("UPDATE rule SET estimate = " + tag + " WHERE _id = " + id);
+
+        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ok);
+        try {
+            if (mp.isPlaying()) {
+                mp.stop();
+                mp.release();
+                mp = MediaPlayer.create(getApplicationContext(), R.raw.ok);
+            }
+            mp.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 

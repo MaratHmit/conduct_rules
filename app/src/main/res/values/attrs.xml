@@ -12,5 +12,11 @@
             <enum name="center" value="1" />
             <enum name="bottom" value="2" />
         </attr>
+
+    </declare-styleable>
+
+    <declare-styleable name="StickyScrollView">
+        <attr name="stuckShadowHeight" format="dimension" />
+        <attr name="stuckShadowDrawable" format="reference" />
     </declare-styleable>
 </resources>

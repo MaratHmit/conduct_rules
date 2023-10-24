@@ -82,6 +82,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="10dp"
+        android:visibility="gone"
         android:paddingBottom="10dp">
 
         <LinearLayout
@@ -99,7 +100,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Напоминание"
+                    android:text="@string/reminder"
                     android:textSize="14sp"></TextView>
 
                 <Spinner
@@ -189,6 +190,14 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/button_corner"
         android:text="@string/resetAll" />
+
+    <Button
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/button_corner"
+        android:onClick="onButtonFeedback"
+        android:text="@string/feedback" />
 
     <LinearLayout
         android:layout_width="match_parent"

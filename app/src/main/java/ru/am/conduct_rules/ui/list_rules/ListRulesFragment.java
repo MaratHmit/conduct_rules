@@ -14,21 +14,24 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
+import ru.am.conduct_rules.Consts;
 import ru.am.conduct_rules.DBHelper;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.RuleInfo;
 import ru.am.conduct_rules.databinding.FragmentListRulesBinding;
+import ru.am.conduct_rules.sticky.StickyScrollView;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -40,17 +43,68 @@ public class ListRulesFragment extends Fragment {
     private LinearLayout mLinerLayoutU1;
     private LinearLayout mLinerLayoutU2;
 
+    private View mRoot;
+    private Context mContext;
+    LinearLayout mContainerBase;
+    LinearLayout mContainerAdvanced;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentListRulesBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        mLinerLayoutU1 = root.findViewById(R.id.listRules1);
-        mLinerLayoutU2 = root.findViewById(R.id.listRules2);
+        mRoot = binding.getRoot();
+        mContext = getContext();
 
+        mContainerBase = mRoot.findViewById(R.id.ll_list_rules_base);
+        mContainerAdvanced = mRoot.findViewById(R.id.ll_list_rules_advanced);
+
+        initButtonSelectors();
         updateAvailableListRules();
         loadListRules();
 
-        return root;
+        return mRoot;
+    }
+
+    private void initButtonSelectors() {
+        Button buttonBase = mRoot.findViewById(R.id.button_base);
+        Button buttonAdvanced = mRoot.findViewById(R.id.button_advanced);
+        if (buttonBase != null && buttonAdvanced != null) {
+            buttonBase.setPressed(true);
+            buttonBase.setTextColor(Color.WHITE);
+            buttonBase.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    buttonBase.setPressed(true);
+                    buttonBase.setSelected(true);
+                    buttonBase.setTextColor(Color.WHITE);
+                    buttonAdvanced.setPressed(false);
+                    buttonAdvanced.setTextColor(Color.DKGRAY);
+                    mContainerAdvanced.setVisibility(View.GONE);
+                    mContainerBase.setVisibility(View.VISIBLE);
+
+                    return true;
+                }
+            });
+
+            buttonAdvanced.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    buttonAdvanced.setPressed(true);
+                    buttonAdvanced.setTextColor(Color.WHITE);
+                    buttonBase.setPressed(false);
+                    buttonBase.setTextColor(Color.DKGRAY);
+                    buttonBase.setSelected(false);
+                    mContainerAdvanced.setVisibility(View.VISIBLE);
+                    mContainerBase.setVisibility(View.GONE);
+                    return true;
+                }
+            });
+
+        }
+    }
+
+    public void clearListRules() {
+        mContainerBase.removeAllViews();
+        mContainerAdvanced.removeAllViews();
     }
 
     @Override
@@ -78,7 +132,6 @@ public class ListRulesFragment extends Fragment {
     }
 
     private void deleteRule(RuleInfo rule, Button buttonAdd) {
-
         AlertDialog.Builder ad;
         String title = "Подтверждение удаления";
         String message = "Удалить правило из практики?\n\"" + rule.name + "\"";
@@ -107,50 +160,7 @@ public class ListRulesFragment extends Fragment {
         ad.show();
     }
 
-    View.OnClickListener buttonAddRuleClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Button buttonAdd = (Button) v;
-            RuleInfo rule = (RuleInfo) buttonAdd.getTag();
-            if (rule.checked) {
-                deleteRule(rule, buttonAdd);
-            } else {
-                if (isCanRule()) {
-                    buttonAdd.setBackgroundResource(R.drawable.ic_remove);
-                    rule.checked = true;
-                    updateRule(rule);
-                    Toast toast = Toast.makeText(getContext(), rule.name + "\nДобавлено в практику!", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            }
-        }
-    };
-
-    private boolean isCanRule() {
-
-        int count = getCountPractices();
-        if (count >= 5) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Выбор правил для практики")
-                    .setMessage("В практику уже добавлено 5 правил!)")
-                    .setIcon(R.drawable.ic_do_not_touch)
-                    .setCancelable(false)
-                    .setNegativeButton("ОК",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-            AlertDialog alert = builder.create();
-            alert.show();
-
-            return false;
-        }
-        return true;
-    }
-
     private int getCountPractices() {
-
         Date currentTime = Calendar.getInstance().getTime();
         int date = (int) (currentTime.getTime() / (1000 * 86400));
         String strDate = String.valueOf(date);
@@ -164,7 +174,6 @@ public class ListRulesFragment extends Fragment {
     }
 
     private void updateAvailableListRules() {
-
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, level, point " +
                 "FROM rule WHERE level = 2 AND available = 0", null);
         if ((cursor != null)) {
@@ -179,116 +188,35 @@ public class ListRulesFragment extends Fragment {
 
     private void loadListRules() {
 
-        Context context = getContext();
-        if (context == null)
-            return;
-
-        int height = DataModule.convertDpToPixel(80, context);
-        int widthN = DataModule.convertDpToPixel(60, context);
-        int sizeButtonAdd = DataModule.convertDpToPixel(36, context);
-        int sizeButtonNot = DataModule.convertDpToPixel(30, context);
-        int paddingDP = DataModule.convertDpToPixel(4, context);
-
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, code, name, level, checked, " +
-                "available, done, estimate" +
-                " FROM rule ORDER BY _id", null);
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, code, title, name, checked, " +
+                "available, done, estimate, level" +
+                " FROM rule WHERE vidible = 1 ORDER BY _id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
 
                 RuleInfo rule = new RuleInfo();
                 rule.id = cursor.getInt(0);
                 rule.code = cursor.getString(1);
-                rule.name = cursor.getString(2);
-                rule.level = cursor.getInt(3);
+                rule.title = cursor.getString(2);
+                rule.name = cursor.getString(3);
                 rule.checked = cursor.getInt(4) == 1;
                 rule.available = cursor.getInt(5) == 1;
                 rule.done = cursor.getInt(6);
                 rule.estimate = cursor.getInt(7);
+                rule.level = cursor.getInt(8);
 
-                LinearLayout wrapper = new LinearLayout(context);
-                wrapper.setTag(rule.id);
-                wrapper.setOrientation(LinearLayout.VERTICAL);
-                wrapper.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT));
-
-                LinearLayout wrapperButton = new LinearLayout(context);
-
-                TextView textViewNumeric = new TextView(context);
-                textViewNumeric.setLayoutParams(new FrameLayout.LayoutParams(widthN,
-                        FrameLayout.LayoutParams.MATCH_PARENT));
-
-                textViewNumeric.setText(rule.code);
-                textViewNumeric.setTypeface(null, Typeface.BOLD);
-                textViewNumeric.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                textViewNumeric.setPadding(paddingDP, 0, paddingDP, 0);
-                textViewNumeric.setTextColor(Color.BLACK);
-                wrapperButton.addView(textViewNumeric);
-
-                View emptyView = new View(context);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, 0);
-                params.weight = 1;
-                emptyView.setLayoutParams(params);
-                wrapperButton.addView(emptyView);
-                wrapperButton.setOrientation(LinearLayout.HORIZONTAL);
-                FrameLayout.LayoutParams paramsWrapper = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                        sizeButtonAdd);
-                paramsWrapper.setMarginEnd(paddingDP);
-                wrapperButton.setLayoutParams(paramsWrapper);
-
-                Button buttonAdd = new Button(context);
-                if (rule.available) {
-                    buttonAdd.setWidth(sizeButtonAdd);
-                    buttonAdd.setHeight(sizeButtonAdd);
-                    buttonAdd.setLayoutParams(new FrameLayout.LayoutParams(sizeButtonAdd, sizeButtonAdd));
-                } else {
-                    buttonAdd.setWidth(sizeButtonNot);
-                    buttonAdd.setHeight(sizeButtonNot);
-                    buttonAdd.setLayoutParams(new FrameLayout.LayoutParams(sizeButtonNot, sizeButtonNot));
-                }
-                buttonAdd.setBackgroundResource(rule.available ?
-                        (rule.checked ? R.drawable.ic_remove : R.drawable.ic_add) : R.drawable.ic_not);
-                if (rule.available) {
-                    buttonAdd.setOnClickListener(buttonAddRuleClickListener);
-                    buttonAdd.setTag(rule);
-                }
-
-                wrapperButton.addView(buttonAdd);
-
-                wrapper.addView(wrapperButton);
-
-                TextView textViewRule = new TextView(context);
-                textViewRule.setText(rule.name);
-                textViewRule.setHeight(height);
-                textViewRule.setEllipsize(TextUtils.TruncateAt.END);
-                textViewRule.setMaxLines(4);
-                textViewRule.setGravity(Gravity.CENTER_HORIZONTAL);
-                textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                textViewRule.setLayoutParams(new FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-                textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
-                textViewRule.setTextColor(Color.BLACK);
-                wrapper.addView(textViewRule);
-                int colorID = R.drawable.cell_shape_gray;
-                switch (rule.estimate) {
-                    case 1:
-                        colorID = R.drawable.cell_shape_light_red;
-                        break;
-                    case 2:
-                        colorID = R.drawable.cell_shape_light_orange;
-                        break;
-                    case 3:
-                        colorID = R.drawable.cell_shape_light_green;
-                        break;
-                }
-                wrapper.setBackground(context.getDrawable(colorID));
-                if (rule.level == 1)
-                    mLinerLayoutU1.addView(wrapper);
-                else
-                    mLinerLayoutU2.addView(wrapper);
+                addViewRule(rule);
 
             }
         }
         cursor.close();
+    }
 
+    private void addViewRule(RuleInfo rule) {
+        ViewRuleItem item = new ViewRuleItem(mContext, rule);
+        if (rule.level == Consts.LEVEL_BASE)
+            mContainerBase.addView(item);
+        else
+            mContainerAdvanced.addView(item);
     }
 }

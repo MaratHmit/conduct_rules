@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
@@ -213,7 +214,7 @@ public class ProfileFragment extends Fragment {
         try {
             Intent notifyIntent = new Intent(getActivity(), Receiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast
-                    (getContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT  | PendingIntent.FLAG_IMMUTABLE);
+                    (getContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             Cursor query = mDbReader.rawQuery(
                     "SELECT reminder FROM user WHERE _id = 1", null);
             if (query.moveToFirst()) {
@@ -258,7 +259,7 @@ public class ProfileFragment extends Fragment {
 
     private void removeData() {
         DataModule.dbWriter.execSQL("DELETE FROM practice");
-        DataModule.dbWriter.execSQL("UPDATE rule SET checked = 0, done = 0");
+        DataModule.dbWriter.execSQL("UPDATE rule SET checked = 0, done = 0, estimate = 0");
         DataModule.dbWriter.execSQL("UPDATE rule SET available = 0 WHERE level = 2");
     }
 

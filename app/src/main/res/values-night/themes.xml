@@ -1,8 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.ConductRules" parent="Theme.AppCompat.DayNight.DarkActionBar">
-        <item name="colorPrimary">#182533</item>
-        <item name="colorPrimaryDark">#17212B</item>
-        <item name="colorAccent">#74B1EB</item>
-        <item name="android:windowBackground">#182533</item>
+    <style name="Theme.ConductRules" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#517DA2</item>
+        <item name="colorPrimaryDark">#455A64</item>
+        <item name="colorAccent">#FF7235</item>
     </style>
+
+    <style name="Theme.ConductRules.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.ConductRules.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.ConductRules.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

@@ -13,6 +13,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -53,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         context = binding.getRoot().getContext();
 
+        try {
+            this.getSupportActionBar().hide();
+        } catch (NullPointerException e) {
+        }
+
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_list_rules, R.id.navigation_practice, R.id.navigation_profile)
                 .build();
@@ -69,11 +75,17 @@ public class MainActivity extends AppCompatActivity {
             graph.setStartDestination(R.id.navigation_list_rules);
         if ((countPracticesToday > 0))
             startSlider();
+        else
+            checkSkippedPractices();
         navController.setGraph(graph);
-        runEstimate();
+        // runEstimate();
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancelAll();
+    }
+
+    private void checkSkippedPractices() {
+        PracticeFragment.updateStatuses(this);
     }
 
     private void runEstimate() {
@@ -129,6 +141,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == Consts.RESULT_FINISH && resultCode == RESULT_OK)
             updatePractices();
+
+        if (requestCode == Consts.RESULT_ESTIMATE) {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+        }
+
     }
 
     private void updatePractices() {
@@ -157,6 +176,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+    }
+
+
+    public void onButtonFeedback(View view) {
+        startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://t.me/+5x-rmfQUnl1hZDli")));
     }
 
 

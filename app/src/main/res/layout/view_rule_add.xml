@@ -23,6 +23,26 @@
         android:orientation="vertical">
 
         <RelativeLayout
+            android:id="@+id/rl_unavailable_practice"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="20dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="20dp"
+                android:text="@string/unavailable"
+                android:textAlignment="textEnd"
+                android:layout_alignParentEnd="true"
+                android:textColor="@android:color/white"
+                android:textSize="14dp" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
             android:id="@+id/rl_in_practice"
             android:layout_width="match_parent"
             android:layout_marginTop="10dp"
@@ -111,8 +131,8 @@
                 android:lineHeight="29sp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:text="@string/sample_rule"
                 android:textColor="@android:color/black"
+                android:text="@string/sample_rule"
                 android:textSize="20sp" />
 
             <LinearLayout

@@ -5,17 +5,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -86,21 +85,26 @@ public class ViewRuleItem extends LinearLayout {
         ImageButton btnDeleteRule = findViewById(R.id.btn_delete_rule);
         btnDeleteRule.setOnClickListener(buttonDeleteRuleClickListener);
 
-        if (mRule.checked)
-            setInPractice();
         if (!mRule.available)
             setUnavailable();
+        else {
+            if (mRule.checked)
+                setInPractice();
+            else
+                setOutPractice();
+        }
+
     }
 
-    private void setUnavailable() {
-        LinearLayout llRule = findViewById(R.id.ll_rule);
-        AlphaAnimation alpha = new AlphaAnimation(0.3F, 0.3F);
-        alpha.setDuration(0);
-        alpha.setFillAfter(true);
-        llRule.startAnimation(alpha);
+    private void setTextColorTextViews(int color)
+    {
+        TextView tvNumberRule = findViewById(R.id.tv_number_rule);
+        tvNumberRule.setTextColor(color);
+        TextView tvShortName = findViewById(R.id.tv_short_name);
+        tvShortName.setTextColor(color);
+        TextView tvRuleName = findViewById(R.id.tv_rule_name);
+        tvRuleName.setTextColor(color);
 
-        LinearLayout llButtons = findViewById(R.id.ll_buttons);
-        llButtons.setVisibility(GONE);
     }
 
     private void setRule(RuleInfo rule) {
@@ -145,7 +149,38 @@ public class ViewRuleItem extends LinearLayout {
         deleteRule();
     };
 
+    private void setUnavailable() {
+
+        RelativeLayout rlInPractice = findViewById(R.id.rl_in_practice);
+        rlInPractice.setVisibility(GONE);
+
+        RelativeLayout rlUnavailablePractice = findViewById(R.id.rl_unavailable_practice);
+        rlUnavailablePractice.setVisibility(VISIBLE);
+
+        LinearLayout llOutPractice = findViewById(R.id.ll_out_practice);
+        llOutPractice.setVisibility(GONE);
+
+        View vRight = findViewById(R.id.v_right);
+        vRight.setVisibility(GONE);
+
+        ImageView ivLogo = findViewById(R.id.iv_logo_rule);
+        ivLogo.setImageResource(R.drawable.logo_unavailable_practice);
+
+        LinearLayout llRule = findViewById(R.id.ll_rule);
+        llRule.setPadding(0, 0, 0, 60);
+        llRule.setBackgroundResource(R.drawable.frame_corner_unavailable);
+        llRule.requestLayout();
+
+        LinearLayout llButtons = findViewById(R.id.ll_buttons);
+        llButtons.setVisibility(GONE);
+
+        setTextColorTextViews(Color.WHITE);
+    }
+
     private void setOutPractice() {
+
+        RelativeLayout rlUnavailablePractice = findViewById(R.id.rl_unavailable_practice);
+        rlUnavailablePractice.setVisibility(GONE);
 
         RelativeLayout rlInPractice = findViewById(R.id.rl_in_practice);
         rlInPractice.setVisibility(INVISIBLE);
@@ -157,14 +192,20 @@ public class ViewRuleItem extends LinearLayout {
         vRight.setVisibility(VISIBLE);
 
         ImageView ivLogo = findViewById(R.id.iv_logo_rule);
-        ivLogo.setBackgroundResource(R.drawable.logo_in_practice);
+        ivLogo.setImageResource(R.drawable.logo_transparent);
 
         LinearLayout llRule = findViewById(R.id.ll_rule);
         llRule.setPadding(0, 0, 0, 60);
+        llRule.setBackgroundResource(R.drawable.frame_corner);
         llRule.requestLayout();
+
+        setTextColorTextViews(Color.BLACK);
     }
 
     void setInPractice() {
+
+        RelativeLayout rlUnavailablePractice = findViewById(R.id.rl_unavailable_practice);
+        rlUnavailablePractice.setVisibility(GONE);
 
         RelativeLayout rlInPractice = findViewById(R.id.rl_in_practice);
         rlInPractice.setVisibility(VISIBLE);
@@ -176,11 +217,14 @@ public class ViewRuleItem extends LinearLayout {
         vRight.setVisibility(GONE);
 
         ImageView ivLogo = findViewById(R.id.iv_logo_rule);
-        ivLogo.setBackgroundResource(R.drawable.logo_in_practice);
+        ivLogo.setImageResource(R.drawable.logo_in_practice);
 
         LinearLayout llRule = findViewById(R.id.ll_rule);
         llRule.setPadding(0, 0, 0, 60);
+        llRule.setBackgroundResource(R.drawable.frame_corner);
         llRule.requestLayout();
+
+        setTextColorTextViews(Color.BLACK);
     }
 
     private boolean updateRule(boolean checked) {

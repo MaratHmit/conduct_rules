@@ -4,14 +4,8 @@
     <string name="title_practice">Практика</string>
     <string name="title_profile">Профиль</string>
     <string name="title_activity_profile">ProfileActivity</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="hello_first_fragment"></string>
+    <string name="next">Следующий</string>
 
     <string-array name="genderList">
         <item>Мужской</item>
@@ -32,9 +26,6 @@
         <item>Выключено</item>
         <item>Включено</item>
     </string-array>
-
-
-
 
     <string name="title_activity_stack">StackActivity</string>
     <string name="number_rule">Номер правила</string>
@@ -67,5 +58,7 @@
     <string name="add">Добавить</string>
     <string name="i_can_do_it">Я это умею</string>
     <string name="in_practice">В практике</string>
+    <string name="unavailable">Недоступно</string>
+    <string name="select5rules_finish">Выбор сделан</string>
 
 </resources>

@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import ru.am.conduct_rules.Consts;
@@ -80,6 +81,13 @@ public class ListRulesFragment extends Fragment {
             else
                 b.setAlpha((float) 0.6);
         }
+
+        TextView tvInfoCount = mRoot.findViewById(R.id.tv_info_count);
+
+        if (count == llButtons.getChildCount())
+            tvInfoCount.setText(R.string.select5rules_finish);
+        else
+            tvInfoCount.setText(R.string.select5rules);
     }
 
     private void initButtonSelectors() {

@@ -19,7 +19,6 @@
             android:label="@string/title_activity_profile"
             android:noHistory="true"
             android:screenOrientation="portrait"
-
             android:windowSoftInputMode="stateAlwaysVisible" />
         <activity
             android:name=".ui.MainActivity"
@@ -28,7 +27,6 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -36,14 +34,10 @@
         <activity
             android:name=".ui.StackActivity"
             android:exported="false"
-            android:label="16 пунктов"
-            />
-
-
+            android:label="16 пунктов" />
         <activity
             android:name=".EstimateActivity"
             android:exported="false"
-
             android:label="Оценка правил" />
 
         <service

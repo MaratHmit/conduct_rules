@@ -71,14 +71,14 @@ public class MainActivity extends AppCompatActivity {
 
         int countPractices = getCountPractices();
         int countPracticesToday = getCountPracticesToday();
-        //if (countPractices == 0)
+        if (countPractices == 0)
             graph.setStartDestination(R.id.navigation_list_rules);
-//        if ((countPracticesToday > 0))
-//            startSlider();
-//        else
-//            checkSkippedPractices();
+        if ((countPracticesToday > 0))
+            startSlider();
+        else
+            checkSkippedPractices();
         navController.setGraph(graph);
-        // runEstimate();
+        runEstimate();
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancelAll();

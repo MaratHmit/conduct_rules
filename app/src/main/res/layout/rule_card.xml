@@ -2,81 +2,110 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="#FF7F26"
-    card_view:cardCornerRadius="6dp"
+    android:layout_height="600dp"
+    card_view:cardCornerRadius="25dp"
     card_view:cardElevation="10dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="540dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/text_code"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center_horizontal"
-            android:background="#C3C3C3"
-            android:gravity="center"
-            android:text="@string/number_rule"
-            android:textSize="22sp" />
+        android:layout_height="match_parent"
+        android:background="@drawable/frame_corner">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/text_code"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="60dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="90dp"
+                android:fontFamily="@font/jost"
+                android:gravity="center"
+                android:text="@string/number_rule"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/text_rule"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:breakStrategy="simple"
-                    android:gravity="center"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="@string/sample_str_rule"
-                    android:textSize="30sp"
-                    android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tv_short_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/sample_rule_short_name"
+                android:textColor="@android:color/black"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="80dp"
-                    android:orientation="horizontal">
+            <TextView
+                android:id="@+id/text_rule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:breakStrategy="simple"
+                android:gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="@string/sample_str_rule"
+                android:textColor="@android:color/black"
+                android:textSize="22sp" />
 
 
-                    <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:background="@null"
-                        android:onClick="onButtonUnCheckRuleClick"
-                        android:layout_marginRight="10dp"
-                        android:layout_alignParentRight="true"
-                        android:id="@+id/button_check_rule"
-                        android:src="@drawable/ic_cancel_24"/>
-
-                    <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:background="@null"
-                        android:id="@+id/button_uncheck_rule"
-                        android:layout_marginLeft="10dp"
-                        android:layout_alignParentLeft="true"
-                        android:onClick="onButtonCheckRuleClick"
-                        android:src="@drawable/ic_check_24"/>
-
-                </RelativeLayout>
-            </LinearLayout>
 
         </LinearLayout>
-    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="80dp"
+                android:breakStrategy="simple"
+                android:gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="@string/info_swipe"
+                android:textColor="#A09FA3"
+                android:textSize="16sp" />
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="35dp">
+                <ImageButton
+                    android:id="@+id/button_uncheck_rule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="60dp"
+                    android:background="@null"
+                    android:onClick="onButtonUnCheckRuleClick"
+                    android:src="@drawable/button_swipe_cancel" />
+
+                <ImageButton
+                    android:id="@+id/button_check_rule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="60dp"
+                    android:background="@null"
+                    android:onClick="onButtonCheckRuleClick"
+                    android:src="@drawable/button_swipe_done" />
+
+
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
 </android.support.v7.widget.CardView>

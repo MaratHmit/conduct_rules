@@ -55,6 +55,7 @@ public class SwipeDeckAdapter extends BaseAdapter {
         String code = "Правило № " + info.code;
         ((TextView) v.findViewById(R.id.text_code)).setText(code);
         ((TextView) v.findViewById(R.id.text_rule)).setText(info.name);
+        ((TextView) v.findViewById(R.id.tv_short_name)).setText(info.title);
 
         v.setOnClickListener(new View.OnClickListener() {
             @Override

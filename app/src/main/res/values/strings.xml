@@ -60,5 +60,6 @@
     <string name="in_practice">В практике</string>
     <string name="unavailable">Недоступно</string>
     <string name="select5rules_finish">Выбор сделан</string>
+    <string name="info_swipe">Для выполенения нажмити кнопку \nили сделайте свайп</string>
 
 </resources>

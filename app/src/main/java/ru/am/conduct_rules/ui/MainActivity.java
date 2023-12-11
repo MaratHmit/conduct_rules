@@ -1,24 +1,12 @@
 package ru.am.conduct_rules.ui;
 
-import static android.telephony.AvailableNetworkInfo.PRIORITY_HIGH;
-
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.navigation.NavController;
@@ -31,7 +19,6 @@ import ru.am.conduct_rules.EstimateActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.Consts;
-import ru.am.conduct_rules.Receiver;
 import ru.am.conduct_rules.ui.practice.PracticeFragment;
 import ru.am.conduct_rules.databinding.ActivityMainBinding;
 
@@ -43,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private Context context;
 
-    private NotificationManager notificationManager;
+//    private NotificationManager notificationManager;
     private static final int NOTIFY_ID = 101;
 
     @Override
@@ -63,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 R.id.navigation_list_rules, R.id.navigation_practice, R.id.navigation_profile)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+      //  NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
         NavGraph graph = navController.getNavInflater().inflate(R.navigation.mobile_navigation);
 
@@ -78,10 +65,10 @@ public class MainActivity extends AppCompatActivity {
         else
             checkSkippedPractices();
         navController.setGraph(graph);
-        runEstimate();
+//        runEstimate();
 
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.cancelAll();
+//        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        manager.cancelAll();
     }
 
     private void checkSkippedPractices() {

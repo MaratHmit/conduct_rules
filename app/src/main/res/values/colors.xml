@@ -1,3 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="Green_2">#98C33B</color>
+    <color name="PrimaryBlack">#141313</color>
 </resources>

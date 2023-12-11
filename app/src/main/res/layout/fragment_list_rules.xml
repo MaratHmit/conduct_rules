@@ -1,84 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ru.am.conduct_rules.sticky.StickyScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ru.am.conduct_rules.sticky.StickyScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:whatever="http://schemas.android.com/apk/res-auto"
     android:id="@+id/sticky_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    whatever:stuckShadowDrawable="@drawable/sticky_shadow_default"
-    >
+    whatever:stuckShadowDrawable="@drawable/sticky_shadow_default">
 
     <LinearLayout
         android:id="@+id/fragment_list_rules"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/logo_ellipse"
-                    android:padding="15dp"
-                    android:src="@drawable/logo" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/jost"
-                    android:text="@string/curs"
-                    android:textColor="#FF7235"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/jost"
-                    android:text="@string/app_name"
-                    android:textColor="#000000"
-                    android:textFontWeight="800"
-                    android:textSize="30sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-        </LinearLayout>
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
             android:orientation="vertical"
-            android:paddingTop="10dp"
+            android:paddingTop="30dp"
             android:tag="sticky">
 
             <LinearLayout
@@ -87,118 +29,113 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-
                 <Button
                     android:id="@+id/button_base"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_marginRight="10dp"
-                    android:alpha="0.6"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_weight="1"
                     android:background="@drawable/button_selector"
-                    android:color="#FFFFFF"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
                     android:text="@string/button_base"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="18sp"></Button>
+                    android:fontFamily="@font/manrope_regular"
+                    android:textColor="@color/PrimaryBlack"
+                    android:textSize="16sp"></Button>
 
                 <Button
                     android:id="@+id/button_advanced"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_marginLeft="10dp"
-                    android:alpha="0.6"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_marginLeft="3dp"
+                    android:layout_weight="1"
                     android:background="@drawable/button_selector"
                     android:color="#FFFFFF"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
                     android:text="@string/button_advanced"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="18sp"></Button>
+                    android:textColor="@color/PrimaryBlack"
+                    android:fontFamily="@font/manrope_regular"
+                    android:textSize="16sp"></Button>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:padding="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/cell_shape_corner"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tv_info_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/select5rules"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="18sp" />
-            </LinearLayout>
+                    android:fontFamily="@font/manrope_regular"
+                    android:textColor="@color/PrimaryBlack"
+                    android:textSize="16sp" />
 
-            <LinearLayout
-                android:id="@+id/ll_check_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp">
 
-                <CheckBox
-                    android:id="@+id/checkbox_rule1"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/ll_check_buttons"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginEnd="14dp"
-                    android:button="@drawable/checkbox_selector"
-                    android:checked="true"
-                    android:enabled="false" />
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp">
 
-                <CheckBox
-                    android:id="@+id/checkbox_rule2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginEnd="14dp"
-                    android:button="@drawable/checkbox_selector"
-                    android:checked="true"
-                    android:enabled="false" />
+                    <CheckBox
+                        android:id="@+id/checkbox_rule1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:button="@drawable/checkbox_selector"
+                        android:checked="true"
+                        android:enabled="false" />
 
-                <CheckBox
-                    android:id="@+id/checkbox_rule3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginEnd="14dp"
-                    android:alpha="0.6"
-                    android:background="#FFFFFF"
-                    android:button="@drawable/checkbox_selector"
-                    android:enabled="false" />
+                    <CheckBox
+                        android:id="@+id/checkbox_rule2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:button="@drawable/checkbox_selector"
+                        android:checked="true"
+                        android:enabled="false" />
 
-                <CheckBox
-                    android:id="@+id/checkbox_rule4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginEnd="14dp"
-                    android:alpha="0.6"
-                    android:button="@drawable/checkbox_selector"
-                    android:enabled="false" />
+                    <CheckBox
+                        android:id="@+id/checkbox_rule3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:alpha="0.6"
+                        android:background="#FFFFFF"
+                        android:button="@drawable/checkbox_selector"
+                        android:enabled="false" />
 
-                <CheckBox
-                    android:id="@+id/checkbox_rule5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginEnd="14dp"
-                    android:alpha="0.6"
-                    android:button="@drawable/checkbox_selector"
-                    android:enabled="false" />
+                    <CheckBox
+                        android:id="@+id/checkbox_rule4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:alpha="0.6"
+                        android:button="@drawable/checkbox_selector"
+                        android:enabled="false" />
 
+                    <CheckBox
+                        android:id="@+id/checkbox_rule5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.6"
+                        android:button="@drawable/checkbox_selector"
+                        android:enabled="false" />
+
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-
 
         <LinearLayout
             android:id="@+id/ll_list_rules_base"
@@ -210,8 +147,8 @@
             android:id="@+id/ll_list_rules_advanced"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            android:visibility="gone"></LinearLayout>
 
 
     </LinearLayout>

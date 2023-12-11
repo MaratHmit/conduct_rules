@@ -2,9 +2,7 @@
     android:id="@+id/ll_rule"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="20dp"
     android:layout_marginTop="20dp"
-    android:layout_marginEnd="20dp"
     android:background="@drawable/frame_corner"
     android:fontFamily="@font/jost"
     android:orientation="horizontal"
@@ -52,7 +50,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@id/btn_delete_rule"
                 android:text="@string/in_practice"
                 android:textAlignment="textEnd"
@@ -82,7 +80,7 @@
                 android:id="@+id/iv_logo_rule"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/logo_transparent"></ImageView>
+                android:src="@drawable/logo_red"></ImageView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -95,7 +93,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:fontFamily="@font/jost"
+                    android:fontFamily="@font/manrope_regular"
                     android:text="@string/sample_rule_1"
                     android:textColor="@android:color/black"
                     android:textFontWeight="400"
@@ -105,12 +103,10 @@
                     android:id="@+id/tv_short_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:fontFamily="@font/jost"
+                    android:fontFamily="@font/manrope_bold"
                     android:text="@string/sample_rule_short_name"
                     android:textColor="@android:color/black"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
@@ -127,8 +123,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:fontFamily="@font/jost"
+                android:fontFamily="@font/manrope_regular"
                 android:lineHeight="29sp"
+                android:visibility="gone"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:textColor="@android:color/black"
@@ -145,30 +142,18 @@
 
                 <Button
                     android:id="@+id/btn_add_rule"
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginRight="4dp"
-                    android:background="@drawable/button_selector_add"
-                    android:drawableLeft="@drawable/baseline_add_24"
-                    android:fontFamily="@font/jost"
-                    android:paddingLeft="28dp"
-                    android:paddingRight="28dp"
-                    android:text="@string/add"
+                    android:background="@drawable/button_add"
+
+                    android:fontFamily="@font/manrope_regular"
+                    android:gravity="center"
+
                     android:textAllCaps="false"
                     android:textSize="16dp"></Button>
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
-                    android:layout_marginLeft="4dp"
-                    android:background="@drawable/button_selector_orange"
-                    android:fontFamily="@font/jost"
-                    android:paddingLeft="28dp"
-                    android:paddingRight="28dp"
-                    android:text="@string/i_can_do_it"
-                    android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16dp"></Button>
+
 
 
             </LinearLayout>

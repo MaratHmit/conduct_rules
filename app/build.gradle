@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 31
 
     defaultConfig {
         applicationId "ru.am.conduct_rules"
         minSdk 28
-        targetSdk 32
-        versionCode 5
-        versionName "1.5"
+        targetSdk 31
+        versionCode 7
+        versionName "2.1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

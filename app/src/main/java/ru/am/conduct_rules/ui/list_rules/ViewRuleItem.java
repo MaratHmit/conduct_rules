@@ -71,13 +71,20 @@ public class ViewRuleItem extends LinearLayout {
             return;
 
         TextView tvNumberRule = findViewById(R.id.tv_number_rule);
-        tvNumberRule.setText("Правило № " + mRule.code);
+        tvNumberRule.setText("Пункт № " + mRule.code);
 
         TextView tvShortName = findViewById(R.id.tv_short_name);
         tvShortName.setText(mRule.title);
 
         TextView tvName = findViewById(R.id.tv_rule_name);
         tvName.setText(mRule.name);
+
+        ImageView ivLogo = findViewById(R.id.iv_logo_rule);
+        ivLogo.setImageResource(R.drawable.logo_red);
+        if (mRule.estimate == 2)
+            ivLogo.setImageResource(R.drawable.logo_orange);
+        if (mRule.estimate == 3)
+            ivLogo.setImageResource(R.drawable.logo_green);
 
         Button btnAddRule = findViewById(R.id.btn_add_rule);
         btnAddRule.setOnClickListener(buttonAddRuleClickListener);
@@ -163,9 +170,6 @@ public class ViewRuleItem extends LinearLayout {
         View vRight = findViewById(R.id.v_right);
         vRight.setVisibility(GONE);
 
-        ImageView ivLogo = findViewById(R.id.iv_logo_rule);
-        ivLogo.setImageResource(R.drawable.logo_unavailable_practice);
-
         LinearLayout llRule = findViewById(R.id.ll_rule);
         llRule.setPadding(0, 0, 0, 60);
         llRule.setBackgroundResource(R.drawable.frame_corner_unavailable);
@@ -191,9 +195,6 @@ public class ViewRuleItem extends LinearLayout {
         View vRight = findViewById(R.id.v_right);
         vRight.setVisibility(VISIBLE);
 
-        ImageView ivLogo = findViewById(R.id.iv_logo_rule);
-        ivLogo.setImageResource(R.drawable.logo_transparent);
-
         LinearLayout llRule = findViewById(R.id.ll_rule);
         llRule.setPadding(0, 0, 0, 60);
         llRule.setBackgroundResource(R.drawable.frame_corner);
@@ -215,9 +216,6 @@ public class ViewRuleItem extends LinearLayout {
 
         View vRight = findViewById(R.id.v_right);
         vRight.setVisibility(GONE);
-
-        ImageView ivLogo = findViewById(R.id.iv_logo_rule);
-        ivLogo.setImageResource(R.drawable.logo_in_practice);
 
         LinearLayout llRule = findViewById(R.id.ll_rule);
         llRule.setPadding(0, 0, 0, 60);

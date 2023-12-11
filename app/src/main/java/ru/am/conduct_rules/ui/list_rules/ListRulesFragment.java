@@ -95,14 +95,11 @@ public class ListRulesFragment extends Fragment {
         Button buttonAdvanced = mRoot.findViewById(R.id.button_advanced);
         if (buttonBase != null && buttonAdvanced != null) {
             buttonBase.setSelected(true);
-            buttonBase.setTextColor(Color.WHITE);
             buttonBase.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     buttonBase.setSelected(true);
-                    buttonBase.setTextColor(Color.WHITE);
                     buttonAdvanced.setSelected(false);
-                    buttonAdvanced.setTextColor(Color.DKGRAY);
                     mContainerAdvanced.setVisibility(View.GONE);
                     mContainerBase.setVisibility(View.VISIBLE);
 
@@ -114,9 +111,7 @@ public class ListRulesFragment extends Fragment {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     buttonAdvanced.setSelected(true);
-                    buttonAdvanced.setTextColor(Color.WHITE);
                     buttonBase.setSelected(false);
-                    buttonBase.setTextColor(Color.DKGRAY);
                     mContainerAdvanced.setVisibility(View.VISIBLE);
                     mContainerBase.setVisibility(View.GONE);
                     return true;

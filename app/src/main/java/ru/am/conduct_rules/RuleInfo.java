@@ -13,5 +13,6 @@ public class RuleInfo {
     public int status;
     public int done;
     public int estimate; // оценка правила
+    public int mode; //
 
 }

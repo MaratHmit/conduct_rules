@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="?attr/colorPrimaryDark"
     android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="70dp"
         android:orientation="horizontal"
         android:id="@+id/liner_ll">
 
@@ -14,21 +13,21 @@
             android:id="@+id/buttonBackEstimate"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginTop="12dp"
+            android:layout_gravity="center"
             android:layout_marginLeft="10dp"
             android:layout_alignParentLeft="true"
             android:background="@drawable/ic_arrow" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="12dp"
+            android:layout_gravity="center"
+            android:textAlignment="center"
             android:text="Оценка правил"
-            android:textColor="@android:color/primary_text_dark"
+            android:textColor="#000000"
+            android:fontFamily="@font/manrope_bold"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="18sp" />
+            android:textSize="22sp" />
 
 
 

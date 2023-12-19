@@ -14,27 +14,34 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
+            android:background="@drawable/cell_shape_corner"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/textViewCodeRule"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="2"
-                android:background="@drawable/cell_shape"
-                android:gravity="center"
-                android:padding="5dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:textColor="@android:color/black"
+                android:paddingLeft="20dp"
                 android:textSize="18sp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#DAD9DE" />
 
             <TextView
                 android:id="@+id/textViewIndexRule"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:background="@drawable/cell_shape"
-                android:gravity="center"
-                android:padding="5dp"
+                android:textColor="@android:color/black"
+                android:textAlignment="textEnd"
+                android:paddingRight="20dp"
                 android:textSize="18sp" />
 
         </LinearLayout>
@@ -45,21 +52,25 @@
             android:layout_height="150dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/cell_shape_gray"
+            android:background="@drawable/cell_shape_corner"
             android:gravity="center"
             android:padding="10dp"
             android:text="@string/everyday_dh"
-            android:textColor="@android:color/black"
-            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/manrope_bold"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/cell_shape_light_green"
+            android:background="@drawable/cell_shape_corner"
+            android:backgroundTint="@color/Green"
             android:text="@string/perfect"
             android:tag="3"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false"
             android:onClick="onButtonClickEstimate"
             android:textSize="18sp" />
 
@@ -67,8 +78,11 @@
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/cell_shape_light_orange"
+            android:background="@drawable/cell_shape_corner"
+            android:backgroundTint="@color/Orange"
             android:text="@string/good"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
             android:tag="2"
             android:onClick="onButtonClickEstimate"
             android:textSize="18sp" />
@@ -77,8 +91,11 @@
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/cell_shape_light_red"
+            android:background="@drawable/cell_shape_corner"
+            android:backgroundTint="@color/Red"
             android:text="@string/bad"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
             android:tag="1"
             android:onClick="onButtonClickEstimate"
             android:textSize="18sp" />
@@ -86,7 +103,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal">
 
             <Button
@@ -94,20 +111,31 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingLeft="20dp"
                 android:text="@string/back"
                 android:layout_marginEnd="5dp"
                 android:onClick="onButtonClickBack"
-                android:background="@drawable/button_corner"
-                android:visibility="invisible"/>
+                android:background="@android:color/transparent"
+                android:textAllCaps="false"
+                android:enabled="false"
+                android:fontFamily="@font/manrope_bold"
+                android:textAlignment="textStart"
+                android:textSize="16sp" />
 
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingRight="20dp"
                 android:layout_marginStart="5dp"
                 android:text="@string/skip"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:fontFamily="@font/manrope_bold"
+                android:textAlignment="textEnd"
+                android:background="@android:color/transparent"
                 android:onClick="onButtonClickEstimate"
-                android:background="@drawable/button_corner" />
+                 />
 
         </LinearLayout>
 

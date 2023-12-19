@@ -2,35 +2,48 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:orientation="horizontal">
 
         <Button
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="46dp"
             android:layout_weight="1"
             android:gravity="center"
             android:padding="5dp"
             android:text="Заполнить"
             android:enabled="false"
             android:id="@+id/button_mark_cards"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="18sp" />
+            android:layout_marginRight="3dp"
+            android:background="@drawable/button_selector"
+            android:textAllCaps="false"
+            android:fontFamily="@font/manrope_regular"
+            android:textColor="@color/PrimaryBlack"
+            android:textSize="16sp" />
 
         <Button
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="46dp"
             android:layout_weight="1"
             android:gravity="center"
             android:padding="5dp"
+            android:layout_marginLeft="3dp"
             android:text="Таблица"
             android:id="@+id/button_mode"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="18sp" />
+            android:background="@drawable/button_selector"
+            android:textAllCaps="false"
+            android:fontFamily="@font/manrope_regular"
+            android:textColor="@color/PrimaryBlack"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -41,6 +54,8 @@
         android:fillViewport="true"
         android:paddingBottom="60dp"
         android:visibility="gone"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:id="@+id/scrollViewPractice" >
 
         <LinearLayout

@@ -1,6 +1,7 @@
 package ru.am.conduct_rules;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -53,6 +54,10 @@ public class EstimateActivity extends AppCompatActivity {
 
         mTextRuleName.setText(mListRules.get(mCurrentIndex).name);
         mTextRuleName.setBackground(getColorByEstimate(mListRules.get(mCurrentIndex).estimate));
+        if (mListRules.get(mCurrentIndex).estimate > 0)
+            mTextRuleName.setTextColor(Color.WHITE);
+        else
+            mTextRuleName.setTextColor(Color.BLACK);
         mTextRuleCode.setText(mListRules.get(mCurrentIndex).code);
         mTextRuleIndex.setText(String.valueOf(mCurrentIndex + 1) + "/" + mListRules.size());
 
@@ -64,14 +69,14 @@ public class EstimateActivity extends AppCompatActivity {
 
         switch (estimate) {
             case 1:
-                return getDrawable(R.drawable.cell_shape_light_red);
+                return getDrawable(R.drawable.cell_shape_light_red_corner);
             case 2:
-                return getDrawable(R.drawable.cell_shape_light_orange);
+                return getDrawable(R.drawable.cell_shape_light_orange_corner);
             case 3:
-                return getDrawable(R.drawable.cell_shape_light_green);
+                return getDrawable(R.drawable.cell_shape_light_green_corner);
         }
 
-        return getDrawable(R.drawable.cell_shape_gray);
+        return getDrawable(R.drawable.cell_shape_gray_corner);
     }
 
     private void loadRules() {
@@ -91,6 +96,7 @@ public class EstimateActivity extends AppCompatActivity {
 
     public void onButtonClickEstimate(View view) {
         mCurrentIndex++;
+        mButtonBack.setEnabled(true);
         if (mCurrentIndex == mListRules.size()) {
 
             Toast toast = Toast.makeText(this, "Оценка правил завершена!", Toast.LENGTH_SHORT);
@@ -109,7 +115,7 @@ public class EstimateActivity extends AppCompatActivity {
         mCurrentIndex--;
         if (mCurrentIndex <= 0) {
             mCurrentIndex = 0;
-            mButtonBack.setVisibility(View.INVISIBLE);
+            mButtonBack.setEnabled(false);
         }
         updateRuleInfo();
     }

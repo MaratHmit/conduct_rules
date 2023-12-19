@@ -38,6 +38,7 @@
         <activity
             android:name=".EstimateActivity"
             android:exported="false"
+            android:theme="@style/Theme.ConductRules"
             android:label="Оценка правил" />
 
         <service

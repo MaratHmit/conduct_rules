@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.text.Layout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -27,14 +28,20 @@ import ru.am.conduct_rules.RuleInfo;
 public class ViewRuleItem extends LinearLayout {
 
     private RuleInfo mRule;
+    private static int sCurrentDate;
+    private boolean isExpandedCalendar;
 
-    interface OnCheckedRuleListener{
+    public LinearLayout layoutCalendar;
+
+    private LinearLayout mLayoutMain;
+
+    interface OnCheckedRuleListener {
         void updateRules();
     }
 
     OnCheckedRuleListener onCheckedRuleListener;
 
-    public void setOnCheckedRuleListener(OnCheckedRuleListener ruleListener){
+    public void setOnCheckedRuleListener(OnCheckedRuleListener ruleListener) {
         this.onCheckedRuleListener = ruleListener;
     }
 
@@ -61,6 +68,9 @@ public class ViewRuleItem extends LinearLayout {
 
     private void initView() {
 
+        Date currentTime = Calendar.getInstance().getTime();
+        sCurrentDate = (int) (currentTime.getTime() / (1000 * 86400));
+
         inflate(getContext(), R.layout.view_rule_add, this);
         initControls();
     }
@@ -79,6 +89,15 @@ public class ViewRuleItem extends LinearLayout {
         TextView tvName = findViewById(R.id.tv_rule_name);
         tvName.setText(mRule.name);
 
+        TextView tvCountDaysP = findViewById(R.id.tv_count_days_p);
+        tvCountDaysP.setVisibility(GONE);
+
+        TextView tvCountDaysAll = findViewById(R.id.tv_count_days_all);
+        tvCountDaysAll.setVisibility(GONE);
+
+        TextView tvSeparator = findViewById(R.id.tv_separator);
+        tvSeparator.setVisibility(GONE);
+
         ImageView ivLogo = findViewById(R.id.iv_logo_rule);
         ivLogo.setImageResource(R.drawable.logo_red);
         if (mRule.estimate == 2)
@@ -87,10 +106,13 @@ public class ViewRuleItem extends LinearLayout {
             ivLogo.setImageResource(R.drawable.logo_green);
 
         Button btnAddRule = findViewById(R.id.btn_add_rule);
-        btnAddRule.setOnClickListener(buttonAddRuleClickListener);
-
         ImageButton btnDeleteRule = findViewById(R.id.btn_delete_rule);
-        btnDeleteRule.setOnClickListener(buttonDeleteRuleClickListener);
+        if (mRule.mode == 0) {
+            btnAddRule.setOnClickListener(buttonAddRuleClickListener);
+            btnDeleteRule.setOnClickListener(buttonDeleteRuleClickListener);
+        } else {
+            btnAddRule.setVisibility(GONE);
+        }
 
         if (!mRule.available)
             setUnavailable();
@@ -101,10 +123,98 @@ public class ViewRuleItem extends LinearLayout {
                 setOutPractice();
         }
 
+        if (mRule.mode == 1)
+            setSwipePracticeMode();
     }
 
-    private void setTextColorTextViews(int color)
-    {
+    private void setSwipePracticeMode() {
+
+        showHideControlsPracticeMode();
+        ImageButton btnExpand = findViewById(R.id.btn_expand);
+        btnExpand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isExpandedCalendar = !isExpandedCalendar;
+                if (isExpandedCalendar) {
+                    btnExpand.setImageResource(R.drawable.collapse_rule);
+                    layoutCalendar.setVisibility(VISIBLE);
+                    mLayoutMain.setPadding(0, 0, 0, 5);
+                }
+                else {
+                    btnExpand.setImageResource(R.drawable.expand_rule);
+                    layoutCalendar.setVisibility(GONE);
+                    mLayoutMain.setPadding(0, 0, 0, 50);
+                }
+            }
+        });
+        refreshBadge();
+    }
+
+    private void showHideControlsPracticeMode() {
+        RelativeLayout rlUnavailablePractice = findViewById(R.id.rl_unavailable_practice);
+        rlUnavailablePractice.setVisibility(GONE);
+
+        LinearLayout llOutPractice = findViewById(R.id.ll_out_practice);
+        llOutPractice.setVisibility(GONE);
+
+        View vRight = findViewById(R.id.v_right);
+        vRight.setVisibility(GONE);
+
+        mLayoutMain = findViewById(R.id.ll_rule);
+        mLayoutMain.setPadding(0, 0, 0, 50);
+        mLayoutMain.setBackgroundResource(R.drawable.frame_corner);
+        mLayoutMain.requestLayout();
+
+        RelativeLayout rlInPractice = findViewById(R.id.rl_in_practice);
+        rlInPractice.setVisibility(VISIBLE);
+
+        View vNote = findViewById(R.id.tv_note_in_practice);
+        vNote.setVisibility(GONE);
+
+        View vClose = findViewById(R.id.btn_delete_rule);
+        vClose.setVisibility(GONE);
+
+        TextView tvCountDaysP = findViewById(R.id.tv_count_days_p);
+        tvCountDaysP.setVisibility(VISIBLE);
+
+        TextView tvCountDaysAll = findViewById(R.id.tv_count_days_all);
+        tvCountDaysAll.setVisibility(VISIBLE);
+
+        TextView tvSeparator = findViewById(R.id.tv_separator);
+        tvSeparator.setVisibility(VISIBLE);
+
+        ImageButton btnExpand = findViewById(R.id.btn_expand);
+        btnExpand.setVisibility(VISIBLE);
+
+        layoutCalendar = findViewById(R.id.ll_calendar);
+        layoutCalendar.setVisibility(GONE);
+    }
+
+    private void refreshBadge() {
+
+        TextView tvDaysP = findViewById(R.id.tv_count_days_p);
+        TextView tvDaysAll = findViewById(R.id.tv_count_days_all);
+        if ((tvDaysP == null) || (tvDaysAll == null))
+            return;
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, p.result, p.date" +
+                        " FROM rule r JOIN practice p ON p.rule_id = r._id WHERE r._id = ?",
+                new String[]{String.valueOf((int) mRule.id)});
+        if ((cursor != null)) {
+            int count = 0;
+            while (cursor.moveToNext()) {
+                if (cursor.getInt(2) <= sCurrentDate) {
+                    if (cursor.getInt(1) == 1)
+                        count++;
+                    else
+                        count = 0;
+                }
+            }
+            tvDaysP.setText(String.valueOf(count));
+        }
+    }
+
+    private void setTextColorTextViews(int color) {
         TextView tvNumberRule = findViewById(R.id.tv_number_rule);
         tvNumberRule.setTextColor(color);
         TextView tvShortName = findViewById(R.id.tv_short_name);
@@ -170,10 +280,10 @@ public class ViewRuleItem extends LinearLayout {
         View vRight = findViewById(R.id.v_right);
         vRight.setVisibility(GONE);
 
-        LinearLayout llRule = findViewById(R.id.ll_rule);
-        llRule.setPadding(0, 0, 0, 60);
-        llRule.setBackgroundResource(R.drawable.frame_corner_unavailable);
-        llRule.requestLayout();
+        mLayoutMain = findViewById(R.id.ll_rule);
+        mLayoutMain.setPadding(0, 0, 0, 60);
+        mLayoutMain.setBackgroundResource(R.drawable.frame_corner_unavailable);
+        mLayoutMain.requestLayout();
 
         LinearLayout llButtons = findViewById(R.id.ll_buttons);
         llButtons.setVisibility(GONE);
@@ -195,10 +305,10 @@ public class ViewRuleItem extends LinearLayout {
         View vRight = findViewById(R.id.v_right);
         vRight.setVisibility(VISIBLE);
 
-        LinearLayout llRule = findViewById(R.id.ll_rule);
-        llRule.setPadding(0, 0, 0, 60);
-        llRule.setBackgroundResource(R.drawable.frame_corner);
-        llRule.requestLayout();
+        mLayoutMain = findViewById(R.id.ll_rule);
+        mLayoutMain.setPadding(0, 0, 0, 60);
+        mLayoutMain.setBackgroundResource(R.drawable.frame_corner);
+        mLayoutMain.requestLayout();
 
         setTextColorTextViews(Color.BLACK);
     }
@@ -211,16 +321,22 @@ public class ViewRuleItem extends LinearLayout {
         RelativeLayout rlInPractice = findViewById(R.id.rl_in_practice);
         rlInPractice.setVisibility(VISIBLE);
 
+        View vNote = findViewById(R.id.tv_note_in_practice);
+        vNote.setVisibility(VISIBLE);
+
+        View vClose = findViewById(R.id.btn_delete_rule);
+        vClose.setVisibility(VISIBLE);
+
         LinearLayout llOutPractice = findViewById(R.id.ll_out_practice);
         llOutPractice.setVisibility(GONE);
 
         View vRight = findViewById(R.id.v_right);
         vRight.setVisibility(GONE);
 
-        LinearLayout llRule = findViewById(R.id.ll_rule);
-        llRule.setPadding(0, 0, 0, 60);
-        llRule.setBackgroundResource(R.drawable.frame_corner);
-        llRule.requestLayout();
+        mLayoutMain = findViewById(R.id.ll_rule);
+        mLayoutMain.setPadding(0, 0, 0, 60);
+        mLayoutMain.setBackgroundResource(R.drawable.frame_corner);
+        mLayoutMain.requestLayout();
 
         setTextColorTextViews(Color.BLACK);
     }
@@ -278,6 +394,8 @@ public class ViewRuleItem extends LinearLayout {
         ad.setCancelable(false);
         ad.show();
     }
+
+
 
 
 }

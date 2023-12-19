@@ -4,6 +4,7 @@
     android:id="@+id/sticky_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="60dp"
     whatever:stuckShadowDrawable="@drawable/sticky_shadow_default">
 
     <LinearLayout

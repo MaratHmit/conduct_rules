@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -45,6 +46,7 @@ import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.RuleInfo;
 import ru.am.conduct_rules.databinding.FragmentPracticeBinding;
 import ru.am.conduct_rules.ui.StackActivity;
+import ru.am.conduct_rules.ui.list_rules.ViewRuleItem;
 
 public class PracticeFragment extends Fragment {
 
@@ -69,6 +71,7 @@ public class PracticeFragment extends Fragment {
     static private ArrayList<TextView> sListBadges;
 
     static private boolean mIsNightMode;
+    private Context mContext;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -78,6 +81,7 @@ public class PracticeFragment extends Fragment {
         mLinerLayoutPractices = root.findViewById(R.id.listPracticesSwipe);
         mLinerLayoutTable = root.findViewById(R.id.listPracticesTable);
         mScrollViewPractice = root.findViewById(R.id.scrollViewPractice);
+        mContext = getContext();
 
         mListMainRect = new ArrayList<>();
         mListFooterRect = new ArrayList<>();
@@ -212,16 +216,18 @@ public class PracticeFragment extends Fragment {
                         info.status = (cursor.getInt(1) == 0) ? 2 : 3;
                         info.date = cursor.getInt(3);
                         info.done = cursor.getInt(2);
-                        rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape));
                         if (info.date <= sCurrentDate)
-                            rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_yellow));
+                            if (rect.getContext() != null)
+                                rect.setTextColor(rect.getContext().getColor(R.color.RedText));
                         if (info.done == 1) {
                             switch (info.status) {
                                 case 2:
-                                    rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_red));
+                                    if (rect.getContext() != null)
+                                        rect.setTextColor(rect.getContext().getColor(R.color.RedText));
                                     break;
                                 case 3:
-                                    rect.setBackground(rect.getContext().getDrawable(R.drawable.cell_shape_green));
+                                    if (rect.getContext() != null)
+                                        rect.setTextColor(rect.getContext().getColor(R.color.GreenText));
                                     break;
                             }
                         }
@@ -285,14 +291,9 @@ public class PracticeFragment extends Fragment {
         if (context == null)
             return;
 
-        int index = 0;
-        int height = DataModule.convertDpToPixel(90, context);
-        int widthNum = DataModule.convertDpToPixel(30, context);
-        int paddingDP = DataModule.convertDpToPixel(4, context);
-
         initPracticeList();
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.code, r.estimate" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.code, r.estimate, r.title" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -303,71 +304,20 @@ public class PracticeFragment extends Fragment {
                 rule.done = cursor.getInt(2);
                 rule.code = cursor.getString(3);
                 rule.estimate = cursor.getInt(4);
-
-                LinearLayout wrapperPractice = new LinearLayout(context);
-                wrapperPractice.setTag(rule.id);
-                wrapperPractice.setOrientation(LinearLayout.VERTICAL);
-                wrapperPractice.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                        height));
-                sListPractice.add(wrapperPractice);
-
-                LinearLayout wrapperPracticeHeader = new LinearLayout(context);
-
-                rule.code = rule.code.replace(".", "\n-\n");
-                TextView textViewNum = new TextView(context);
-                textViewNum.setText(rule.code);
-                textViewNum.setGravity(Gravity.CENTER);
-                textViewNum.setPadding(paddingDP, 0, paddingDP, 0);
-                textViewNum.setLayoutParams(new FrameLayout.LayoutParams(widthNum, FrameLayout.LayoutParams.MATCH_PARENT));
-                textViewNum.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
-                textViewNum.setTextColor(Color.WHITE);
-                textViewNum.setTypeface(null, Typeface.BOLD);
-                textViewNum.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                wrapperPracticeHeader.addView(textViewNum);
-
-                wrapperPracticeHeader.setOrientation(LinearLayout.HORIZONTAL);
-                wrapperPracticeHeader.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                        height));
-                wrapperPracticeHeader.setBackground(context.getDrawable(R.drawable.cell_shape));
-                wrapperPractice.addView(wrapperPracticeHeader);
-
-                LinearLayout wrapperPracticeFooter = new LinearLayout(context);
-                wrapperPracticeFooter.setOrientation(LinearLayout.VERTICAL);
-                wrapperPracticeFooter.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                        height));
-                wrapperPracticeFooter.setBackground(context.getDrawable(R.drawable.cell_shape));
-                wrapperPractice.addView(wrapperPracticeFooter);
-                wrapperPracticeFooter.setVisibility(View.GONE);
-
-                TextView textViewRule = new TextView(context);
-                textViewRule.setText(rule.name);
-                textViewRule.setHeight(height);
-                textViewRule.setGravity(Gravity.CENTER);
-                textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                textViewRule.setLayoutParams(new LinearLayout.LayoutParams(0, FrameLayout.LayoutParams.MATCH_PARENT, 1));
-                textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
-                if (rule.estimate == 1)
-                    textViewNum.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
-                if (rule.estimate == 2)
-                    textViewNum.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
-                if (rule.estimate == 3)
-                    textViewNum.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
-                wrapperPracticeHeader.addView(textViewRule);
-                textViewRule.setTag(rule.id);
-                sListTextViews.add(textViewRule);
-
-                setProgressHeader(wrapperPracticeHeader, rule.id, index);
-                setProgressFooter(wrapperPracticeFooter, rule.id);
-                mListFooterRect.add(wrapperPracticeFooter);
-
-                mLinerLayoutPractices.addView(wrapperPractice);
-                index++;
-
+                rule.title = cursor.getString(5);
+                rule.available = true;
+                rule.mode = 1; // режим практики
+                addViewRule(rule);
             }
         }
         cursor.close();
+    }
 
-
+    private void addViewRule(RuleInfo rule) {
+        ViewRuleItem item = new ViewRuleItem(mContext, rule);
+        mLinerLayoutPractices.addView(item);
+        if (item.layoutCalendar != null)
+            setProgressFooter(item.layoutCalendar, rule.id);
     }
 
     private void createPracticesTable() {
@@ -695,7 +645,7 @@ public class PracticeFragment extends Fragment {
             return;
 
         int size1 = DataModule.convertDpToPixel(1, context);
-        int height = DataModule.convertDpToPixel(90, context);
+        int height = DataModule.convertDpToPixel(111, context);
 
         int pos = 0;
         RuleInfo[] days = new RuleInfo[21];
@@ -712,30 +662,50 @@ public class PracticeFragment extends Fragment {
 
             for (int j = 0; j < 7; j++) {
                 TextView rect = new TextView(context);
-                rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+                Typeface font = ResourcesCompat.getFont(getContext(), R.font.manrope_bold);
+                rect.setTypeface(font);
+                rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
                 rect.setGravity(Gravity.CENTER);
-                rect.setLayoutParams(new LinearLayout.LayoutParams(0, h, 1));
-                rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, h, 1);
+                if (j == 0)
+                    lp.setMarginStart(size1);
+                if (j == 0)
+                    rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect_t));
+                if (j > 0)
+                    rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect_lt));
+                if (j == 6) {
+                    rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect_lrt));
+                    lp.setMarginEnd(size1);
+                }
+                if (i == 2) {
+                    rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect_b));
+                }
+                if ((j == 6) && (i == 2))
+                    rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect_r_corner));
+                if ((j == 0) && (i == 2)) {
+                    rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect_lb_corner));
+                }
+                if (i == 1) {
+                    rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect_ltb));
+                    if (j == 0)
+                        rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect_ss));
+                }
+
+                rect.setLayoutParams(lp);
+                rect.setTextColor(Color.BLACK);
+                if (getActivity() != null)
+                    rect.setTextColor(getResources().getColor(R.color.GrayText, getActivity().getTheme()));
                 if ((days != null) && (pos < days.length) && (days[pos] != null)) {
                     long dateInt = (long) days[pos].date * 1000 * 86400;
                     SimpleDateFormat fmt = new SimpleDateFormat("E dd.MM");
                     String dateStr = fmt.format(dateInt);
                     rect.setText(dateStr);
                     if (days[pos].date <= sCurrentDate) {
-                        if (mIsNightMode)
-                            rect.setTextColor(Color.BLACK);
-                        switch (days[pos].status) {
-                            case 1:
-                                rect.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));
-                                break;
-                            case 2:
-                                rect.setBackground(context.getDrawable(R.drawable.cell_shape_red));
-                                break;
-                            case 3:
-                                rect.setBackground(context.getDrawable(R.drawable.cell_shape_green));
-                                break;
+                        if (getActivity() != null)
+                            rect.setTextColor(getResources().getColor(R.color.RedText, getActivity().getTheme()));
+                        if ((days[pos].status == 3) && (getActivity() != null)) {
+                            rect.setTextColor(getResources().getColor(R.color.GreenText, getActivity().getTheme()));
                         }
-
                         rect.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -768,150 +738,6 @@ public class PracticeFragment extends Fragment {
         FragmentActivity activity = getActivity();
         if (activity != null)
             activity.startActivityForResult(intent, Consts.RESULT_FINISH);
-    }
-
-    private void setProgressHeader(LinearLayout layout, int ruleID, int index) {
-
-        Context context = getContext();
-        if (context == null)
-            return;
-
-        int widthL = DataModule.convertDpToPixel(80, context);
-        int size = DataModule.convertDpToPixel(30, context);
-        int size1 = DataModule.convertDpToPixel(1, context);
-        int sizeI = DataModule.convertDpToPixel(26, context);
-        int height = DataModule.convertDpToPixel(90, context);
-        int widthButtons = DataModule.convertDpToPixel(35, context);
-        int marginB = DataModule.convertDpToPixel(2, context);
-        int marginI = DataModule.convertDpToPixel(4, context);
-        int textSize = DataModule.convertDpToPixel(5, context);
-
-        RelativeLayout wrapperButtonV = new RelativeLayout(context);
-        wrapperButtonV.setLayoutParams(new FrameLayout.LayoutParams(widthButtons,
-                FrameLayout.LayoutParams.MATCH_PARENT));
-        wrapperButtonV.setBackground(context.getDrawable(R.drawable.cell_shape_rect));
-        layout.addView(wrapperButtonV);
-
-        TextView badge = new TextView(context);
-        badge.setBackground(context.getDrawable(R.drawable.bage));
-        RelativeLayout.LayoutParams layoutParamsBadge = new RelativeLayout.LayoutParams(sizeI, sizeI);
-        layoutParamsBadge.setMargins(marginI, marginI, marginI, marginI);
-        layoutParamsBadge.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        wrapperButtonV.addView(badge, layoutParamsBadge);
-        badge.setGravity(Gravity.CENTER);
-        badge.setTextSize(textSize);
-        badge.setTextColor(Color.WHITE);
-        badge.setTag(ruleID);
-        sListBadges.add(badge);
-        updateBadges();
-
-        ImageButton buttonPlusMinus = new ImageButton(context);
-        buttonPlusMinus.setImageResource(R.drawable.ic_add_30_white);
-        buttonPlusMinus.setLayoutParams(new FrameLayout.LayoutParams(size, size));
-        buttonPlusMinus.setBackground(context.getDrawable(R.drawable.rounded_button_plus));
-        RelativeLayout.LayoutParams layoutParamsButton = new RelativeLayout.LayoutParams(size, size);
-        layoutParamsButton.setMargins(marginB, marginB, marginB, marginB);
-        layoutParamsButton.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        wrapperButtonV.addView(buttonPlusMinus, layoutParamsButton);
-        buttonPlusMinus.setTag(index);
-        buttonPlusMinus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int i = (int) ((ImageButton) v).getTag();
-                View practice = sListPractice.get(i);
-                View footer = mListFooterRect.get(i);
-                View main = mListMainRect.get(i);
-                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) practice.getLayoutParams();
-
-                if (footer.getVisibility() == View.GONE) {
-                    footer.setVisibility(View.VISIBLE);
-                    main.setVisibility(View.GONE);
-                    layoutParams.height = height * 2;
-                    ((ImageButton) v).setImageResource(R.drawable.ic_remove_30_white);
-                } else {
-                    footer.setVisibility(View.GONE);
-                    main.setVisibility(View.VISIBLE);
-                    layoutParams.height = height;
-                    ((ImageButton) v).setImageResource(R.drawable.ic_add_30_white);
-                }
-                practice.setLayoutParams(layoutParams);
-            }
-        });
-
-        LinearLayout wrapperRect = new LinearLayout(context);
-        wrapperRect.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams layoutParamsW = new LinearLayout.LayoutParams(widthL, height);
-        wrapperRect.setLayoutParams(layoutParamsW);
-        mListMainRect.add(wrapperRect);
-
-        int h;
-        int pos = 0;
-        RuleInfo[] days = new RuleInfo[21];
-        if (mMapPractice.get(ruleID) != null)
-            days = mMapPractice.get(ruleID);
-        if (days != null) {
-            for (int d = 0; d < days.length; d++) {
-                if (days[d].date == sCurrentDate) {
-                    pos = d - 5;
-                    if (pos < 0)
-                        pos = 0;
-                    break;
-                }
-            }
-        }
-        for (int i = 0; i < 3; i++) {
-            LinearLayout wrapperH = new LinearLayout(context);
-            wrapperH.setOrientation(LinearLayout.HORIZONTAL);
-            h = (i == 2) ? ((height / 3) + size1) : (height / 3);
-            wrapperH.setLayoutParams(new LinearLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT, h));
-            wrapperH.setWeightSum(2);
-
-            for (int j = 0; j < 2; j++) {
-                TextView rect = new TextView(context);
-                rect.setGravity(Gravity.CENTER);
-                rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-                rect.setLayoutParams(new LinearLayout.LayoutParams(0, h, 1));
-                rect.setBackground(context.getDrawable(R.drawable.cell_shape_rect));
-                if ((days != null) && (pos < days.length) && (days[pos] != null)) {
-                    long dateInt = (long) days[pos].date * 1000 * 86400;
-                    SimpleDateFormat fmt = new SimpleDateFormat("E");
-                    String dateStr = fmt.format(dateInt);
-                    rect.setText(dateStr);
-                    if (days[pos].date <= sCurrentDate) {
-                        if (mIsNightMode)
-                            rect.setTextColor(Color.BLACK);
-                        switch (days[pos].status) {
-                            case 1:
-                                rect.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));
-                                break;
-                            case 2:
-                                rect.setBackground(context.getDrawable(R.drawable.cell_shape_red));
-                                break;
-                            case 3:
-                                rect.setBackground(context.getDrawable(R.drawable.cell_shape_green));
-                                break;
-                        }
-
-                        rect.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                handlerRect(v);
-                            }
-                        });
-
-                        rect.setTag(days[pos]);
-                    }
-                    sListRect.add(rect);
-                }
-                wrapperH.addView(rect);
-                pos++;
-            }
-
-            wrapperRect.addView(wrapperH);
-        }
-
-        layout.addView(wrapperRect);
     }
 
     public static void updateStatuses(Context context) {

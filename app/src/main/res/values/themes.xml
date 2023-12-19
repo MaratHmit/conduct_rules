@@ -3,11 +3,13 @@
         <item name="colorPrimary">#517DA2</item>
         <item name="colorPrimaryDark">#455A64</item>
         <item name="colorAccent">#FF7235</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
     </style>
 
     <style name="Theme.ConductRules.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
     </style>
 
     <style name="Theme.ConductRules.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

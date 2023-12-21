@@ -14,6 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ConductRules">
         <activity
+            android:name=".ui.login.LoginActivity"
+            android:exported="false"
+            android:label="@string/title_activity_login" />
+        <activity
             android:name=".ui.ProfileActivity"
             android:exported="false"
             android:label="@string/title_activity_profile"
@@ -24,13 +28,7 @@
             android:name=".ui.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".ui.StackActivity"
             android:exported="false"
@@ -38,18 +36,31 @@
         <activity
             android:name=".EstimateActivity"
             android:exported="false"
-            android:theme="@style/Theme.ConductRules"
-            android:label="Оценка правил" />
+            android:label="Оценка правил"
+            android:theme="@style/Theme.ConductRules" />
+        <activity
+            android:name=".StartActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ConductRules">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".StartLoginActivity"
+            android:exported="false"
+            android:label="Расскажи о себе"
+            android:theme="@style/Theme.ConductRules" />
 
         <service
             android:name=".ReminderIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <receiver
             android:name=".Receiver"
             android:enabled="true"
-            android:exported="false"></receiver>
-
+            android:exported="false" />
     </application>
 
 </manifest>

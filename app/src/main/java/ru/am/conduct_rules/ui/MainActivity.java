@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private Context context;
 
-//    private NotificationManager notificationManager;
+    //    private NotificationManager notificationManager;
     private static final int NOTIFY_ID = 101;
 
     @Override
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         context = binding.getRoot().getContext();
 
         try {
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 R.id.navigation_list_rules, R.id.navigation_practice, R.id.navigation_profile)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-      //  NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        //  NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
         NavGraph graph = navController.getNavInflater().inflate(R.navigation.mobile_navigation);
 
@@ -67,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         else
             checkSkippedPractices();
         navController.setGraph(graph);
-        runEstimate();
 
 //        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 //        manager.cancelAll();
@@ -75,14 +76,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkSkippedPractices() {
         PracticeFragment.updateStatuses(this);
-    }
-
-    private void runEstimate() {
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT SUM(estimate) FROM rule", null);
-        if (cursor.moveToFirst() && cursor.getInt(0) == 0) {
-            Intent intent = new Intent(this, EstimateActivity.class);
-            startActivityForResult(intent, Consts.RESULT_ESTIMATE);
-        }
     }
 
     private int getCountPracticesToday() {

@@ -332,7 +332,7 @@ public class PracticeFragment extends Fragment {
         int widthDisplay = displayMetrics.widthPixels;
 
         int widthCell = DataModule.convertDpToPixel(50, context);
-        int heightCell = DataModule.convertDpToPixel(100, context);
+        int heightCell = DataModule.convertDpToPixel(80, context);
         int widthLeftSide = widthDisplay - 4 * widthCell;
         int heightHeader = DataModule.convertDpToPixel(50, context);
 
@@ -351,17 +351,19 @@ public class PracticeFragment extends Fragment {
         layoutLeftSide.setOrientation(LinearLayout.VERTICAL);
         layoutLeftSide.setLayoutParams(new FrameLayout.LayoutParams(width,
                 FrameLayout.LayoutParams.WRAP_CONTENT));
-        layoutLeftSide.setBackground(context.getDrawable(R.drawable.cell_shape));
+        layoutLeftSide.setBackground(context.getDrawable(R.drawable.table_header_background_corner1));
 
         TextView textViewTitle = new TextView(context);
         textViewTitle.setText("Мои правила");
-        textViewTitle.setTypeface(null, Typeface.BOLD);
-        textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        Typeface font = ResourcesCompat.getFont(getContext(), R.font.manrope_medium);
+        textViewTitle.setTypeface(font);
+        textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         textViewTitle.setGravity(Gravity.CENTER);
         textViewTitle.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 heightHeader));
-        textViewTitle.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
-        textViewTitle.setTextColor(Color.WHITE);
+        textViewTitle.setBackground(context.getDrawable(R.drawable.table_header_background_corner1));
+        if (getActivity() != null)
+            textViewTitle.setTextColor(getResources().getColor(R.color.PrimaryBlack, getActivity().getTheme()));
         layoutLeftSide.addView(textViewTitle);
 
         int paddingDP = DataModule.convertDpToPixel(4, context);
@@ -376,21 +378,26 @@ public class PracticeFragment extends Fragment {
                 rule.name = cursor.getString(1);
                 rule.done = cursor.getInt(2);
 
+                int size1 = DataModule.convertDpToPixel(1, context);
+
                 TextView textViewRule = new TextView(context);
+                LinearLayout.LayoutParams params =
+                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightCell);
+                params.setMargins(size1, 0, 0, 0);
+
+                textViewRule.setTypeface(font);
+                if (getActivity() != null)
+                    textViewRule.setTextColor(getResources().getColor(R.color.PrimaryBlack, getActivity().getTheme()));
                 textViewRule.setText(rule.name);
                 textViewRule.setHeight(heightCell);
                 textViewRule.setGravity(Gravity.CENTER);
                 textViewRule.setEllipsize(TextUtils.TruncateAt.END);
                 textViewRule.setMaxLines(4);
-                textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                textViewRule.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        heightCell));
+                textViewRule.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                textViewRule.setLayoutParams(params);
                 textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
-                textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_red));
-                if (rule.done == 1)
-                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_orange));
-                if (rule.done == 2)
-                    textViewRule.setBackground(context.getDrawable(R.drawable.cell_shape_light_green));
+                textViewRule.setBackground(context.getDrawable(R.drawable.table_cell_rect));
+
 
                 layoutLeftSide.addView(textViewRule);
             }
@@ -409,7 +416,7 @@ public class PracticeFragment extends Fragment {
 
         View view = new View(context);
         view.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightHeader));
-        view.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+        view.setBackground(context.getDrawable(R.drawable.table_header_background));
         layout.addView(view);
 
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done" +
@@ -420,10 +427,12 @@ public class PracticeFragment extends Fragment {
                 TextView viewCell = new TextView(context);
                 viewCell.setTag(cursor.getInt(0));
                 viewCell.setGravity(Gravity.CENTER);
-                viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-                viewCell.setTypeface(null, Typeface.BOLD);
+                Typeface font = ResourcesCompat.getFont(context, R.font.manrope_medium);
+                viewCell.setTypeface(font);
+                viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                viewCell.setTextColor(getResources().getColor(R.color.PrimaryBlack, context.getTheme()));
                 viewCell.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightCell));
-                viewCell.setBackground(context.getDrawable(R.drawable.cell_shape_violet));
+                viewCell.setBackground(context.getDrawable(R.drawable.table_cell_rect));
                 layout.addView(viewCell);
                 listBadgesTable.add(viewCell);
             }
@@ -450,10 +459,10 @@ public class PracticeFragment extends Fragment {
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        layout.setBackground(context.getDrawable(R.drawable.cell_shape_yellow));
+        layout.setBackground(context.getDrawable(R.drawable.table_cell_rect));
         scrollView.addView(layout);
 
-        int paddingDP = DataModule.convertDpToPixel(6, context);
+        int paddingDP = DataModule.convertDpToPixel(10, context);
 
         // заголовок
         LinearLayout layoutHeader = new LinearLayout(context);
@@ -474,7 +483,7 @@ public class PracticeFragment extends Fragment {
             for (int i = minDate; i < maxDate + 1; i++) {
                 TextView viewCell = new TextView(context);
                 viewCell.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightHeader));
-                viewCell.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+                viewCell.setBackground(context.getDrawable(R.drawable.table_header_background));
                 if (i == sCurrentDate && paddingX == 0) {
                     paddingX = widthCell * (i - minDate);
                 }
@@ -483,8 +492,10 @@ public class PracticeFragment extends Fragment {
                 SimpleDateFormat fmt = new SimpleDateFormat("dd.MM");
                 String dateStr = fmt.format(dateInt);
                 viewCell.setGravity(Gravity.CENTER);
-                viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                viewCell.setTextColor(Color.WHITE);
+                viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                Typeface font = ResourcesCompat.getFont(context, R.font.manrope_medium);
+                viewCell.setTypeface(font);
+                viewCell.setTextColor(getResources().getColor(R.color.PrimaryBlack, context.getTheme()));
                 viewCell.setText(dateStr);
 
                 layoutHeader.addView(viewCell);
@@ -504,7 +515,7 @@ public class PracticeFragment extends Fragment {
                     if (cursorL != null) {
                         for (int i = minDate; i < maxDate + 1; i++) {
                             RelativeLayout view = new RelativeLayout(context);
-                            view.setBackground(context.getDrawable(R.drawable.cell_shape_dark));
+                            view.setBackground(context.getDrawable(R.drawable.table_cell_rect));
                             cursorL.moveToFirst();
                             while (true) {
                                 if (i == cursorL.getInt(3)) {
@@ -515,7 +526,7 @@ public class PracticeFragment extends Fragment {
                                     info.status = cursorL.getInt(1);
                                     info.done = cursorL.getInt(2);
 
-                                    view.setBackground(context.getDrawable(R.drawable.cell_shape_orange));
+                                    view.setBackground(context.getDrawable(R.drawable.table_cell_rect));
                                     ImageView image = new ImageView(context);
                                     image.setImageDrawable(context.getDrawable(R.drawable.ic_box));
                                     if (cursorL.getInt(2) == 1) {

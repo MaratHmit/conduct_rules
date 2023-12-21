@@ -1,5 +1,6 @@
 package ru.am.conduct_rules;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import ru.am.conduct_rules.ui.MainActivity;
 
 public class EstimateActivity extends AppCompatActivity {
 
@@ -40,6 +43,11 @@ public class EstimateActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+                if (DataModule.isFirstStart) {
+                    DataModule.isFirstStart = false;
+                    Intent intent = new Intent(EstimateActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 

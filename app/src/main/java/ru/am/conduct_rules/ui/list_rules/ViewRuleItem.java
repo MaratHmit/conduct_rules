@@ -1,12 +1,14 @@
 package ru.am.conduct_rules.ui.list_rules;
 
+import static android.support.v4.content.ContextCompat.startActivity;
+
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.text.Layout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -22,8 +24,11 @@ import java.util.Date;
 import java.util.Objects;
 
 import ru.am.conduct_rules.DataModule;
+import ru.am.conduct_rules.EstimateActivity;
 import ru.am.conduct_rules.R;
+import ru.am.conduct_rules.RuleDescriptionActivity;
 import ru.am.conduct_rules.RuleInfo;
+import ru.am.conduct_rules.ui.MainActivity;
 
 public class ViewRuleItem extends LinearLayout {
 
@@ -82,9 +87,11 @@ public class ViewRuleItem extends LinearLayout {
 
         TextView tvNumberRule = findViewById(R.id.tv_number_rule);
         tvNumberRule.setText("Пункт № " + mRule.code);
+        tvNumberRule.setOnClickListener(view -> showRuleDescription());
 
         TextView tvShortName = findViewById(R.id.tv_short_name);
         tvShortName.setText(mRule.title);
+        tvShortName.setOnClickListener(view -> showRuleDescription());
 
         TextView tvName = findViewById(R.id.tv_rule_name);
         tvName.setText(mRule.name);
@@ -104,6 +111,7 @@ public class ViewRuleItem extends LinearLayout {
             ivLogo.setImageResource(R.drawable.logo_orange);
         if (mRule.estimate == 3)
             ivLogo.setImageResource(R.drawable.logo_green);
+        ivLogo.setOnClickListener(view -> showRuleDescription());
 
         Button btnAddRule = findViewById(R.id.btn_add_rule);
         ImageButton btnDeleteRule = findViewById(R.id.btn_delete_rule);
@@ -125,6 +133,13 @@ public class ViewRuleItem extends LinearLayout {
 
         if (mRule.mode == 1)
             setSwipePracticeMode();
+    }
+
+    private void showRuleDescription() {
+        Intent intent = new Intent(getContext(), RuleDescriptionActivity.class);
+        intent.putExtra("title", mRule.title);
+        intent.putExtra("description", mRule.description);
+        getContext().startActivity(intent);
     }
 
     private void setSwipePracticeMode() {

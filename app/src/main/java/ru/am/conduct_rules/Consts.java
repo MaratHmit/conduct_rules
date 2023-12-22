@@ -11,7 +11,7 @@ public class Consts {
     public static final int RESULT_ESTIMATE = 3;
     public static final int COUNT_PRACTICES = 21;
     public static int DB_VERSION = 1;
-    public static String DATABASE_NAME = "bnk20122023";
+    public static String DATABASE_NAME = "bnk22122023";
     public static String NOTIFICATION_CHANNEL_ID = "10001";
 
     public static int NOTIFY_ID = 1250;

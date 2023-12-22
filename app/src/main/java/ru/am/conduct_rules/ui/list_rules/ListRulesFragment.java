@@ -166,7 +166,7 @@ public class ListRulesFragment extends Fragment {
     private void loadListRules() {
 
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, code, title, name, checked, " +
-                "available, done, estimate, level" +
+                "available, done, estimate, level, description" +
                 " FROM rule WHERE vidible = 1 ORDER BY _id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -181,6 +181,7 @@ public class ListRulesFragment extends Fragment {
                 rule.done = cursor.getInt(6);
                 rule.estimate = cursor.getInt(7);
                 rule.level = cursor.getInt(8);
+                rule.description = cursor.getString(9);
 
                 addViewRule(rule);
 

@@ -10,7 +10,7 @@ import ru.am.conduct_rules.ui.MainActivity;
 
 public class StartActivity extends AppCompatActivity {
 
-    public static int SPLASH_TIMER = 1000;
+    public static int SPLASH_TIMER = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,24 +18,19 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        if (isFirstStart()) {
-
-            DataModule.isFirstStart = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(StartActivity.this, StartLoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            }, SPLASH_TIMER);
-
-            return;
-        }
-
-        Intent intent = new Intent(StartActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        DataModule.isFirstStart = isFirstStart();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent;
+                if (DataModule.isFirstStart)
+                    intent = new Intent(StartActivity.this, StartLoginActivity.class);
+                else
+                    intent = new Intent(StartActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }, SPLASH_TIMER);
     }
 
     private boolean isFirstStart() {

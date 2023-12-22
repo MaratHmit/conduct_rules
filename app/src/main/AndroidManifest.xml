@@ -52,6 +52,11 @@
             android:exported="false"
             android:label="Расскажи о себе"
             android:theme="@style/Theme.ConductRules" />
+        <activity
+            android:name=".RuleDescriptionActivity"
+            android:exported="false"
+            android:label="О практике"
+            android:theme="@style/Theme.ConductRules" />
 
         <service
             android:name=".ReminderIntentService"

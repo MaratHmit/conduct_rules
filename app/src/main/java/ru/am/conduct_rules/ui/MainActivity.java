@@ -22,6 +22,7 @@ import ru.am.conduct_rules.EstimateActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.Consts;
+import ru.am.conduct_rules.RuleDescriptionActivity;
 import ru.am.conduct_rules.ui.practice.PracticeFragment;
 import ru.am.conduct_rules.databinding.ActivityMainBinding;
 

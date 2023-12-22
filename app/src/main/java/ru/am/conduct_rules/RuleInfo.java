@@ -15,4 +15,6 @@ public class RuleInfo {
     public int estimate; // оценка правила
     public int mode; //
 
+    public String description; // описание правила
+
 }

@@ -293,7 +293,7 @@ public class PracticeFragment extends Fragment {
 
         initPracticeList();
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.code, r.estimate, r.title" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.code, r.estimate, r.title, r.description" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -307,6 +307,7 @@ public class PracticeFragment extends Fragment {
                 rule.title = cursor.getString(5);
                 rule.available = true;
                 rule.mode = 1; // режим практики
+                rule.description = cursor.getString(6);
                 addViewRule(rule);
             }
         }

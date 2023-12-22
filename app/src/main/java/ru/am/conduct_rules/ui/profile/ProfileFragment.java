@@ -71,19 +71,19 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         mRoot = binding.getRoot();
 
-        mTextViewName = mRoot.findViewById(R.id.textViewUserName);
-        mTextViewReminderTime = mRoot.findViewById(R.id.textViewReminderTime);
-        mSpinnerGender = mRoot.findViewById(R.id.spinnerGender);
-        mSpinnerLanguage = mRoot.findViewById(R.id.spinnerLanguage);
-        mSpinnerMode = mRoot.findViewById(R.id.spinnerMode);
-        mSpinnerReminder = mRoot.findViewById(R.id.spinnerReminder);
-        mLinerLayoutUserName = mRoot.findViewById(R.id.linerLayoutUserName);
-        mLinerLayoutReminder = mRoot.findViewById(R.id.linerLayoutReminder);
-
-        initDBHelper(getContext());
-
-        loadData();
-        setListeners();
+//        mTextViewName = mRoot.findViewById(R.id.textViewUserName);
+//        mTextViewReminderTime = mRoot.findViewById(R.id.textViewReminderTime);
+//        mSpinnerGender = mRoot.findViewById(R.id.spinnerGender);
+//        mSpinnerLanguage = mRoot.findViewById(R.id.spinnerLanguage);
+//        mSpinnerMode = mRoot.findViewById(R.id.spinnerMode);
+//        mSpinnerReminder = mRoot.findViewById(R.id.spinnerReminder);
+//        mLinerLayoutUserName = mRoot.findViewById(R.id.linerLayoutUserName);
+//        mLinerLayoutReminder = mRoot.findViewById(R.id.linerLayoutReminder);
+//
+//        initDBHelper(getContext());
+//
+//        loadData();
+//        setListeners();
 
         return mRoot;
     }

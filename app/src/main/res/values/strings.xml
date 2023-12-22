@@ -72,5 +72,8 @@
     <string name="login_failed">"Login failed"</string>
     <string name="sampleRuleName">Название практики</string>
     <string name="sampleRuleDescription">Реферат по эстетике Тема: «Первоначальный комплекс агрессивности — актуальная национальная задача»</string>
+    <string name="namaskar">Намаскар,</string>
+    <string name="sample_name">Манавендра</string>
+    <string name="beginner">Начинающий</string>
 
 </resources>

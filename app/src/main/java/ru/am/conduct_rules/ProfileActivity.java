@@ -5,18 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import ru.am.conduct_rules.databinding.ActivityProfileBinding;
 
@@ -48,22 +43,22 @@ public class ProfileActivity extends AppCompatActivity {
             });
         }
 
-        Button buttonSave = (Button) findViewById(R.id.buttonSave);
-        if (buttonSave != null) {
-            buttonSave.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    save();
-                }
-            });
-        }
+//        Button buttonSave = (Button) findViewById(R.id.buttonSave);
+//        if (buttonSave != null) {
+//            buttonSave.setOnClickListener(new View.OnClickListener() {
+//                public void onClick(View v) {
+//                    save();
+//                }
+//            });
+//        }
     }
 
-    @Override
-    protected void onStart() {
-
-        super.onStart();
-        loadData();
-    }
+//    @Override
+//    protected void onStart() {
+//
+//        super.onStart();
+//       // loadData();
+//    }
 
     public static void initDBHelper(Context c) {
         mDbHelper = new DBHelper(c);

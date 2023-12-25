@@ -75,5 +75,9 @@
     <string name="namaskar">Намаскар,</string>
     <string name="sample_name">Манавендра</string>
     <string name="beginner">Начинающий</string>
+    <string name="profile">Профиль</string>
+    <string name="settings">Настройки</string>
+    <string name="sample_user_name">Манавендра</string>
+    <string name="label_user_name">Имя пользователя</string>
 
 </resources>

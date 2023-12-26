@@ -1,23 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--<ru.am.conduct_rules.cardstack.SwipeFrameLayout-->
-<ru.am.conduct_rules.cardstack.SwipeFrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--<ru.am.conduct_rules.cardstack.SwipeFrameLayout-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:swipedeck="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/rect_purple"
     android:orientation="vertical">
 
-<!--    ru.am.conduct_rules.cardstack.SwipeDeck-->
-    <ru.am.conduct_rules.cardstack.SwipeDeck
-        android:id="@+id/swipe_deck"
+    <LinearLayout
+        android:id="@+id/ll_wrapper_rule_calendar"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="600dp"
-        android:padding="20dp"
-        swipedeck:card_spacing="5dp"
-        swipedeck:max_visible="3"
-        swipedeck:render_above="true"
-        swipedeck:opacity_end="0.33"
-        swipedeck:rotation_degrees="2" />
+        android:orientation="horizontal"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="60dp"/>
 
+    <ru.am.conduct_rules.cardstack.SwipeFrameLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_marginTop="15dp">
 
-</ru.am.conduct_rules.cardstack.SwipeFrameLayout>
+        <ru.am.conduct_rules.cardstack.SwipeDeck
+            android:id="@+id/swipe_deck"
+            android:layout_width="match_parent"
+            android:layout_height="600dp"
+            android:padding="20dp"
+            swipedeck:card_spacing="5dp"
+            swipedeck:max_visible="3"
+            swipedeck:opacity_end="0.33"
+            swipedeck:render_above="true"
+            swipedeck:rotation_degrees="2" />
+
+    </ru.am.conduct_rules.cardstack.SwipeFrameLayout>
+</LinearLayout>

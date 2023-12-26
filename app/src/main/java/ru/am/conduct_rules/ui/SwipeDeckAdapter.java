@@ -52,7 +52,7 @@ public class SwipeDeckAdapter extends BaseAdapter {
             v =  LayoutInflater.from(parent.getContext()).inflate(R.layout.rule_card, parent, false);
         }
         RuleInfo info = data.get(position);
-        String code = "Правило № " + info.code;
+        String code = "Пункт № " + info.code;
         ((TextView) v.findViewById(R.id.text_code)).setText(code);
         ((TextView) v.findViewById(R.id.text_rule)).setText(info.name);
         ((TextView) v.findViewById(R.id.tv_short_name)).setText(info.title);

@@ -61,7 +61,7 @@
     <string name="in_practice">В практике</string>
     <string name="unavailable">Недоступно</string>
     <string name="select5rules_finish">Выбор сделан</string>
-    <string name="info_swipe">Для выполенения нажмити кнопку \nили сделайте свайп</string>
+    <string name="info_swipe">Для выполенения нажмити\nкнопку или сделайте свайп</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

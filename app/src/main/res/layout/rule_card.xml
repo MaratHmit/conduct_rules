@@ -20,14 +20,14 @@
             <TextView
                 android:id="@+id/text_code"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="90dp"
-                android:fontFamily="@font/jost"
+                android:layout_marginTop="45dp"
+                android:fontFamily="@font/manrope_regular"
                 android:gravity="center"
                 android:text="@string/number_rule"
                 android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tv_short_name"
@@ -37,6 +37,7 @@
                 android:gravity="center"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
+                android:fontFamily="@font/manrope_bold"
                 android:text="@string/sample_rule_short_name"
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
@@ -50,11 +51,12 @@
                 android:layout_marginTop="20dp"
                 android:breakStrategy="simple"
                 android:gravity="center"
+                android:fontFamily="@font/manrope_regular"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:text="@string/sample_str_rule"
                 android:textColor="@android:color/black"
-                android:textSize="22sp" />
+                android:textSize="18sp" />
 
 
 
@@ -75,9 +77,10 @@
                 android:gravity="center"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
+                android:fontFamily="@font/manrope_light"
                 android:text="@string/info_swipe"
                 android:textColor="#A09FA3"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
 
             <RelativeLayout
@@ -104,8 +107,8 @@
                     android:onClick="onButtonCheckRuleClick"
                     android:src="@drawable/button_swipe_done" />
 
-
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>
+
 </android.support.v7.widget.CardView>

@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.LinearLayout;
 
 //import com.daprlabs.cardstack.SwipeDeck;
 
@@ -15,6 +16,7 @@ import java.util.Date;
 
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.R;
+import ru.am.conduct_rules.RuleCalendar;
 import ru.am.conduct_rules.RuleInfo;
 import ru.am.conduct_rules.cardstack.SwipeDeck;
 
@@ -54,8 +56,14 @@ public class StackActivity extends AppCompatActivity {
 
     private void init() {
 
+        RuleCalendar calendar = new RuleCalendar(getBaseContext());
+        LinearLayout llWrapper = findViewById(R.id.ll_wrapper_rule_calendar);
+        llWrapper.addView(calendar);
+
         final ArrayList<RuleInfo> listRules = new ArrayList<>();
         loadRules(listRules);
+        if (listRules.size() > 0)
+            calendar.Update(listRules.get(0).id);
 
         mAdapter = new SwipeDeckAdapter(listRules, this);
         mCardStack.setAdapter(mAdapter);

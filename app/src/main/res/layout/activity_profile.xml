@@ -19,16 +19,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/label_user_name"
-                android:paddingLeft="30dp"
                 android:layout_marginBottom="10dp"
                 android:fontFamily="@font/manrope_medium"
+                android:paddingLeft="30dp"
+                android:text="@string/label_user_name"
                 android:textColor="@color/PrimaryBlack"
                 android:textSize="18sp"></TextView>
 
@@ -38,18 +38,187 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_corner"
                 android:focusable="true"
-                android:fontFamily="@font/manrope_regular"
                 android:focusableInTouchMode="true"
+                android:fontFamily="@font/manrope_regular"
+                android:inputType="text"
                 android:paddingLeft="30dp"
                 android:paddingTop="12dp"
                 android:paddingRight="30dp"
                 android:paddingBottom="12dp"
-                android:inputType="text"
                 android:text="@string/sample_user_name"
                 android:textColor="@color/GrayText"
                 android:textSize="16sp" />
 
         </LinearLayout>
-    </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/manrope_medium"
+                android:paddingLeft="30dp"
+                android:text="@string/gender_2"
+                android:textColor="@color/PrimaryBlack"
+                android:textSize="18sp"></TextView>
+
+            <Spinner
+                android:id="@+id/spinnerGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_corner"
+                android:entries="@array/genderList"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/manrope_regular"
+                android:inputType="text"
+                android:paddingLeft="30dp"
+                android:paddingTop="12dp"
+                android:paddingRight="30dp"
+                android:paddingBottom="12dp"
+                android:text="@string/sample_user_name"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/manrope_medium"
+                android:paddingLeft="30dp"
+                android:text="@string/language_2"
+                android:textColor="@color/PrimaryBlack"
+                android:textSize="18sp"></TextView>
+
+            <Spinner
+                android:id="@+id/spinnerLanguage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_corner"
+                android:entries="@array/languageList"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/manrope_regular"
+                android:inputType="text"
+                android:paddingLeft="30dp"
+                android:paddingTop="12dp"
+                android:paddingRight="30dp"
+                android:paddingBottom="12dp"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/manrope_medium"
+                android:paddingLeft="30dp"
+                android:text="@string/practice_mode"
+                android:textColor="@color/PrimaryBlack"
+                android:textSize="18sp"></TextView>
+
+            <Spinner
+                android:id="@+id/spinnerMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_corner"
+                android:entries="@array/modeList"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/manrope_regular"
+                android:inputType="text"
+                android:paddingLeft="30dp"
+                android:paddingTop="12dp"
+                android:paddingRight="30dp"
+                android:paddingBottom="12dp"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
+            <Button
+                android:id="@+id/buttonRunEstimate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:textAlignment="textStart"
+                android:paddingLeft="30dp"
+                android:background="@drawable/button_corner"
+                android:textAllCaps="false"
+                android:fontFamily="@font/manrope_regular"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:text="@string/estimateRules"></Button>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:textAlignment="textStart"
+                android:paddingLeft="30dp"
+                android:textAllCaps="false"
+                android:background="@drawable/button_corner"
+                android:fontFamily="@font/manrope_regular"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:text="@string/instruction" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:textAlignment="textStart"
+                android:paddingLeft="30dp"
+                android:background="@drawable/button_corner"
+                android:onClick="onButtonFeedback"
+                android:textAllCaps="false"
+                android:fontFamily="@font/manrope_regular"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:text="@string/feedback" />
+
+            <Button
+                android:id="@+id/button_reset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:textAlignment="textStart"
+                android:paddingLeft="30dp"
+                android:textAllCaps="false"
+                android:background="@drawable/button_corner"
+                android:fontFamily="@font/manrope_regular"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:layout_marginBottom="10dp"
+                android:text="@string/resetAll" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 </LinearLayout>

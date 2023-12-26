@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUserData() {
 
-        TextView textViewName = findViewById(R.id.textViewUserName);
+        TextView textViewName = findViewById(R.id.tv_userName);
 
         Cursor query = DataModule.dbReader.rawQuery("SELECT name FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
@@ -159,11 +159,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-    }
-
-
-    public void onButtonFeedback(View view) {
-        startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://t.me/+5x-rmfQUnl1hZDli")));
     }
 
 

@@ -20,6 +20,7 @@
     <string-array name="modeList">
         <item>Свайп</item>
         <item>Таблица</item>
+        <item>Свайп-список</item>
     </string-array>
 
     <string-array name="reminderList">
@@ -43,7 +44,7 @@
     <string name="gender">Пол</string>
     <string name="estimateRules">Оценить правила</string>
     <string name="instruction">Руководство</string>
-    <string name="resetAll">Сбросить всё</string>
+    <string name="resetAll">Сброс</string>
     <string name="level_1">1 уровень</string>
     <string name="level_2">2 уровень</string>
     <string name="reminder">Напоминание</string>
@@ -79,5 +80,8 @@
     <string name="settings">Настройки</string>
     <string name="sample_user_name">Манавендра</string>
     <string name="label_user_name">Имя пользователя</string>
+    <string name="gender_2">Пол:</string>
+    <string name="language_2">Язык системы:</string>
+    <string name="practice_mode">Режим практики:</string>
 
 </resources>

@@ -11,12 +11,14 @@ import android.widget.TextView;
 import java.util.List;
 
 import ru.am.conduct_rules.R;
+import ru.am.conduct_rules.RuleCalendar;
 import ru.am.conduct_rules.RuleInfo;
 
 public class SwipeDeckAdapter extends BaseAdapter {
 
     private List<RuleInfo> data;
     private Context context;
+    private RuleCalendar mCalendar;
 
     public SwipeDeckAdapter(List<RuleInfo> data, Context context) {
         this.data = data;
@@ -56,6 +58,8 @@ public class SwipeDeckAdapter extends BaseAdapter {
         ((TextView) v.findViewById(R.id.text_code)).setText(code);
         ((TextView) v.findViewById(R.id.text_rule)).setText(info.name);
         ((TextView) v.findViewById(R.id.tv_short_name)).setText(info.title);
+        if (mCalendar != null)
+            mCalendar.update(info);
 
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,5 +70,9 @@ public class SwipeDeckAdapter extends BaseAdapter {
         });
 
         return v;
+    }
+
+    public void setCalendar(RuleCalendar calendar) {
+        mCalendar = calendar;
     }
 }

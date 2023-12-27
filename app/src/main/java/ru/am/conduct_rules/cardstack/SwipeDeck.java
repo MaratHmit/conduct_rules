@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import ru.am.conduct_rules.R;
+import ru.am.conduct_rules.RuleCalendar;
 
 /**
  * Created by aaron on 4/12/2015.
@@ -498,6 +499,7 @@ public class SwipeDeck extends FrameLayout {
             }
         }
     }
+
 }
 
 

@@ -355,8 +355,6 @@ public class PracticeFragment extends Fragment {
 
         TextView textViewTitle = new TextView(context);
         textViewTitle.setText("Мои правила");
-        Typeface font = ResourcesCompat.getFont(getContext(), R.font.manrope_medium);
-        textViewTitle.setTypeface(font);
         textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         textViewTitle.setGravity(Gravity.CENTER);
         textViewTitle.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -385,7 +383,6 @@ public class PracticeFragment extends Fragment {
                         new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightCell);
                 params.setMargins(size1, 0, 0, 0);
 
-                textViewRule.setTypeface(font);
                 if (getActivity() != null)
                     textViewRule.setTextColor(getResources().getColor(R.color.PrimaryBlack, getActivity().getTheme()));
                 textViewRule.setText(rule.name);
@@ -427,8 +424,6 @@ public class PracticeFragment extends Fragment {
                 TextView viewCell = new TextView(context);
                 viewCell.setTag(cursor.getInt(0));
                 viewCell.setGravity(Gravity.CENTER);
-                Typeface font = ResourcesCompat.getFont(context, R.font.manrope_medium);
-                viewCell.setTypeface(font);
                 viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
                 viewCell.setTextColor(getResources().getColor(R.color.PrimaryBlack, context.getTheme()));
                 viewCell.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightCell));
@@ -490,8 +485,6 @@ public class PracticeFragment extends Fragment {
                 String dateStr = fmt.format(dateInt);
                 viewCell.setGravity(Gravity.CENTER);
                 viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-                Typeface font = ResourcesCompat.getFont(context, R.font.manrope_medium);
-                viewCell.setTypeface(font);
                 viewCell.setTextColor(getResources().getColor(R.color.PrimaryBlack, context.getTheme()));
                 viewCell.setText(dateStr);
 
@@ -670,8 +663,7 @@ public class PracticeFragment extends Fragment {
 
             for (int j = 0; j < 7; j++) {
                 TextView rect = new TextView(context);
-                Typeface font = ResourcesCompat.getFont(getContext(), R.font.manrope_bold);
-                rect.setTypeface(font);
+                rect.setTypeface(null, Typeface.BOLD);
                 rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
                 rect.setGravity(Gravity.CENTER);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, h, 1);

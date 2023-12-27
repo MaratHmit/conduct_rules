@@ -19,7 +19,7 @@
             android:label="@string/title_activity_profile"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.ConductRules.NoActionBar"
+            android:theme="@style/Theme.ConductRules"
             android:windowSoftInputMode="stateAlwaysVisible" />
         <activity
             android:name=".ui.MainActivity"

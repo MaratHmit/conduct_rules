@@ -183,13 +183,13 @@ public class ProfileActivity extends AppCompatActivity {
         String buttonYesString = "Да";
         String buttonNoString = "Нет";
 
-        ad = new AlertDialog.Builder(getBaseContext());
+        ad = new AlertDialog.Builder(this);
         ad.setTitle(title);
         ad.setMessage(message);
 
         ad.setPositiveButton(buttonYesString, (dialog, arg1) -> {
             removeData();
-            Toast toast = Toast.makeText(getBaseContext(), "Данные очищены!", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "Данные очищены!", Toast.LENGTH_SHORT);
             toast.show();
         });
         ad.setNegativeButton(buttonNoString, (dialog, arg1) -> {
@@ -199,6 +199,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void removeData() {
+        if (mDbHelper == null)
+            initDBHelper(getBaseContext());
+
         DataModule.dbWriter.execSQL("DELETE FROM practice");
         DataModule.dbWriter.execSQL("UPDATE rule SET checked = 0, done = 0, estimate = 0");
         DataModule.dbWriter.execSQL("UPDATE rule SET available = 0 WHERE level = 2");

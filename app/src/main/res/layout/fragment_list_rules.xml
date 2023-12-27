@@ -41,7 +41,6 @@
                     android:paddingRight="20dp"
                     android:text="@string/button_base"
                     android:textAllCaps="false"
-                    android:fontFamily="@font/manrope_regular"
                     android:textColor="@color/PrimaryBlack"
                     android:textSize="16sp"></Button>
 
@@ -58,7 +57,6 @@
                     android:text="@string/button_advanced"
                     android:textAllCaps="false"
                     android:textColor="@color/PrimaryBlack"
-                    android:fontFamily="@font/manrope_regular"
                     android:textSize="16sp"></Button>
 
             </LinearLayout>
@@ -76,7 +74,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/select5rules"
-                    android:fontFamily="@font/manrope_regular"
                     android:textColor="@color/PrimaryBlack"
                     android:textSize="16sp" />
 

@@ -42,12 +42,12 @@ public class EstimateActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
                 if (DataModule.isFirstStart) {
                     DataModule.isFirstStart = false;
                     Intent intent = new Intent(EstimateActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
+                finish();
             }
         });
 
@@ -109,6 +109,12 @@ public class EstimateActivity extends AppCompatActivity {
 
             Toast toast = Toast.makeText(this, "Оценка правил завершена!", Toast.LENGTH_SHORT);
             toast.show();
+
+            if (DataModule.isFirstStart) {
+                DataModule.isFirstStart = false;
+                Intent intent = new Intent(EstimateActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
 
             finish();
             return;

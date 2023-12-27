@@ -260,6 +260,8 @@ public class SwipeListener implements View.OnTouchListener {
             this.deactivated = true;
         } else {
             resetCardPosition();
+            if (mBackgroundLayout != null)
+                mBackgroundLayout.setBackground(card.getContext().getDrawable(R.drawable.rect_purple));
         }
     }
 

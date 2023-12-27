@@ -1,5 +1,7 @@
 package ru.am.conduct_rules.ui;
 
+import static java.security.AccessController.getContext;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.media.MediaPlayer;
@@ -24,6 +26,7 @@ public class StackActivity extends AppCompatActivity {
 
     private SwipeDeck mCardStack;
     private SwipeDeckAdapter mAdapter;
+    private LinearLayout mBackgroundLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +36,9 @@ public class StackActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().hide();
 
-        LinearLayout backGroundLayout = findViewById(R.id.ll_background);
+        mBackgroundLayout = findViewById(R.id.ll_background);
         mCardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
-        mCardStack.setBackgroundLayout(backGroundLayout);
+        mCardStack.setBackgroundLayout(mBackgroundLayout);
         init();
     }
 
@@ -108,6 +111,10 @@ public class StackActivity extends AppCompatActivity {
         cv.put("result", check ? 1 : 0);
         cv.put("done", 1);
         DataModule.dbWriter.update("practice", cv, "_id = ?", new String[]{String.valueOf(info.practiceId)});
+
+        if (mBackgroundLayout != null)
+            mBackgroundLayout.setBackground(getDrawable(R.drawable.rect_purple));
+
     }
 
     private void loadRules(ArrayList<RuleInfo> listRules) {

@@ -33,7 +33,9 @@ public class StackActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().hide();
 
+        LinearLayout backGroundLayout = findViewById(R.id.ll_background);
         mCardStack = (SwipeDeck) findViewById(R.id.swipe_deck);
+        mCardStack.setBackgroundLayout(backGroundLayout);
         init();
     }
 
@@ -63,7 +65,7 @@ public class StackActivity extends AppCompatActivity {
         final ArrayList<RuleInfo> listRules = new ArrayList<>();
         loadRules(listRules);
         if (listRules.size() > 0)
-            calendar.Update(listRules.get(0).id);
+            calendar.update(listRules.get(0).id);
 
         mAdapter = new SwipeDeckAdapter(listRules, this);
         mCardStack.setAdapter(mAdapter);

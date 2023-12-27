@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 
 //import com.daprlabs.cardstack.SwipeListener;
@@ -58,6 +59,7 @@ public class SwipeDeck extends FrameLayout {
     private int leftImageResource;
     private int rightImageResource;
     private boolean cardInteraction;
+    private LinearLayout mBackgroundLayout;
 
     public SwipeDeck(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -400,13 +402,19 @@ public class SwipeDeck extends FrameLayout {
             //for the sake of animating them
             View rightView = null;
             View leftView = null;
+
             if (!(rightImageResource == 0)) rightView = child.findViewById(rightImageResource);
             if (!(leftImageResource == 0)) leftView = child.findViewById(leftImageResource);
             swipeListener.setLeftView(leftView);
             swipeListener.setRightView(rightView);
+            swipeListener.setBackgroundLayout(mBackgroundLayout);
 
             child.setOnTouchListener(swipeListener);
         }
+    }
+
+    public void setBackgroundLayout(LinearLayout layout) {
+        mBackgroundLayout = layout;
     }
 
     public void setEventCallback(SwipeEventCallback eventCallback) {

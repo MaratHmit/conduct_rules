@@ -1,22 +1,27 @@
 package ru.am.conduct_rules;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.TypedValue;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class RuleCalendar extends LinearLayout {
 
     public static final String[] DAYS = {"Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"};
     private Button[] mButtonDays;
+    private static int sCurrentDate;
 
     public RuleCalendar(Context context) {
         super(context);
         inflate(getContext(), R.layout.fragment_rule_calendar, this);
+
+        Date currentTime = Calendar.getInstance().getTime();
+        sCurrentDate = (int) (currentTime.getTime() / (1000 * 86400));
 
         mButtonDays = new Button[7];
         createButtonsDays();
@@ -46,10 +51,10 @@ public class RuleCalendar extends LinearLayout {
             llDaysWeek.addView(buttonDay);
             mButtonDays[i] = buttonDay;
         }
-
     }
 
-    public void Update(int ruleID) {
+    public void update(int ruleID) {
+        
 
     }
 

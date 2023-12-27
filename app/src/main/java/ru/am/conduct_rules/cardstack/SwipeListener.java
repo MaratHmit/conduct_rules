@@ -39,6 +39,7 @@ public class SwipeListener implements View.OnTouchListener {
 
     private Drawable mBackgroundCard;
     private int mTextColor;
+    private LinearLayout mBackgroundLayout;
 
 
     public SwipeListener(View card, final SwipeCallback callback, float initialX, float initialY, float rotation, float opacityEnd) {
@@ -69,6 +70,9 @@ public class SwipeListener implements View.OnTouchListener {
         this.paddingLeft = ((ViewGroup) card.getParent()).getPaddingLeft();
     }
 
+    public void setBackgroundLayout(LinearLayout layout) {
+        mBackgroundLayout = layout;
+    }
 
     private boolean click = true;
 
@@ -136,6 +140,8 @@ public class SwipeListener implements View.OnTouchListener {
                 card.setAlpha(1);
                 if (textView != null)
                     textView.setTextColor(mTextColor);
+                if (mBackgroundLayout != null)
+                    mBackgroundLayout.setBackground(card.getContext().getDrawable(R.drawable.rect_purple));
 
                 //card.setRotation
                 float distobjectX = posX - initialX;
@@ -143,15 +149,19 @@ public class SwipeListener implements View.OnTouchListener {
                 card.setRotation(rotation);
 
                 float alpha = (((posX - paddingLeft) / (parentWidth * OPACITY_END)));
-                if (alpha > 0.4) {
-                    card.setBackgroundColor(Color.rgb(238, 96, 85));
+                if (alpha > 0.5) {
+//                    card.setBackgroundColor(Color.rgb(238, 96, 85));
                     card.setAlpha(1 - alpha / 2);
+                    if (mBackgroundLayout != null)
+                        mBackgroundLayout.setBackground(card.getContext().getDrawable(R.drawable.rect_red));
                     if (textView != null)
                         textView.setTextColor(Color.BLACK);
                 }
-                if (alpha < -0.4) {
-                    card.setBackgroundColor(Color.rgb(170, 246, 131));
+                if (alpha < -0.5) {
+//                    card.setBackgroundColor(Color.rgb(170, 246, 131));
                     card.setAlpha(1 + alpha / 2);
+                    if (mBackgroundLayout != null)
+                        mBackgroundLayout.setBackground(card.getContext().getDrawable(R.drawable.rect_green));
                     if (textView != null)
                         textView.setTextColor(Color.BLACK);
                 }

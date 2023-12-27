@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!--<ru.am.conduct_rules.cardstack.SwipeFrameLayout-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:swipedeck="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/rect_purple"

@@ -28,7 +28,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
+                android:fontFamily="@font/manrope_extrabold"
                 android:gravity="center"
                 android:textAlignment="center"
                 android:text="@string/app_name"

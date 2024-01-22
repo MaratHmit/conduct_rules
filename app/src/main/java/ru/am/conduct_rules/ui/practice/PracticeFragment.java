@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -316,6 +317,8 @@ public class PracticeFragment extends Fragment {
     private void addViewRule(RuleInfo rule) {
         ViewRuleItem item = new ViewRuleItem(mContext, rule);
         mLinerLayoutPractices.addView(item);
+        item.setTag(rule.id);
+        sListPractice.add(item);
         if (item.layoutCalendar != null)
             setProgressFooter(item.layoutCalendar, rule.id);
     }
@@ -355,6 +358,8 @@ public class PracticeFragment extends Fragment {
 
         TextView textViewTitle = new TextView(context);
         textViewTitle.setText("Мои правила");
+        Typeface font = ResourcesCompat.getFont(getContext(), R.font.manrope_medium);
+        textViewTitle.setTypeface(font);
         textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         textViewTitle.setGravity(Gravity.CENTER);
         textViewTitle.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -364,9 +369,10 @@ public class PracticeFragment extends Fragment {
             textViewTitle.setTextColor(getResources().getColor(R.color.PrimaryBlack, getActivity().getTheme()));
         layoutLeftSide.addView(textViewTitle);
 
-        int paddingDP = DataModule.convertDpToPixel(4, context);
+        int paddingDP = DataModule.convertDpToPixel(6, context);
+        int widthBadge = DataModule.convertDpToPixel(8, context);
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.estimate" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -375,14 +381,27 @@ public class PracticeFragment extends Fragment {
                 rule.id = cursor.getInt(0);
                 rule.name = cursor.getString(1);
                 rule.done = cursor.getInt(2);
+                rule.estimate = cursor.getInt(3);
 
                 int size1 = DataModule.convertDpToPixel(1, context);
+
+                LinearLayout layoutWrapperRule = new LinearLayout(context);
+                layoutWrapperRule.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams paramsWrapper = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightCell);
+                paramsWrapper.setMargins(0, 1, 0, 1);
+                layoutWrapperRule.setLayoutParams(paramsWrapper);
+
+                View viewColor = new View(context);
+                viewColor.setLayoutParams(new LinearLayout.LayoutParams(widthBadge, heightCell));
+                viewColor.setBackground(getColorByEstimate(rule.estimate));
+                layoutWrapperRule.addView(viewColor);
 
                 TextView textViewRule = new TextView(context);
                 LinearLayout.LayoutParams params =
                         new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightCell);
                 params.setMargins(size1, 0, 0, 0);
 
+                textViewRule.setTypeface(font);
                 if (getActivity() != null)
                     textViewRule.setTextColor(getResources().getColor(R.color.PrimaryBlack, getActivity().getTheme()));
                 textViewRule.setText(rule.name);
@@ -394,13 +413,26 @@ public class PracticeFragment extends Fragment {
                 textViewRule.setLayoutParams(params);
                 textViewRule.setPadding(paddingDP, 0, paddingDP, 0);
                 textViewRule.setBackground(context.getDrawable(R.drawable.table_cell_rect));
+                textViewRule.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+                layoutWrapperRule.addView(textViewRule);
 
 
-                layoutLeftSide.addView(textViewRule);
+                layoutLeftSide.addView(layoutWrapperRule);
             }
         }
 
         return layoutLeftSide;
+    }
+
+    private Drawable getColorByEstimate(int estimate) {
+
+        return switch (estimate) {
+            case 1 -> getContext().getDrawable(R.drawable.cell_shape_light_red);
+            case 2 -> getContext().getDrawable(R.drawable.cell_shape_light_orange);
+            case 3 -> getContext().getDrawable(R.drawable.cell_shape_light_green);
+            default -> getContext().getDrawable(R.drawable.cell_shape_gray_rect);
+        };
+
     }
 
 
@@ -424,6 +456,8 @@ public class PracticeFragment extends Fragment {
                 TextView viewCell = new TextView(context);
                 viewCell.setTag(cursor.getInt(0));
                 viewCell.setGravity(Gravity.CENTER);
+                Typeface font = ResourcesCompat.getFont(context, R.font.manrope_medium);
+                viewCell.setTypeface(font);
                 viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
                 viewCell.setTextColor(getResources().getColor(R.color.PrimaryBlack, context.getTheme()));
                 viewCell.setLayoutParams(new FrameLayout.LayoutParams(widthCell, heightCell));
@@ -485,6 +519,8 @@ public class PracticeFragment extends Fragment {
                 String dateStr = fmt.format(dateInt);
                 viewCell.setGravity(Gravity.CENTER);
                 viewCell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                Typeface font = ResourcesCompat.getFont(context, R.font.manrope_medium);
+                viewCell.setTypeface(font);
                 viewCell.setTextColor(getResources().getColor(R.color.PrimaryBlack, context.getTheme()));
                 viewCell.setText(dateStr);
 
@@ -663,7 +699,8 @@ public class PracticeFragment extends Fragment {
 
             for (int j = 0; j < 7; j++) {
                 TextView rect = new TextView(context);
-                rect.setTypeface(null, Typeface.BOLD);
+                Typeface font = ResourcesCompat.getFont(getContext(), R.font.manrope_bold);
+                rect.setTypeface(font);
                 rect.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
                 rect.setGravity(Gravity.CENTER);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, h, 1);
@@ -742,7 +779,7 @@ public class PracticeFragment extends Fragment {
 
     public static void updateStatuses(Context context) {
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.code" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
 
         if ((cursor != null)) {
@@ -750,9 +787,22 @@ public class PracticeFragment extends Fragment {
                 RuleInfo info = new RuleInfo();
                 info.id = cursor.getInt(0);
                 info.name = cursor.getString(1);
-                updateStatusRule(info);
+                info.code = cursor.getString(2);
                 checkRuleOnFinish(context, info);
             }
+        }
+    }
+
+    public static void updateRuleItems(Activity activity) {
+
+        LinearLayout layoutPractices = activity.findViewById(R.id.listPracticesSwipe);
+        if (layoutPractices == null)
+            return;
+
+        for (int i = 0; i < layoutPractices.getChildCount(); i++) {
+            View v = layoutPractices.getChildAt(i);
+            if (v instanceof ViewRuleItem)
+                ((ViewRuleItem) v).updateImageLogoByStatus();
         }
     }
 
@@ -767,11 +817,13 @@ public class PracticeFragment extends Fragment {
         if (!isLast)
             return;
 
+        updateStatusRule(info);
+
         AlertDialog.Builder ad;
-        String title = "Практика\n" + info.name + "\nзавершена!";
-        String message = "Удалить правило из практики?";
-        String buttonYesString = "Да";
-        String buttonNoString = "Нет";
+        String title = "Сегодня 21 день как вы практикуете пункт \"" +  info.code + "\"";
+        String message = "Хотите выбрать новый пункт или продолжить практиковать?!";
+        String buttonYesString = "новый";
+        String buttonNoString = "продолжить";
 
         ad = new AlertDialog.Builder(context);
         ad.setTitle(title);

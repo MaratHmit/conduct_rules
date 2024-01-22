@@ -31,7 +31,7 @@
                 android:id="@+id/tv_practiceName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
+                android:fontFamily="@font/manrope_bold"
                 android:text="@string/sampleRuleName"
                 android:textColor="#141313"
                 android:textSize="18sp" />
@@ -41,6 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:fontFamily="@font/manrope_regular"
                 android:textColor="#141313"
                 android:textSize="16sp"
                 android:text="@string/sampleRuleDescription"/>

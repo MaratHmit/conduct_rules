@@ -2,7 +2,7 @@
     android:id="@+id/ll_rule"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
+    android:layout_marginTop="10dp"
     android:background="@drawable/frame_corner"
     android:fontFamily="@font/jost"
     android:orientation="vertical"
@@ -80,8 +80,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/tv_separator"
+                    android:fontFamily="@font/manrope_extrabold"
                     android:text="1"
-                    android:textStyle="bold"
                     android:textAlignment="textEnd"
                     android:textColor="@android:color/black"
                     android:textSize="14sp" />
@@ -91,8 +91,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_toLeftOf="@+id/tv_count_days_all"
+                    android:fontFamily="@font/manrope_extrabold"
                     android:text="/"
-                    android:textStyle="bold"
                     android:textAlignment="textEnd"
                     android:textColor="@android:color/black"
                     android:textSize="14sp" />
@@ -103,6 +103,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
                     android:layout_marginRight="20dp"
+                    android:fontFamily="@font/manrope_medium"
                     android:paddingTop="1sp"
                     android:text="21"
                     android:textAlignment="textEnd"
@@ -125,7 +126,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="25dp"
+                    android:layout_marginLeft="16dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -133,6 +134,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
+                        android:fontFamily="@font/manrope_regular"
                         android:text="@string/sample_rule_1"
                         android:textColor="@android:color/black"
                         android:textFontWeight="400"
@@ -149,7 +151,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/manrope_bold"
                             android:text="@string/sample_rule_short_name"
                             android:textColor="@android:color/black"
                             android:textSize="18sp" />
@@ -180,6 +182,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
+                    android:fontFamily="@font/manrope_regular"
                     android:lineHeight="29sp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
@@ -191,22 +194,27 @@
                 <LinearLayout
                     android:id="@+id/ll_buttons"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_marginTop="20dp"
                     android:gravity="center"
+                    android:layout_gravity="center"
+                    android:background="@drawable/button_add_corner"
                     android:orientation="horizontal">
 
-                    <Button
-                        android:id="@+id/btn_add_rule"
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="4dp"
-                        android:background="@drawable/button_add"
-                        android:gravity="center"
+                        android:src="@drawable/ic_add_black"
+                        android:layout_marginEnd="5dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/PrimaryBlack"
                         android:textAllCaps="false"
-                        android:textSize="16dp"></Button>
-
-
+                        android:fontFamily="@font/manrope_regular"
+                        android:text="@string/add_label"
+                        android:textSize="18sp"/>
                 </LinearLayout>
             </LinearLayout>
 

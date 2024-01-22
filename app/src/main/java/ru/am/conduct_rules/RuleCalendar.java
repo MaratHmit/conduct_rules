@@ -31,6 +31,7 @@ public class RuleCalendar extends LinearLayout {
 
         int heightRect = DataModule.convertDpToPixel(38, getContext());
         int marginRect = DataModule.convertDpToPixel(3, getContext());
+        Typeface font = ResourcesCompat.getFont(getContext(), R.font.manrope_medium);
 
         for (int i = 0; i < DAYS.length; i++) {
             Button buttonDay = new Button(getContext());
@@ -39,6 +40,7 @@ public class RuleCalendar extends LinearLayout {
             llParam.setMarginEnd(marginRect);
             buttonDay.setLayoutParams(llParam);
             buttonDay.setBackground(getContext().getDrawable(R.drawable.button_day));
+            buttonDay.setTypeface(font);
             buttonDay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             buttonDay.setText(DAYS[i]);
             buttonDay.setTransformationMethod(null);
@@ -56,6 +58,10 @@ public class RuleCalendar extends LinearLayout {
 
         int targetDate = rule.date;
         long targetTime = (long) targetDate * 1000 * 86400;
+        SimpleDateFormat fmt = new SimpleDateFormat("E dd.MM");
+        String dateTarget = fmt.format(targetTime);
+        long dateInt = (long) currentDate * 1000 * 86400;
+        String dateCurr = fmt.format(dateInt);
 
         SimpleDateFormat sdf = new SimpleDateFormat("u");
         int dayOfTheWeek = Integer.parseInt(sdf.format(targetTime)) - 1;
@@ -67,10 +73,17 @@ public class RuleCalendar extends LinearLayout {
         int startDate = targetDate - dayOfTheWeek;
         int endDate = startDate + 6;
 
+        dateInt = (long) startDate * 1000 * 86400;
+        String dateStart = fmt.format(dateInt);
+        dateInt = (long) endDate * 1000 * 86400;
+        String dateEnd = fmt.format(dateInt);
+
+        Typeface font = ResourcesCompat.getFont(getContext(), R.font.manrope_medium);
         for (int i = 0; i < DAYS.length; i++) {
             mButtonDays[i].setTextColor(getContext().getColor(R.color.GrayText));
-            mButtonDays[i].setTypeface(null, Typeface.NORMAL);
+            mButtonDays[i].setTypeface(font);
         }
+        font = ResourcesCompat.getFont(getContext(), R.font.manrope_extrabold);
 
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT p._id, p.result, p.done, p.date" +
                         " FROM practice p WHERE p.rule_id = ? AND p.date >= ? AND p.date <= ?",
@@ -83,7 +96,7 @@ public class RuleCalendar extends LinearLayout {
                 if (cursor.getInt(1) == 1)
                     mButtonDays[index].setTextColor(getContext().getColor(R.color.Green));
                 if (index == dayOfTheWeek)
-                    mButtonDays[index].setTypeface(null, Typeface.BOLD);
+                    mButtonDays[index].setTypeface(font);
                 if (cursor.getInt(3) == currentDate)
                     break;
             }

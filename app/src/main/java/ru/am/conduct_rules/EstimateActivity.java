@@ -75,16 +75,13 @@ public class EstimateActivity extends AppCompatActivity {
 
     private Drawable getColorByEstimate(int estimate) {
 
-        switch (estimate) {
-            case 1:
-                return getDrawable(R.drawable.cell_shape_light_red_corner);
-            case 2:
-                return getDrawable(R.drawable.cell_shape_light_orange_corner);
-            case 3:
-                return getDrawable(R.drawable.cell_shape_light_green_corner);
-        }
+        return switch (estimate) {
+            case 1 -> getDrawable(R.drawable.cell_shape_light_red_corner);
+            case 2 -> getDrawable(R.drawable.cell_shape_light_orange_corner);
+            case 3 -> getDrawable(R.drawable.cell_shape_light_green_corner);
+            default -> getDrawable(R.drawable.cell_shape_gray_corner);
+        };
 
-        return getDrawable(R.drawable.cell_shape_gray_corner);
     }
 
     private void loadRules() {
@@ -103,6 +100,11 @@ public class EstimateActivity extends AppCompatActivity {
     }
 
     public void onButtonClickEstimate(View view) {
+        if (view.getTag() != null) {
+            mListRules.get(mCurrentIndex).estimate = Integer.parseInt(view.getTag().toString());
+            updateRuleInfo();
+        }
+
         mCurrentIndex++;
         mButtonBack.setEnabled(true);
         if (mCurrentIndex == mListRules.size()) {

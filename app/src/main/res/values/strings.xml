@@ -83,5 +83,6 @@
     <string name="gender_2">Пол:</string>
     <string name="language_2">Язык системы:</string>
     <string name="practice_mode">Режим практики:</string>
+    <string name="add_label">Добавить</string>
 
 </resources>

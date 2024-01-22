@@ -51,11 +51,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (NullPointerException e) {
         }
 
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_list_rules, R.id.navigation_practice, R.id.navigation_profile)
-                .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        //  NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
         NavGraph graph = navController.getNavInflater().inflate(R.navigation.mobile_navigation);
 
@@ -139,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
             PracticeFragment.sButtonMarkCards.setEnabled(PracticeFragment.getCountPractices() > 0);
             PracticeFragment.updateRectViews();
             PracticeFragment.updateTextViews();
+            PracticeFragment.updateRuleItems(this);
             PracticeFragment.updateStatuses(this);
         } catch (Exception e) {
             finish();

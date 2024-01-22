@@ -27,9 +27,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:fontFamily="@font/manrope_bold"
                 android:lineHeight="26sp"
                 android:text="Намаскар,\nрасскажи о себе"
-                android:textStyle="bold"
                 android:textAlignment="center"
                 android:textColor="@color/PrimaryBlack"
                 android:textSize="24sp" />

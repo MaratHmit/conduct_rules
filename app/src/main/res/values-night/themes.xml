@@ -5,6 +5,7 @@
         <item name="colorAccent">#FF7235</item>
         <item name="android:navigationBarColor">@android:color/white</item>
         <item name="colorControlActivated">@color/GrayText</item>
+        <item name="colorControlHighlight">#0000</item>
     </style>
 
     <style name="Theme.ConductRules.NoActionBar">
@@ -13,6 +14,7 @@
         <item name="android:navigationBarColor">@android:color/white</item>
         <item name="colorControlActivated">@color/GrayText</item>
         <item name="colorAccent">#FF7235</item>
+        <item name="colorControlHighlight">#0000</item>
     </style>
 
     <style name="Theme.ConductRules.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

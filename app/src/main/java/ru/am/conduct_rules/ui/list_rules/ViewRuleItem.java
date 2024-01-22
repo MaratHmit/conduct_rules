@@ -113,7 +113,7 @@ public class ViewRuleItem extends LinearLayout {
             ivLogo.setImageResource(R.drawable.logo_green);
         ivLogo.setOnClickListener(view -> showRuleDescription());
 
-        Button btnAddRule = findViewById(R.id.btn_add_rule);
+        LinearLayout btnAddRule = findViewById(R.id.ll_buttons);
         ImageButton btnDeleteRule = findViewById(R.id.btn_delete_rule);
         if (mRule.mode == 0) {
             btnAddRule.setOnClickListener(buttonAddRuleClickListener);
@@ -131,8 +131,37 @@ public class ViewRuleItem extends LinearLayout {
                 setOutPractice();
         }
 
-        if (mRule.mode == 1)
+        if (mRule.mode == 1) {
             setSwipePracticeMode();
+            updateImageLogoByStatus();
+        }
+    }
+
+    public void updateImageLogoByStatus() {
+
+        ImageView ivLogo = findViewById(R.id.iv_logo_rule);
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, p.result, p.date" +
+                        " FROM rule r JOIN practice p ON p.rule_id = r._id WHERE r._id = ?",
+                new String[]{String.valueOf((int) mRule.id)});
+        if ((cursor != null)) {
+            int countSkipped = 0;
+            int count = 0;
+            while (cursor.moveToNext()) {
+                if (cursor.getInt(2) <= sCurrentDate) {
+                    count++;
+                    if (cursor.getInt(1) == 0)
+                        countSkipped++;
+                }
+            }
+            if (count > 3) {
+                ivLogo.setImageResource(R.drawable.logo_green);
+                if (countSkipped > 1)
+                    ivLogo.setImageResource(R.drawable.logo_orange);
+                if (countSkipped > 3)
+                    ivLogo.setImageResource(R.drawable.logo_red);
+            }
+        }
     }
 
     private void showRuleDescription() {
@@ -297,13 +326,12 @@ public class ViewRuleItem extends LinearLayout {
 
         mLayoutMain = findViewById(R.id.ll_rule);
         mLayoutMain.setPadding(0, 0, 0, 60);
-        mLayoutMain.setBackgroundResource(R.drawable.frame_corner_unavailable);
         mLayoutMain.requestLayout();
 
         LinearLayout llButtons = findViewById(R.id.ll_buttons);
         llButtons.setVisibility(GONE);
 
-        setTextColorTextViews(Color.WHITE);
+        setTextColorTextViews(Color.parseColor("#A09FA3"));
     }
 
     private void setOutPractice() {

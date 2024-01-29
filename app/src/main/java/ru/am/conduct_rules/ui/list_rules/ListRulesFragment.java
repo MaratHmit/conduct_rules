@@ -151,14 +151,15 @@ public class ListRulesFragment extends Fragment {
     }
 
     private void updateAvailableListRules() {
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT _id, level, point " +
-                "FROM rule WHERE level = 2 AND available = 0", null);
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT COUNT(_id) " +
+                "FROM rule WHERE estimate < 3 AND level = 1", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
-                Cursor cursorL = DataModule.dbReader.rawQuery("SELECT COUNT(_id) " +
-                        "FROM rule WHERE done != 2 AND level = 1 AND point = ?", new String[]{String.valueOf(cursor.getInt(2))});
-                if ((cursorL != null) && cursorL.moveToFirst() && (cursorL.getInt(0) == 0))
-                    DataModule.dbWriter.execSQL("UPDATE rule SET available = 1 WHERE _id = " + cursor.getInt(0));
+                if (cursor.getInt(0) == 0)
+                    DataModule.dbWriter.execSQL("UPDATE rule SET available = 1 WHERE level = 2");
+                else
+                    DataModule.dbWriter.execSQL("UPDATE rule SET available = 0 WHERE level = 2");
             }
         }
     }

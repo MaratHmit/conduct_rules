@@ -24,6 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "mode INTEGER DEFAULT 0,"
                 + "reminder INTEGER DEFAULT 0,"
                 + "reminder_time INTEGER DEFAULT 1260,"
+                + "reg_date INTEGER,"
                 + "language INTEGER);");
 
         db.execSQL("INSERT INTO user (_id, name, gender, language) VALUES (1, 'Садхака', NULL, 0)");

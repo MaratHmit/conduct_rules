@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import ru.am.conduct_rules.ui.MainActivity;
 
 public class StartLoginActivity extends AppCompatActivity {
@@ -43,10 +46,14 @@ public class StartLoginActivity extends AppCompatActivity {
         if ((editTextName == null) || (editTextAge == null) || (editTextMeditation == null))
             return;
 
+        Date currentTime = Calendar.getInstance().getTime();
+        int currentDate = (int) (currentTime.getTime() / (1000 * 86400));
+
         ContentValues cv = new ContentValues();
         cv.put("name", editTextName.getText().toString());
         cv.put("age", editTextAge.getText().toString());
         cv.put("meditation", editTextMeditation.getText().toString());
+        cv.put("reg_date", currentDate);
         cv.put("start", 1);
         DataModule.dbWriter.update("user", cv, "_id = 1", null);
 

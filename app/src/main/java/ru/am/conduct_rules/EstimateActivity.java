@@ -107,6 +107,9 @@ public class EstimateActivity extends AppCompatActivity {
 
         mCurrentIndex++;
         mButtonBack.setEnabled(true);
+        if (view.getTag() != null) {
+            saveRuleEstimate(Integer.parseInt(view.getTag().toString()));
+        }
         if (mCurrentIndex == mListRules.size()) {
 
             Toast toast = Toast.makeText(this, "Оценка правил завершена!", Toast.LENGTH_SHORT);
@@ -122,9 +125,6 @@ public class EstimateActivity extends AppCompatActivity {
             return;
         }
         updateRuleInfo();
-        if (view.getTag() != null) {
-            saveRuleEstimate(Integer.parseInt(view.getTag().toString()));
-        }
     }
 
     public void onButtonClickBack(View view) {

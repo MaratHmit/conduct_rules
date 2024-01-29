@@ -1,14 +1,16 @@
 package ru.am.conduct_rules;
 
+import static ru.am.conduct_rules.Consts.NOTIFY_ID;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,10 +20,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.TimePicker;
 
 import androidx.navigation.ui.AppBarConfiguration;
+
+import java.util.Calendar;
 
 import ru.am.conduct_rules.databinding.ActivityProfileBinding;
 
@@ -33,6 +38,10 @@ public class ProfileActivity extends AppCompatActivity {
     private static DBHelper mDbHelper;
     private static SQLiteDatabase mDbWriter;
     private static SQLiteDatabase mDbReader;
+    private LinearLayout mLinerLayoutReminder;
+    private Spinner mSpinnerReminder;
+    private EditText mEditTextReminderTime;
+    private int mHourReminder, mMinReminder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +50,18 @@ public class ProfileActivity extends AppCompatActivity {
         binding = ActivityProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        mLinerLayoutReminder = findViewById(R.id.linerLayoutReminder);
+        mSpinnerReminder = findViewById(R.id.spinnerReminder);
+        mEditTextReminderTime = findViewById(R.id.editTextReminderTime);
+
         initAdapters();
         initListeners();
     }
 
     private void initListeners() {
+
+        if (mEditTextReminderTime != null)
+            mEditTextReminderTime.setKeyListener(null);
 
         Button buttonBack = (Button) findViewById(R.id.buttonBack);
         buttonBack.setOnClickListener(v -> {
@@ -66,16 +82,18 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        Button buttonReset = findViewById(R.id.button_reset);
-        buttonReset.setOnClickListener(v -> resetData());
+        mEditTextReminderTime.setOnClickListener(v -> new TimePickerDialog(ProfileActivity.this, timeSetListener,
+                mHourReminder, mMinReminder, true)
+                .show());
 
-        Button buttonRunEstimate = findViewById(R.id.buttonRunEstimate);
-        buttonRunEstimate.setOnClickListener(v -> runEstimate());
     }
 
     AdapterView.OnItemSelectedListener onItemSelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+            if (parentView == mSpinnerReminder)
+                mLinerLayoutReminder.setVisibility(position == 1 ? View.VISIBLE : View.GONE);
             save();
         }
 
@@ -84,6 +102,54 @@ public class ProfileActivity extends AppCompatActivity {
             save();
         }
     };
+
+    // установка обработчика выбора времени
+    TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+            mHourReminder = hourOfDay;
+            mMinReminder = minute;
+            String time = String.format("%02d", mHourReminder) + ":" + String.format("%02d", mMinReminder);
+            mEditTextReminderTime.setText(time);
+            ContentValues cv = new ContentValues();
+            int timeInt = hourOfDay * 60 + minute;
+            cv.put("reminder_time", timeInt);
+            DataModule.dbWriter.update("user", cv, "_id = 1", null);
+            setNotification();
+        }
+    };
+
+    private void setNotification() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, mHourReminder);
+        calendar.set(Calendar.MINUTE, mMinReminder);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+
+        try {
+            Intent notifyIntent = new Intent(getApplicationContext(), Receiver.class);
+            PendingIntent pendingIntentEveryDay = PendingIntent.getBroadcast
+                    (getApplicationContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent pendingIntentOne = PendingIntent.getBroadcast
+                    (getApplicationContext(), NOTIFY_ID + 1, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            Cursor query = mDbReader.rawQuery(
+                    "SELECT reminder FROM user WHERE _id = 1", null);
+            if (query.moveToFirst()) {
+                AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                alarmManager.cancel(pendingIntentEveryDay);
+                if (query.getInt(0) == 1) {
+                    if (Calendar.getInstance().getTimeInMillis() < calendar.getTimeInMillis())
+                        alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntentOne);
+                    alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntentEveryDay);
+                }
+            }
+        } catch (Exception e) {
+
+        }
+    }
 
     private void initAdapters() {
 
@@ -107,6 +173,13 @@ public class ProfileActivity extends AppCompatActivity {
         adapterMode.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinnerMode.setAdapter(adapterMode);
         spinnerMode.setOnItemSelectedListener(onItemSelectedListener);
+
+        Spinner spinnerReminder = findViewById(R.id.spinnerReminder);
+        ArrayAdapter adapterReminder = ArrayAdapter.createFromResource(this,
+                R.array.reminderList, R.layout.spinner_item);
+        adapterReminder.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinnerReminder.setAdapter(adapterReminder);
+        spinnerReminder.setOnItemSelectedListener(onItemSelectedListener);
     }
 
     @Override
@@ -147,6 +220,7 @@ public class ProfileActivity extends AppCompatActivity {
         cv.put("gender", spinnerGender.getSelectedItemPosition());
         cv.put("language", spinnerLanguage.getSelectedItemPosition());
         cv.put("mode", spinnerMode.getSelectedItemPosition());
+        cv.put("reminder", mSpinnerReminder.getSelectedItemPosition());
         mDbWriter.update("user", cv, "_id = 1", null);
     }
 
@@ -160,7 +234,8 @@ public class ProfileActivity extends AppCompatActivity {
         Spinner spinnerLanguage = (Spinner) findViewById(R.id.spinnerLanguage);
         Spinner spinnerMode = (Spinner) findViewById(R.id.spinnerMode);
 
-        Cursor query = mDbReader.rawQuery("SELECT name, gender, language, mode FROM user WHERE _id = 1", null);
+        Cursor query = mDbReader.rawQuery("SELECT name, gender, language, mode, reminder, " +
+                "reminder_time FROM user WHERE _id = 1", null);
         if (query.moveToFirst()) {
             String name = query.getString(0);
             if (editTextName != null) {
@@ -173,50 +248,16 @@ public class ProfileActivity extends AppCompatActivity {
                 spinnerLanguage.setSelection(query.getInt(2));
             if (spinnerMode != null)
                 spinnerMode.setSelection(query.getInt(3));
+
+            if (mSpinnerReminder != null)
+                mSpinnerReminder.setSelection(query.getInt(4));
+            if (mEditTextReminderTime != null) {
+                int t = query.getInt(5);
+                mHourReminder = t / 60;
+                mMinReminder = t % 60;
+                String time = String.format("%02d", mHourReminder) + ":" + String.format("%02d", mMinReminder);
+                mEditTextReminderTime.setText(time);
+            }
         }
     }
-
-    private void resetData() {
-        AlertDialog.Builder ad;
-        String title = "Подтверждение удаления данных";
-        String message = "Очистить все данные?";
-        String buttonYesString = "Да";
-        String buttonNoString = "Нет";
-
-        ad = new AlertDialog.Builder(this);
-        ad.setTitle(title);
-        ad.setMessage(message);
-
-        ad.setPositiveButton(buttonYesString, (dialog, arg1) -> {
-            removeData();
-            Toast toast = Toast.makeText(this, "Данные очищены!", Toast.LENGTH_SHORT);
-            toast.show();
-        });
-        ad.setNegativeButton(buttonNoString, (dialog, arg1) -> {
-        });
-        ad.setCancelable(false);
-        ad.show();
-    }
-
-    private void removeData() {
-        if (mDbHelper == null)
-            initDBHelper(getBaseContext());
-
-        DataModule.dbWriter.execSQL("DELETE FROM practice");
-        DataModule.dbWriter.execSQL("UPDATE rule SET checked = 0, done = 0, estimate = 0");
-        DataModule.dbWriter.execSQL("UPDATE rule SET available = 0 WHERE level = 2");
-    }
-
-    private void runEstimate() {
-
-        Intent intent = new Intent(getBaseContext(), EstimateActivity.class);
-        startActivityForResult(intent, Consts.RESULT_ESTIMATE);
-    }
-
-    public void onButtonFeedback(View view) {
-        startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://t.me/+5x-rmfQUnl1hZDli")));
-    }
-
-
-
 }

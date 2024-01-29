@@ -20,7 +20,6 @@
     <string-array name="modeList">
         <item>Свайп</item>
         <item>Таблица</item>
-        <item>Свайп-список</item>
     </string-array>
 
     <string-array name="reminderList">
@@ -47,7 +46,7 @@
     <string name="resetAll">Сброс</string>
     <string name="level_1">1 уровень</string>
     <string name="level_2">2 уровень</string>
-    <string name="reminder">Напоминание</string>
+    <string name="reminder">Напоминание:</string>
     <string name="feedback">Обратная связь</string>
     <string name="curs">Курс</string>
     <string name="button_base">Базовый</string>

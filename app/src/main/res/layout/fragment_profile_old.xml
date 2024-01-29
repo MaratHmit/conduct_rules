@@ -82,7 +82,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="10dp"
-        android:visibility="gone"
+
         android:paddingBottom="10dp">
 
         <LinearLayout

@@ -1,5 +1,10 @@
 package ru.am.conduct_rules.ui;
 
+import static ru.am.conduct_rules.Consts.NOTIFY_ID;
+
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,6 +27,7 @@ import ru.am.conduct_rules.EstimateActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.Consts;
+import ru.am.conduct_rules.Receiver;
 import ru.am.conduct_rules.RuleDescriptionActivity;
 import ru.am.conduct_rules.ui.practice.PracticeFragment;
 import ru.am.conduct_rules.databinding.ActivityMainBinding;
@@ -34,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private Context context;
 
-    //    private NotificationManager notificationManager;
+    private NotificationManager notificationManager;
     private static final int NOTIFY_ID = 101;
 
     @Override
@@ -67,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
             checkSkippedPractices();
         navController.setGraph(graph);
 
-//        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//        manager.cancelAll();
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.cancelAll();
     }
 
     private void checkSkippedPractices() {
@@ -156,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    public void onButtonFeedback(View view) {
+        startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://t.me/+5x-rmfQUnl1hZDli")));
     }
 
 

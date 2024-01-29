@@ -142,8 +142,8 @@ public class ProfileActivity extends AppCompatActivity {
                 alarmManager.cancel(pendingIntentEveryDay);
                 if (query.getInt(0) == 1) {
                     if (Calendar.getInstance().getTimeInMillis() < calendar.getTimeInMillis())
-                        alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntentOne);
-                    alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntentEveryDay);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentOne);
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntentEveryDay);
                 }
             }
         } catch (Exception e) {

@@ -53,7 +53,7 @@ public class Receiver extends BroadcastReceiver {
 
         Notification.Builder builder = new Notification.Builder(context, Consts.NOTIFICATION_CHANNEL_ID);
         builder.setContentTitle("16 пунктов");
-        builder.setContentText("Время провести оценку!");
+        builder.setContentText("- проверь свои достижения");
         builder.setSmallIcon(R.drawable.ic_launcher);
 
         Intent notifyIntent = new Intent(context, MainActivity.class);

@@ -22,8 +22,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "gender INTEGER,"
                 + "start INTEGER DEFAULT 0,"
                 + "mode INTEGER DEFAULT 0,"
-                + "reminder INTEGER DEFAULT 0,"
-                + "reminder_time INTEGER DEFAULT 1260,"
+                + "reminder INTEGER DEFAULT 1,"
+                + "reminder_time INTEGER DEFAULT 1200,"
                 + "reg_date INTEGER,"
                 + "language INTEGER);");
 

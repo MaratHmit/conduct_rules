@@ -2,17 +2,18 @@ package ru.am.conduct_rules.ui;
 
 import static ru.am.conduct_rules.Consts.NOTIFY_ID;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
@@ -20,15 +21,12 @@ import android.widget.TextView;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import ru.am.conduct_rules.EstimateActivity;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.Consts;
-import ru.am.conduct_rules.Receiver;
-import ru.am.conduct_rules.RuleDescriptionActivity;
+import ru.am.conduct_rules.NotifyReceiver;
 import ru.am.conduct_rules.ui.practice.PracticeFragment;
 import ru.am.conduct_rules.databinding.ActivityMainBinding;
 
@@ -75,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancelAll();
+
+        setNotification();
     }
 
     private void checkSkippedPractices() {
@@ -166,6 +166,53 @@ public class MainActivity extends AppCompatActivity {
 
     public void onButtonFeedback(View view) {
         startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://t.me/+5x-rmfQUnl1hZDli")));
+    }
+
+    public void setNotification() {
+
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+        }
+
+        int hour = 20;
+        int min = 0;
+        int isReminder = 0;
+
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT reminder, reminder_time FROM user WHERE _id = 1", null);
+        if (cursor.moveToFirst()) {
+            isReminder = cursor.getInt(0);
+            int t = cursor.getInt(1);
+            hour = t / 60;
+            min = t % 60;
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, min);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        try {
+            Intent notifyIntent = new Intent(getApplicationContext(), NotifyReceiver.class);
+            PendingIntent pendingIntentEveryDay = PendingIntent.getBroadcast
+                    (getApplicationContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent pendingIntentOne = PendingIntent.getBroadcast
+                    (getApplicationContext(), NOTIFY_ID + 1, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntentEveryDay);
+            alarmManager.cancel(pendingIntentOne);
+
+            if (isReminder == 1) {
+                if (Calendar.getInstance().getTimeInMillis() < calendar.getTimeInMillis())
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentOne);
+                calendar.add(Calendar.DATE, 1);
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntentEveryDay);
+            }
+
+        } catch (Exception e) {
+
+        }
     }
 
 

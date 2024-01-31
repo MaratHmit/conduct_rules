@@ -55,14 +55,12 @@
             android:label="О практике"
             android:theme="@style/Theme.ConductRules" />
 
-        <service
-            android:name=".ReminderIntentService"
-            android:exported="false" />
-
         <receiver
-            android:name=".Receiver"
+            android:name=".NotifyReceiver"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="true"
+            android:process=":remote">
+        </receiver>
     </application>
 
 </manifest>

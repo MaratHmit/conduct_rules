@@ -2,15 +2,19 @@ package ru.am.conduct_rules;
 
 import static ru.am.conduct_rules.Consts.NOTIFY_ID;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -121,15 +125,18 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setNotification() {
 
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, mHourReminder);
         calendar.set(Calendar.MINUTE, mMinReminder);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-
         try {
-            Intent notifyIntent = new Intent(getApplicationContext(), Receiver.class);
+            Intent notifyIntent = new Intent(getApplicationContext(), NotifyReceiver.class);
             PendingIntent pendingIntentEveryDay = PendingIntent.getBroadcast
                     (getApplicationContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             PendingIntent pendingIntentOne = PendingIntent.getBroadcast
@@ -139,10 +146,12 @@ public class ProfileActivity extends AppCompatActivity {
                     "SELECT reminder FROM user WHERE _id = 1", null);
             if (query.moveToFirst()) {
                 AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                alarmManager.cancel(pendingIntentOne);
                 alarmManager.cancel(pendingIntentEveryDay);
                 if (query.getInt(0) == 1) {
                     if (Calendar.getInstance().getTimeInMillis() < calendar.getTimeInMillis())
                         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentOne);
+                    calendar.add(Calendar.DATE, 1);
                     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntentEveryDay);
                 }
             }

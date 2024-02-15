@@ -4,6 +4,8 @@ import static ru.am.conduct_rules.Consts.NOTIFY_ID;
 
 import android.Manifest;
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
@@ -12,12 +14,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -125,9 +129,12 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setNotification() {
 
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-        }
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_DENIED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SCHEDULE_EXACT_ALARM}, 1);
+
+        NotificationChannel();
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, mHourReminder);
@@ -137,27 +144,42 @@ public class ProfileActivity extends AppCompatActivity {
 
         try {
             Intent notifyIntent = new Intent(getApplicationContext(), NotifyReceiver.class);
-            PendingIntent pendingIntentEveryDay = PendingIntent.getBroadcast
-                    (getApplicationContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            PendingIntent pendingIntentOne = PendingIntent.getBroadcast
-                    (getApplicationContext(), NOTIFY_ID + 1, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast
+                    (getApplicationContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
             Cursor query = mDbReader.rawQuery(
                     "SELECT reminder FROM user WHERE _id = 1", null);
             if (query.moveToFirst()) {
                 AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-                alarmManager.cancel(pendingIntentOne);
-                alarmManager.cancel(pendingIntentEveryDay);
+                alarmManager.cancel(pendingIntent);
                 if (query.getInt(0) == 1) {
-                    if (Calendar.getInstance().getTimeInMillis() < calendar.getTimeInMillis())
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentOne);
-                    calendar.add(Calendar.DATE, 1);
-                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntentEveryDay);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                 }
             }
         } catch (Exception e) {
+            Log.e("pe", e.toString());
 
         }
+
+    }
+
+    private void NotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "CONDUCTRULES";
+            String description = "CONDUCT RULES CHANNEL";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("Notification", name, importance);
+            channel.setDescription(description);
+
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+
+        }
+
     }
 
     private void initAdapters() {

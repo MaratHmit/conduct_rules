@@ -10,8 +10,8 @@ android {
         applicationId "ru.am.conduct_rules"
         minSdk 28
         targetSdk 33
-        versionCode 17
-        versionName "2.13"
+        versionCode 20
+        versionName "2.16"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

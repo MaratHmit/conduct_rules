@@ -9,6 +9,7 @@ public class DataModule {
     public static SQLiteDatabase dbReader;
     public static SQLiteDatabase dbWriter;
     public static boolean isFirstStart;
+    public static boolean isSetReminder;
 
     public static void initDBHelper(Context c) {
         DBHelper dbHelper = new DBHelper(c);

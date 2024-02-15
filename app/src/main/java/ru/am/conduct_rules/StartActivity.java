@@ -19,6 +19,7 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
 
         DataModule.isFirstStart = isFirstStart();
+        DataModule.isSetReminder = !DataModule.isFirstStart;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

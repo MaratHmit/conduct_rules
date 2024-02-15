@@ -1,9 +1,8 @@
 package ru.am.conduct_rules.ui;
 
-import static ru.am.conduct_rules.Consts.NOTIFY_ID;
-
 import android.Manifest;
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -23,15 +23,15 @@ import androidx.navigation.NavGraph;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import ru.am.conduct_rules.R;
-import ru.am.conduct_rules.DataModule;
-import ru.am.conduct_rules.Consts;
-import ru.am.conduct_rules.NotifyReceiver;
-import ru.am.conduct_rules.ui.practice.PracticeFragment;
-import ru.am.conduct_rules.databinding.ActivityMainBinding;
-
 import java.util.Calendar;
 import java.util.Date;
+
+import ru.am.conduct_rules.Consts;
+import ru.am.conduct_rules.DataModule;
+import ru.am.conduct_rules.NotifyReceiver;
+import ru.am.conduct_rules.R;
+import ru.am.conduct_rules.databinding.ActivityMainBinding;
+import ru.am.conduct_rules.ui.practice.PracticeFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancelAll();
 
-        setNotification();
+        if (!DataModule.isSetReminder)
+            setNotification();
     }
 
     private void checkSkippedPractices() {
@@ -168,23 +169,17 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://t.me/+5x-rmfQUnl1hZDli")));
     }
 
-    public void setNotification() {
+    private void setNotification() {
 
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-        }
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_DENIED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SCHEDULE_EXACT_ALARM}, 1);
+
+        NotificationChannel();
 
         int hour = 20;
         int min = 0;
-        int isReminder = 0;
-
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT reminder, reminder_time FROM user WHERE _id = 1", null);
-        if (cursor.moveToFirst()) {
-            isReminder = cursor.getInt(0);
-            int t = cursor.getInt(1);
-            hour = t / 60;
-            min = t % 60;
-        }
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -194,26 +189,38 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             Intent notifyIntent = new Intent(getApplicationContext(), NotifyReceiver.class);
-            PendingIntent pendingIntentEveryDay = PendingIntent.getBroadcast
-                    (getApplicationContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            PendingIntent pendingIntentOne = PendingIntent.getBroadcast
-                    (getApplicationContext(), NOTIFY_ID + 1, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast
+                    (getApplicationContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
-            AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-            alarmManager.cancel(pendingIntentEveryDay);
-            alarmManager.cancel(pendingIntentOne);
-
-            if (isReminder == 1) {
-                if (Calendar.getInstance().getTimeInMillis() < calendar.getTimeInMillis())
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentOne);
-                calendar.add(Calendar.DATE, 1);
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntentEveryDay);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
             }
 
         } catch (Exception e) {
 
         }
     }
+
+    private void NotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "CONDUCTRULES";
+            String description = "CONDUCT RULES CHANNEL";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("Notification", name, importance);
+            channel.setDescription(description);
+
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+
+        }
+
+    }
+
+
 
 
 }

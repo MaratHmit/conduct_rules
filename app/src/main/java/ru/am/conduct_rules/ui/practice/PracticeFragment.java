@@ -44,7 +44,10 @@ import ru.am.conduct_rules.Consts;
 import ru.am.conduct_rules.DataModule;
 import ru.am.conduct_rules.R;
 import ru.am.conduct_rules.RuleInfo;
+import ru.am.conduct_rules.StartActivity;
+import ru.am.conduct_rules.StartLoginActivity;
 import ru.am.conduct_rules.databinding.FragmentPracticeBinding;
+import ru.am.conduct_rules.ui.MainActivity;
 import ru.am.conduct_rules.ui.StackActivity;
 import ru.am.conduct_rules.ui.list_rules.ViewRuleItem;
 
@@ -777,7 +780,7 @@ public class PracticeFragment extends Fragment {
             activity.startActivityForResult(intent, Consts.RESULT_FINISH);
     }
 
-    public static void updateStatuses(Context context) {
+    public static void updateStatuses(Activity activity) {
 
         Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.code" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
@@ -788,7 +791,7 @@ public class PracticeFragment extends Fragment {
                 info.id = cursor.getInt(0);
                 info.name = cursor.getString(1);
                 info.code = cursor.getString(2);
-                checkRuleOnFinish(context, info);
+                checkRuleOnFinish(activity, info);
             }
         }
     }
@@ -806,7 +809,7 @@ public class PracticeFragment extends Fragment {
         }
     }
 
-    private static void checkRuleOnFinish(Context context, RuleInfo info) {
+    private static void checkRuleOnFinish(Activity activity, RuleInfo info) {
 
         if (sCurrentDate == 0) {
             Date currentTime = Calendar.getInstance().getTime();
@@ -820,12 +823,12 @@ public class PracticeFragment extends Fragment {
         updateStatusRule(info);
 
         AlertDialog.Builder ad;
-        String title = "Сегодня 21 день как вы практикуете пункт \"" +  info.code + "\"";
+        String title = "Сегодня 21 день как вы практикуете пункт \"" + info.code + "\"";
         String message = "Хотите выбрать новый пункт или продолжить практиковать?!";
         String buttonYesString = "новый";
         String buttonNoString = "продолжить";
 
-        ad = new AlertDialog.Builder(context);
+        ad = new AlertDialog.Builder(activity);
         ad.setTitle(title);
         ad.setMessage(message);
 
@@ -839,6 +842,7 @@ public class PracticeFragment extends Fragment {
                             PracticeFragment.sListPractice.get(i).setVisibility(View.GONE);
                         }
                     }
+                    checkOnEmpty(activity);
                 } catch (Exception e) {
 
                 }
@@ -876,6 +880,24 @@ public class PracticeFragment extends Fragment {
         });
         ad.setCancelable(false);
         ad.show();
+    }
+
+    private static void checkOnEmpty(Activity activity) {
+
+        boolean isEmpty = true;
+        for (int i = 0; i < PracticeFragment.sListPractice.size(); i++) {
+            if (PracticeFragment.sListPractice.get(i).getVisibility() == View.VISIBLE) {
+                isEmpty = false;
+                break;
+            }
+        }
+
+        if (isEmpty) {
+            Intent intent = activity.getIntent();
+            activity.finish();
+            activity.startActivity(intent);
+        }
+
     }
 
     private static boolean checkRuleIsLast(RuleInfo info) {

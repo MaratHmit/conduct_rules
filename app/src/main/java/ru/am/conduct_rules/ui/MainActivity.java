@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         DataModule.initDBHelper(this);
 
+
         int countPractices = getCountPractices();
         int countPracticesToday = getCountPracticesToday();
         if (countPractices == 0)
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         if (!DataModule.isSetReminder)
             setNotification();
     }
+
 
     private void checkSkippedPractices() {
         PracticeFragment.updateStatuses(this);

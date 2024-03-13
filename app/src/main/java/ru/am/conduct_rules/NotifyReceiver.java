@@ -9,13 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.NotificationManagerCompat;
-
 import ru.am.conduct_rules.ui.MainActivity;
 
 public class NotifyReceiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
-        showNotification(context);
+        context.startService(new Intent(context, NotificationService.class));
     }
 
     private void showNotification(Context context) {

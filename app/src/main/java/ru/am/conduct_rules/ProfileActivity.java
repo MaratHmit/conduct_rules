@@ -152,11 +152,9 @@ public class ProfileActivity extends AppCompatActivity {
             if (query.moveToFirst()) {
                 AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
                 alarmManager.cancel(pendingIntent);
-                if (query.getInt(0) == 1) {
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-                }
+                if (query.getInt(0) == 1)
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
             }
         } catch (Exception e) {
             Log.e("pe", e.toString());

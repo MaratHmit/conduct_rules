@@ -14,7 +14,8 @@ import ru.am.conduct_rules.ui.MainActivity;
 public class NotifyReceiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
-        context.startService(new Intent(context, NotificationService.class));
+       // context.startService(new Intent(context, NotificationService.class));
+        showNotification(context);
     }
 
     private void showNotification(Context context) {

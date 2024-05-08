@@ -134,8 +134,6 @@ public class ProfileActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_DENIED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SCHEDULE_EXACT_ALARM}, 1);
 
-        NotificationChannel();
-
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, mHourReminder);
         calendar.set(Calendar.MINUTE, mMinReminder);
@@ -144,40 +142,26 @@ public class ProfileActivity extends AppCompatActivity {
 
         try {
             Intent notifyIntent = new Intent(getApplicationContext(), NotifyReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast
-                    (getApplicationContext(), NOTIFY_ID, notifyIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+
+            boolean isSet = false;
             Cursor query = mDbReader.rawQuery(
                     "SELECT reminder FROM user WHERE _id = 1", null);
-            if (query.moveToFirst()) {
-                AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+            isSet = query.moveToFirst() && (query.getInt(0) == 1);
+            for (int i = 0; i < 100; i++) {
+                PendingIntent pendingIntent = PendingIntent.getBroadcast
+                        (getApplicationContext(), Consts.NOTIFY_ID + i, notifyIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
                 alarmManager.cancel(pendingIntent);
-                if (query.getInt(0) == 1)
-                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-
+                if (isSet)
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                calendar.add(Calendar.DATE, i + 1);
             }
+
         } catch (Exception e) {
             Log.e("pe", e.toString());
 
         }
-
-    }
-
-    private void NotificationChannel() {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "CONDUCTRULES";
-            String description = "CONDUCT RULES CHANNEL";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("Notification", name, importance);
-            channel.setDescription(description);
-
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-
-        }
-
     }
 
     private void initAdapters() {

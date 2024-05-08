@@ -123,7 +123,7 @@ public class StackActivity extends AppCompatActivity {
         int date = (int) (currentTime.getTime() / (1000 * 86400));
         String strDate = String.valueOf(date);
 
-        String sqlStr = "SELECT p._id AS practice_id, r._id, r.code, r.name, r.title, p.date" +
+        String sqlStr = "SELECT p._id AS practice_id, r._id, r.code, r.name, p.date, r.description" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id WHERE p.done = 0 AND" +
                 " p.date = " + strDate +
                 " GROUP BY r._id";
@@ -132,7 +132,7 @@ public class StackActivity extends AppCompatActivity {
         if (extras != null) {
             int id = extras.getInt("practiceID");
             if (id > 0)
-                sqlStr = "SELECT p._id AS practice_id, r._id, r.code, r.name, r.title, p.date" +
+                sqlStr = "SELECT p._id AS practice_id, r._id, r.code, r.name, p.date, r.description" +
                         " FROM rule r JOIN practice p ON r._id = p.rule_id" +
                         " WHERE p._id = " + id;
         }
@@ -147,8 +147,8 @@ public class StackActivity extends AppCompatActivity {
                 rule.id = cursor.getInt(1);
                 rule.code = cursor.getString(2);
                 rule.name = cursor.getString(3);
-                rule.title = cursor.getString(4);
-                rule.date = cursor.getInt(5);
+                rule.date = cursor.getInt(4);
+                rule.description = cursor.getString(5);
                 listRules.add(rule);
             }
         }

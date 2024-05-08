@@ -91,7 +91,7 @@ public class EstimateActivity extends AppCompatActivity {
             while (cursor.moveToNext()) {
                 RuleInfo info = new RuleInfo();
                 info.id = cursor.getInt(0);
-                info.code = "Пункт № " + cursor.getString(1);
+                info.code = "Правило № " + cursor.getString(1);
                 info.name = cursor.getString(2);
                 info.estimate = cursor.getInt(3);
                 mListRules.add(info);

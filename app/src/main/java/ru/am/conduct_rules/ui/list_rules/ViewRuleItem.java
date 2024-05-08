@@ -86,11 +86,11 @@ public class ViewRuleItem extends LinearLayout {
             return;
 
         TextView tvNumberRule = findViewById(R.id.tv_number_rule);
-        tvNumberRule.setText("Пункт № " + mRule.code);
+        tvNumberRule.setText("Правило № " + mRule.code);
         tvNumberRule.setOnClickListener(view -> showRuleDescription());
 
         TextView tvShortName = findViewById(R.id.tv_short_name);
-        tvShortName.setText(mRule.title);
+        tvShortName.setText(mRule.name);
         tvShortName.setOnClickListener(view -> showRuleDescription());
 
         TextView tvName = findViewById(R.id.tv_rule_name);
@@ -166,8 +166,7 @@ public class ViewRuleItem extends LinearLayout {
 
     private void showRuleDescription() {
         Intent intent = new Intent(getContext(), RuleDescriptionActivity.class);
-        intent.putExtra("title", mRule.title);
-        intent.putExtra("description", mRule.description);
+        intent.putExtra("id", mRule.id);
         getContext().startActivity(intent);
     }
 

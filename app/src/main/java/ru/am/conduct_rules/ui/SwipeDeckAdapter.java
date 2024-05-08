@@ -56,8 +56,8 @@ public class SwipeDeckAdapter extends BaseAdapter {
         RuleInfo info = data.get(position);
         String code = "Пункт № " + info.code;
         ((TextView) v.findViewById(R.id.text_code)).setText(code);
-        ((TextView) v.findViewById(R.id.text_rule)).setText(info.name);
-        ((TextView) v.findViewById(R.id.tv_short_name)).setText(info.title);
+        ((TextView) v.findViewById(R.id.text_rule)).setText(info.description);
+        ((TextView) v.findViewById(R.id.tv_short_name)).setText(info.name);
         if (mCalendar != null)
             mCalendar.update(info);
 

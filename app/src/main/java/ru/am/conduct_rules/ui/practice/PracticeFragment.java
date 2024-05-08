@@ -296,7 +296,7 @@ public class PracticeFragment extends Fragment {
 
         initPracticeList();
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.code, r.estimate, r.title, r.description" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.code, r.done, r.estimate, r.description" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -304,13 +304,12 @@ public class PracticeFragment extends Fragment {
                 RuleInfo rule = new RuleInfo();
                 rule.id = cursor.getInt(0);
                 rule.name = cursor.getString(1);
-                rule.done = cursor.getInt(2);
-                rule.code = cursor.getString(3);
+                rule.code = cursor.getString(2);
+                rule.done = cursor.getInt(3);
                 rule.estimate = cursor.getInt(4);
-                rule.title = cursor.getString(5);
                 rule.available = true;
                 rule.mode = 1; // режим практики
-                rule.description = cursor.getString(6);
+                rule.description = cursor.getString(5);
                 addViewRule(rule);
             }
         }
@@ -375,7 +374,7 @@ public class PracticeFragment extends Fragment {
         int paddingDP = DataModule.convertDpToPixel(6, context);
         int widthBadge = DataModule.convertDpToPixel(8, context);
 
-        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.done, r.estimate" +
+        Cursor cursor = DataModule.dbReader.rawQuery("SELECT r._id, r.name, r.code, r.done, r.estimate" +
                 " FROM rule r JOIN practice p ON r._id = p.rule_id GROUP BY r._id ORDER BY p._id", null);
         if ((cursor != null)) {
             while (cursor.moveToNext()) {
@@ -383,8 +382,9 @@ public class PracticeFragment extends Fragment {
                 RuleInfo rule = new RuleInfo();
                 rule.id = cursor.getInt(0);
                 rule.name = cursor.getString(1);
-                rule.done = cursor.getInt(2);
-                rule.estimate = cursor.getInt(3);
+                rule.code = cursor.getString(2);
+                rule.done = cursor.getInt(3);
+                rule.estimate = cursor.getInt(4);
 
                 int size1 = DataModule.convertDpToPixel(1, context);
 
@@ -823,7 +823,7 @@ public class PracticeFragment extends Fragment {
         updateStatusRule(info);
 
         AlertDialog.Builder ad;
-        String title = "Сегодня 21 день как вы практикуете пункт \"" + info.code + "\"";
+        String title = "Сегодня 21-ый день как вы практикуете правило № \"" + info.code + "\"";
         String message = "Хотите выбрать новый пункт или продолжить практиковать?!";
         String buttonYesString = "новый";
         String buttonNoString = "продолжить";

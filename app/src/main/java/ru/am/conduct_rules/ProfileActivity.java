@@ -149,7 +149,7 @@ public class ProfileActivity extends AppCompatActivity {
             Cursor query = mDbReader.rawQuery(
                     "SELECT reminder FROM user WHERE _id = 1", null);
             isSet = query.moveToFirst() && (query.getInt(0) == 1);
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 60; i++) {
                 PendingIntent pendingIntent = PendingIntent.getBroadcast
                         (getApplicationContext(), Consts.NOTIFY_ID + i, notifyIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
                 alarmManager.cancel(pendingIntent);
